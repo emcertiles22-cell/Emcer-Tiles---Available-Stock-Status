@@ -1,123 +1,82 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>NexTile - Live Emcer Stock</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background: #fff; padding-bottom: 50px; }
-        .main-container { max-width: 1000px; margin: auto; padding: 10px; }
-        .branding h1 { font-size: 34px; font-weight: 900; color: #0f172a; }
-        .header-line { height: 4px; background: #000; margin: 15px 0; }
-        .stock-card { border: 2px solid #000; display: flex; margin-bottom: 25px; min-height: 220px; }
-        .card-img { width: 30%; border-right: 2px solid #000; padding: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .card-img img { max-height: 200px; object-fit: contain; }
-        .card-info { width: 50%; padding: 20px; display: flex; flex-direction: column; }
-        .design-name { font-size: 26px; font-weight: 900; text-transform: uppercase; }
-        .design-meta { color: #2563eb; font-size: 13px; font-weight: 800; margin-bottom: 20px; }
-        .lot-row { display: flex; justify-content: space-between; border-bottom: 1px dotted #cbd5e1; padding: 6px 0; font-weight: 700; }
-        .card-total { width: 20%; border-left: 2px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; }
-        .total-val { font-size: 52px; font-weight: 900; }
-        #imageModal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
-        #modalImg { max-width: 90%; max-height: 90%; border: 5px solid white; }
-    </style>
-</head>
-<body>
-
-<div id="imageModal" onclick="this.style.display='none'"><img id="modalImg" src=""></div>
-
-<div class="main-container">
-    <div class="flex justify-between items-start pt-6">
-        <div class="branding">
-            <h1>EMCER TILES PRIVATE LIMITED</h1>
-            <p class="text-slate-400 font-bold uppercase tracking-widest">Live Stock Portal</p>
-        </div>
-        <div class="text-right">
-            <div class="text-[11px] font-bold text-blue-600">Developer: Yashdeep Jivani</div>
-            <div id="status" class="text-[10px] font-bold text-green-500 uppercase mt-1">● System Live</div>
-        </div>
+<div class="flex justify-between items-center px-4 py-4 bg-slate-50 border-b">
+    <div class="flex gap-4">
+        <input type="file" id="fileInput" class="hidden" accept=".json" onchange="handleFileUpload(event)">
+        <button onclick="document.getElementById('fileInput').click()" class="bg-black text-white px-6 py-2 font-bold text-sm uppercase">
+            📁 Upload JSON
+        </button>
+        <button onclick="resetSystem()" class="text-red-500 font-bold text-sm uppercase">Reset</button>
     </div>
-    <div class="header-line"></div>
-
-    <div id="reportList" class="py-10 text-center font-bold text-slate-300">Loading Live Data...</div>
+    <div id="status" class="text-[10px] font-bold text-green-500 uppercase">● System Ready</div>
 </div>
 
 <script>
     let groups = {};
     let designImages = {};
 
-    // --- MAIN FUNCTION: GitHub mathi data automatic fetch karse ---
+    // 1. Manuel Upload Function (Tamara mate)
+    function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const stockJson = JSON.parse(e.target.result);
+                processData(stockJson);
+                document.getElementById('status').innerText = "● Local Data Loaded";
+            } catch (err) {
+                alert("Invalid JSON file!");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    // 2. GitHub thi automatic load karva mate (Senior mate)
     async function loadLiveData() {
         try {
-            // 1. Load Design Images
             const resImg = await fetch('design.json');
-            const imgData = await resImg.json();
-            imgData.forEach(d => { if(d.url) designImages[d.name.toLowerCase().trim()] = d.url; });
+            if(resImg.ok) {
+                const imgData = await resImg.json();
+                imgData.forEach(d => { if(d.url) designImages[d.name.toLowerCase().trim()] = d.url; });
+            }
 
-            // 2. Load Stock Data
             const resStock = await fetch('stock.json');
-            const stockJson = await resStock.json();
-            const raw = Array.isArray(stockJson) ? stockJson : (stockJson.data || [stockJson]);
-
-            raw.forEach(item => {
-                const name = (item["Item Description"] || "Unknown").trim();
-                const surf = (item["Series"] || "N/A").trim();
-                const size = (item["Size"] || "N/A").trim();
-                const qty = Number(item["Net Qty"]) || 0;
-                const lot = (item["Lot no."] || "N/A").trim();
-                const key = `${name}|${surf}|${size}`.toLowerCase();
-                
-                if(!groups[key]) groups[key] = { name, surface: surf, size, lots: [], total: 0 };
-                groups[key].lots.push({ lot, qty });
-                groups[key].total += qty;
-            });
-
-            renderUI();
-            document.getElementById('status').innerText = "● Data Updated";
+            if(resStock.ok) {
+                const stockJson = await resStock.json();
+                processData(stockJson);
+                document.getElementById('status').innerText = "● Live Data Updated";
+            }
         } catch (e) {
-            console.error(e);
-            document.getElementById('reportList').innerHTML = "Error: JSON files not found on GitHub.";
+            console.log("No default files found on GitHub, waiting for manual upload.");
         }
     }
 
-    function renderUI() {
-        const list = document.getElementById('reportList');
-        const data = Object.values(groups);
+    // Common processing function
+    function processData(stockJson) {
+        const raw = Array.isArray(stockJson) ? stockJson : (stockJson.data || [stockJson]);
+        groups = {}; // Reset previous data
         
-        list.innerHTML = data.map(g => {
-            const img = designImages[g.name.toLowerCase().trim()] || 'https://via.placeholder.com/400?text=No+Image';
-            return `
-            <div class="stock-card">
-                <div class="card-img" onclick="openModal('${img}')">
-                    <img src="${img}">
-                </div>
-                <div class="card-info">
-                    <div class="design-name">${g.name}</div>
-                    <div class="design-meta">${g.surface} | ${g.size} MM</div>
-                    <div class="flex-grow">
-                        ${g.lots.map(l => `
-                            <div class="lot-row">
-                                <span>LOT: ${l.lot}</span>
-                                <span>${l.qty} Bx</span>
-                            </div>`).join('')}
-                    </div>
-                </div>
-                <div class="card-total">
-                    <div class="total-val">${g.total}</div>
-                    <div class="text-[10px] font-bold text-slate-400 uppercase">Boxes</div>
-                </div>
-            </div>`;
-        }).join('');
+        raw.forEach(item => {
+            const name = (item["Item Description"] || "Unknown").trim();
+            const surf = (item["Series"] || "N/A").trim();
+            const size = (item["Size"] || "N/A").trim();
+            const qty = Number(item["Net Qty"]) || 0;
+            const lot = (item["Lot no."] || "N/A").trim();
+            const key = `${name}|${surf}|${size}`.toLowerCase();
+            
+            if(!groups[key]) groups[key] = { name, surface: surf, size, lots: [], total: 0 };
+            groups[key].lots.push({ lot, qty });
+            groups[key].total += qty;
+        });
+        renderUI();
     }
 
-    function openModal(src) {
-        document.getElementById('imageModal').style.display = "flex";
-        document.getElementById('modalImg').src = src;
+    function resetSystem() {
+        groups = {};
+        document.getElementById('reportList').innerHTML = '<div class="py-10 text-center font-bold text-slate-300 uppercase">No Data Loaded</div>';
+        document.getElementById('status').innerText = "● System Reset";
     }
 
-    // Start loading
+    // Start loading on page load
     loadLiveData();
 </script>
-</body>
-</html>
