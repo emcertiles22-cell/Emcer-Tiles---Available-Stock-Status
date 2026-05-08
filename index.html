@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Status - Emcer Tiles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #000; padding-bottom: 50px; }
+        .main-container { max-width: 1000px; margin: auto; padding: 10px; }
+        .branding h1 { font-size: 34px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; color: #0f172a; }
+        .branding p { font-size: 16px; color: #94a3b8; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-top: 8px; }
+        .dev-credit { font-size: 11px; font-weight: 800; color: #2563eb; text-align: right; margin-top: 10px; }
+        .header-line { height: 4px; background: #000; margin: 15px 0; }
+        .stock-card { border: 2px solid #000; display: flex; margin-bottom: 25px; min-height: 220px; page-break-inside: avoid; }
+        .card-img { width: 30%; border-right: 2px solid #000; padding: 15px; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
+        .card-img img { max-height: 200px; width: auto; max-width: 100%; object-fit: contain; }
+        .card-info { width: 50%; padding: 20px; position: relative; display: flex; flex-direction: column; }
+        .grade-tag { position: absolute; top: 15px; right: 15px; background: #000; color: #fff; padding: 3px 12px; font-size: 10px; font-weight: 900; }
+        .design-name { font-size: 26px; font-weight: 900; text-transform: uppercase; margin-bottom: 4px; }
+        .design-meta { color: #2563eb; font-size: 13px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; }
+        .lot-row { display: flex; justify-content: space-between; border-bottom: 1px dotted #cbd5e1; padding: 6px 0; font-size: 14px; font-weight: 700; }
+        .card-total { width: 20%; border-left: 2px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; }
+        .total-label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+        .total-val { font-size: 52px; font-weight: 900; line-height: 1; color: #000; }
+        .footer-tagline { margin-top: auto; display: flex; gap: 25px; font-size: 9px; font-weight: 800; color: #cbd5e1; text-transform: uppercase; }
+        .btn-black { background: #000; color: #fff; padding: 10px 24px; font-weight: 900; font-size: 14px; text-transform: uppercase; transition: 0.2s; }
+        
+        /* Modal for Full Image View */
+        #imageModal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; padding: 20px; }
+        #modalImg { max-width: 95%; max-height: 95%; border: 4px solid white; background: white; }
+        .close-modal { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 50px; font-weight: bold; cursor: pointer; }
+
+        @media print { .no-print { display: none; } }
+    </style>
+</head>
+<body>
+
+<div id="imageModal" onclick="closeModal()">
+    <span class="close-modal">&times;</span>
+    <img id="modalImg" src="">
+</div>
+
+<div class="main-container">
+    <div class="flex justify-between items-start pt-6">
+        <div class="branding">
+            <h1>EMCER TILES PRIVATE LIMITED</h1>
+            <p>Stock Status Report</p>
+        </div>
+        <div class="text-right">
+            <button onclick="downloadPDF()" class="btn-black mb-1 no-print">Print PDF</button>
+            <div class="dev-credit">System Developer: Yashdeep Jivani</div>
+        </div>
+    </div>
+    <div class="header-line"></div>
+
+    <div class="no-print mb-8 flex gap-4">
+        <label class="cursor-pointer bg-slate-50 border-2 border-dashed border-slate-300 px-6 py-3 text-xs font-black uppercase rounded-lg hover:bg-slate-100">
+            📁 Upload Stock JSON
+            <input type="file" id="fileInput" multiple accept=".json" class="hidden" onchange="handleFileUpload(event)">
+        </label>
+        <button onclick="if(confirm('Clear all data?')) { localStorage.clear(); location.reload(); }" class="text-red-500 font-bold text-xs uppercase underline">Reset System</button>
+    </div>
+
+    <div id="reportList"></div>
+</div>
+
+<script>
+    var groups = {};
+    var designImages = {};
+
+    window.onload = () => {
+        const d = localStorage.getItem('em_stock_v2');
+        const i = localStorage.getItem('em_imgs_v2');
+        if(d) groups = JSON.parse(d);
+        if(i) designImages = JSON.parse(i);
+        renderUI();
+    };
+
+    // Full Image Modal Functions
+    function openModal(src) {
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImg');
+        modal.style.display = "flex";
+        modalImg.src = src;
+    }
+
+    function closeModal() {
+        document.getElementById('imageModal').style.display = "none";
+    }
+
+    async function handleFileUpload(event) {
+        const files = event.target.files;
+        for (let file of files) {
+            try {
+                let text = await file.text();
+                if (text.includes('}{')) text = '[' + text.replace(/}{/g, '},{') + ']';
+                const json = JSON.parse(text.trim());
+                
+                if (Array.isArray(json) && json.length > 0 && (json[0].url || json[0].name)) {
+                    json.forEach(d => { if(d.url) designImages[d.name.toLowerCase().trim()] = d.url; });
+                } else {
+                    const raw = Array.isArray(json) ? json : (json.data || [json]);
+                    raw.forEach(item => {
+                        const name = (item["Item Description"] || "Unknown").trim();
+                        const surf = (item["Series"] || "N/A").trim();
+                        const size = (item["Size"] || "N/A").trim();
+                        const qty = Number(item["Net Qty"]) || 0;
+                        const lot = (item["Lot no."] || "N/A").trim();
+                        const key = `${name}|${surf}|${size}`.toLowerCase();
+                        
+                        if(!groups[key]) groups[key] = { name, surface: surf, size, lots: [], total: 0 };
+                        groups[key].lots.push({ lot, qty });
+                        groups[key].total += qty;
+                    });
+                }
+            } catch (e) { alert("Format Error: Check JSON file"); }
+        }
+        localStorage.setItem('em_stock_v2', JSON.stringify(groups));
+        localStorage.setItem('em_imgs_v2', JSON.stringify(designImages));
+        renderUI();
+    }
+
+    function renderUI() {
+        const list = document.getElementById('reportList');
+        const data = Object.values(groups);
+        if(data.length === 0) { list.innerHTML = "<div class='py-32 text-center text-slate-300 font-black text-xl uppercase'>No Stock Loaded</div>"; return; }
+
+        list.innerHTML = data.map(g => {
+            const img = designImages[g.name.toLowerCase().trim()] || 'https://via.placeholder.com/400x600?text=Emcer+Tiles';
+            return `
+            <div class="stock-card shadow-sm">
+                <div class="card-img" onclick="openModal('${img}')">
+                    <img src="${img}" onerror="this.src='https://via.placeholder.com/400x600?text=Image+Not+Found'">
+                </div>
+                <div class="card-info">
+                    <div class="grade-tag">PRE</div>
+                    <div class="design-name">${g.name}</div>
+                    <div class="design-meta">${g.surface} | ${g.size} MM</div>
+                    <div class="flex-grow">
+                        ${g.lots.map(l => `
+                            <div class="lot-row">
+                                <span class="text-slate-500 uppercase">LOT: ${l.lot}</span>
+                                <span class="text-slate-900">${l.qty} Bx</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="footer-tagline">
+                        <span>Brand: Emcer</span>
+                        <span>Quality: Pre-Certified</span>
+                    </div>
+                </div>
+                <div class="card-total">
+                    <div class="total-label">Total</div>
+                    <div class="total-val">${g.total}</div>
+                    <div class="total-label">Boxes</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    async function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const data = Object.values(groups);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(24);
+        doc.setTextColor(15, 23, 42);
+        doc.text("EMCER TILES PRIVATE LIMITED", 10, 20);
+        doc.setFontSize(11);
+        doc.setTextColor(148, 163, 184);
+        doc.text("STOCK STATUS REPORT", 10, 27);
+        doc.setTextColor(37, 99, 235);
+        doc.text("System Developer: Yashdeep Jivani", 200, 27, {align: 'right'});
+        doc.line(10, 32, 200, 32);
+
+        let y = 42;
+        const cardH = 50;
+
+        data.forEach((g) => {
+            if (y + cardH > 280) { doc.addPage(); y = 20; }
+            doc.setDrawColor(0);
+            doc.rect(10, y, 190, cardH); 
+            doc.line(65, y, 65, y + cardH);
+            doc.line(165, y, 165, y + cardH);
+            doc.setFontSize(16); doc.setTextColor(0);
+            doc.text(g.name.toUpperCase(), 70, y + 10);
+            doc.setFontSize(9); doc.setTextColor(37, 99, 235);
+            doc.text(`${g.surface} | ${g.size} MM`, 70, y + 15);
+            let lotY = y + 25;
+            g.lots.slice(0, 4).forEach(l => {
+                doc.setFontSize(9); doc.setTextColor(0);
+                doc.text(`LOT: ${l.lot}`, 70, lotY);
+                doc.text(`${l.qty} Bx`, 160, lotY, {align: 'right'});
+                lotY += 5;
+            });
+            doc.setFontSize(28); 
+            doc.text(String(g.total), 182, y + 28, {align: 'center'});
+            y += cardH + 8;
+        });
+        doc.save(`Emcer_Stock_${new Date().toLocaleDateString()}.pdf`);
+    }
+</script>
+</body>
+</html>
