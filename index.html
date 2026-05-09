@@ -1,78 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>NexTile - Professional Stock Portal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #000; }
-        .main-container { max-width: 1100px; margin: auto; padding: 20px; }
-        .header-line { height: 5px; background: #000; margin: 20px 0; }
-        
-        /* Filter Styles */
-        .filter-box { background: white; border: 2px solid #000; padding: 15px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        select { border: 1px solid #e2e8f0; padding: 10px; font-weight: 700; font-size: 13px; text-transform: uppercase; cursor: pointer; outline: none; }
-        select:focus { border-color: #2563eb; }
-
-        /* Card UI */
-        .stock-card { background: white; border: 2px solid #000; display: flex; margin-bottom: 25px; min-height: 220px; page-break-inside: avoid; transition: 0.2s; }
-        .card-img { width: 30%; border-right: 2px solid #000; padding: 15px; display: flex; align-items: center; justify-content: center; cursor: zoom-in; background: #fff; }
-        .card-img img { max-height: 200px; width: auto; max-width: 100%; object-fit: contain; }
-        
-        .card-info { width: 50%; padding: 20px; display: flex; flex-direction: column; position: relative; }
-        .design-name { font-size: 26px; font-weight: 900; text-transform: uppercase; line-height: 1.1; }
-        .design-meta { color: #2563eb; font-size: 13px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; }
-        .lot-row { display: flex; justify-content: space-between; border-bottom: 1px dotted #cbd5e1; padding: 6px 0; font-size: 14px; font-weight: 700; }
-        
-        .card-total { width: 20%; border-left: 2px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; }
-        .total-val { font-size: 55px; font-weight: 900; line-height: 1; }
-        .total-label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
-
-        #imgModal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
-        #modalImg { max-width: 90%; max-height: 90%; border: 5px solid #fff; }
-
-        @media print { .no-print { display: none; } .stock-card { margin-bottom: 10px; } }
-    </style>
-</head>
-<body>
-
-<div id="imgModal" onclick="this.style.display='none'"><img id="modalImg" src=""></div>
-
-<div class="main-container">
-    <div class="flex justify-between items-end pt-6">
-        <div>
-            <h1 class="text-4xl font-black text-slate-900 leading-none">EMCER TILES PRIVATE LIMITED</h1>
-            <p class="text-sm text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Inventory Discovery Portal</p>
-        </div>
-        <div class="text-right">
-            <button onclick="location.reload()" class="bg-black text-white px-4 py-2 text-[10px] font-black uppercase no-print">🔄 Refresh Data</button>
-            <div class="text-[11px] font-black text-blue-600 mt-2">SYSTEM DEVELOPER: YASHDEEP JIVANI</div>
-        </div>
+<div class="filter-box no-print">
+    <div class="flex flex-col">
+        <label class="text-[10px] font-black text-slate-400 uppercase mb-1">Search Design</label>
+        <input type="text" id="searchName" oninput="applyFilters()" placeholder="Type design name..." class="border p-2 font-bold text-sm outline-none focus:border-blue-600">
     </div>
-    <div class="header-line"></div>
-
-    <div class="filter-box no-print">
-        <div class="flex flex-col">
-            <label class="text-[10px] font-black text-slate-400 uppercase mb-1">Search Design</label>
-            <input type="text" id="searchName" oninput="applyFilters()" placeholder="Type design name..." class="border p-2 font-bold text-sm outline-none focus:border-blue-600">
-        </div>
-        <div class="flex flex-col">
-            <label class="text-[10px] font-black text-slate-400 uppercase mb-1">Filter by Size</label>
-            <select id="filterSize" onchange="applyFilters()">
-                <option value="">All Sizes</option>
-            </select>
-        </div>
-        <div class="flex flex-col">
-            <label class="text-[10px] font-black text-slate-400 uppercase mb-1">Filter by Series</label>
-            <select id="filterSeries" onchange="applyFilters()">
-                <option value="">All Series</option>
-            </select>
-        </div>
+    <div class="flex flex-col">
+        <label class="text-[10px] font-black text-slate-400 uppercase mb-1">Step 1: Select Size</label>
+        <select id="filterSize" onchange="updateSeriesDropdown(); applyFilters();">
+            <option value="">All Sizes</option>
+        </select>
     </div>
-
-    <div id="reportList">
-        <div class="py-32 text-center text-slate-300 font-black text-2xl uppercase">Loading Master Stock...</div>
+    <div class="flex flex-col">
+        <label class="text-[10px] font-black text-slate-400 uppercase mb-1">Step 2: Select Series</label>
+        <select id="filterSeries" onchange="applyFilters()">
+            <option value="">All Series</option>
+        </select>
+    </div>
+    <div class="flex flex-col">
+        <label class="text-[10px] font-black text-slate-400 uppercase mb-1">Step 3: Select Grade</label>
+        <select id="filterGrade" onchange="applyFilters()">
+            <option value="">All Grades</option>
+        </select>
     </div>
 </div>
 
@@ -80,78 +27,74 @@
     let masterData = [];
     let designMap = {};
 
-    async function initPortal() {
-        try {
-            // Load Images
-            const resImg = await fetch('design.json?v=' + Date.now());
-            if (resImg.ok) {
-                const designs = await resImg.json();
-                designs.forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
-            }
-
-            // Load Stock - Check both Small and Capital file names
-            let resStock = await fetch('stock.json?v=' + Date.now());
-            if (!resStock.ok) resStock = await fetch('STOCK.JSON?v=' + Date.now());
-            
-            if (!resStock.ok) throw new Error("File not found");
-            
-            let stockText = await resStock.text();
-            stockText = stockText.trim();
-            if (stockText.includes('}{')) stockText = '[' + stockText.replace(/}{/g, '},{') + ']';
-            if (!stockText.startsWith('[')) stockText = '[' + stockText + ']';
-
-            masterData = JSON.parse(stockText);
-            
-            populateFilters();
-            applyFilters();
-        } catch (err) {
-            document.getElementById('reportList').innerHTML = `<div class="py-20 text-center text-red-500 font-bold uppercase">stock.json not found on GitHub!</div>`;
-        }
-    }
-
+    // 1. Dropdowns ne dynamic banavva mate
     function populateFilters() {
         const sizes = new Set();
-        const series = new Set();
+        const grades = new Set();
 
         masterData.forEach(item => {
             if (item["Size"]) sizes.add(item["Size"].trim());
-            if (item["Series"]) series.add(item["Series"].trim());
+            if (item["Grade"]) grades.add(item["Grade"].trim());
         });
 
+        // Size Dropdown bharo
         const sizeSelect = document.getElementById('filterSize');
-        [...sizes].sort().forEach(s => {
-            sizeSelect.innerHTML += `<option value="${s}">${s}</option>`;
+        sizeSelect.innerHTML = '<option value="">All Sizes</option>';
+        [...sizes].sort().forEach(s => sizeSelect.innerHTML += `<option value="${s}">${s}</option>`);
+
+        // Grade Dropdown bharo
+        const gradeSelect = document.getElementById('filterGrade');
+        gradeSelect.innerHTML = '<option value="">All Grades</option>';
+        [...grades].sort().forEach(g => gradeSelect.innerHTML += `<option value="${g}">${g}</option>`);
+
+        updateSeriesDropdown(); // Sharuat ma badhi series batavva mate
+    }
+
+    // 2. SMART FILTER: Size mujab Series badlava mate
+    function updateSeriesDropdown() {
+        const selectedSize = document.getElementById('filterSize').value;
+        const seriesSet = new Set();
+
+        masterData.forEach(item => {
+            const itemSize = (item["Size"] || "").trim();
+            if (selectedSize === "" || itemSize === selectedSize) {
+                if (item["Series"]) seriesSet.add(item["Series"].trim());
+            }
         });
 
         const seriesSelect = document.getElementById('filterSeries');
-        [...series].sort().forEach(sr => {
+        seriesSelect.innerHTML = '<option value="">All Series</option>';
+        [...seriesSet].sort().forEach(sr => {
             seriesSelect.innerHTML += `<option value="${sr}">${sr}</option>`;
         });
     }
 
+    // 3. APPLY FILTERS (Grade inclusion sathe)
     function applyFilters() {
         const nameVal = document.getElementById('searchName').value.toLowerCase();
         const sizeVal = document.getElementById('filterSize').value;
         const seriesVal = document.getElementById('filterSeries').value;
+        const gradeVal = document.getElementById('filterGrade').value;
 
-        // Grouping logic for filtered results
         const filteredGroups = {};
 
         masterData.forEach(item => {
             const name = (item["Item Description"] || "Unknown").trim();
             const surface = (item["Series"] || "N/A").trim();
             const size = (item["Size"] || "N/A").trim();
+            const grade = (item["Grade"] || "PRE").trim();
             const qty = Number(item["Net Qty"] || 0);
             const lot = (item["Lot no."] || "N/A").trim();
 
             const matchName = name.toLowerCase().includes(nameVal);
             const matchSize = sizeVal === "" || size === sizeVal;
             const matchSeries = seriesVal === "" || surface === seriesVal;
+            const matchGrade = gradeVal === "" || grade === gradeVal;
 
-            if (matchName && matchSize && matchSeries) {
-                const key = `${name}|${surface}|${size}`.toLowerCase();
+            if (matchName && matchSize && matchSeries && matchGrade) {
+                const key = `${name}|${surface}|${size}|${grade}`.toLowerCase();
                 if (!filteredGroups[key]) {
-                    filteredGroups[key] = { name, surface, size, lots: [], total: 0 };
+                    filteredGroups[key] = { name, surface, size, grade, lots: [], total: 0 };
                 }
                 filteredGroups[key].lots.push({ lot, qty });
                 filteredGroups[key].total += qty;
@@ -161,19 +104,18 @@
         render(Object.values(filteredGroups));
     }
 
+    // 4. RENDER UI (Grade badge sathe)
     function render(items) {
         const area = document.getElementById('reportList');
-        if (items.length === 0) {
-            area.innerHTML = "<div class='py-32 text-center text-slate-300 font-bold uppercase'>No matching tiles found</div>";
-            return;
-        }
-
         area.innerHTML = items.map(item => {
             const imgUrl = designMap[item.name.toLowerCase().trim()] || 'https://via.placeholder.com/400x600?text=No+Photo';
             return `
-            <div class="stock-card shadow-md">
+            <div class="stock-card shadow-md relative">
+                <div class="absolute top-2 right-[22%] bg-black text-white px-3 py-1 text-[10px] font-black uppercase z-10">
+                    ${item.grade}
+                </div>
                 <div class="card-img" onclick="openFullImg('${imgUrl}')">
-                    <img src="${imgUrl}" onerror="this.src='https://via.placeholder.com/400x600?text=Image+Error'">
+                    <img src="${imgUrl}">
                 </div>
                 <div class="card-info">
                     <div class="design-name">${item.name}</div>
@@ -194,13 +136,4 @@
             </div>`;
         }).join('');
     }
-
-    function openFullImg(src) {
-        document.getElementById('imgModal').style.display = "flex";
-        document.getElementById('modalImg').src = src;
-    }
-
-    initPortal();
 </script>
-</body>
-</html>
