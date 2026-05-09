@@ -21,7 +21,7 @@
         .stock-card { background: white; border: 2px solid #000; display: flex; margin-bottom: 25px; min-height: 220px; position: relative; }
         .variant-badge { position: absolute; top: 0; right: 20%; background: #000; color: #fff; padding: 5px 15px; font-size: 11px; font-weight: 900; text-transform: uppercase; z-index: 10; }
         
-        .card-img { width: 30%; border-right: 2px solid #000; padding: 15px; display: flex; align-items: center; justify-content: center; }
+        .card-img { width: 30%; border-right: 2px solid #000; padding: 15px; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
         .card-img img { max-height: 200px; width: auto; max-width: 100%; object-fit: contain; }
         
         .card-info { width: 50%; padding: 25px; display: flex; flex-direction: column; }
@@ -32,10 +32,20 @@
         .card-total { width: 20%; border-left: 2px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; }
         .total-val { font-size: 60px; font-weight: 900; line-height: 1; }
         .total-label { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+
+        /* Image Modal Style */
+        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; cursor: zoom-out; align-items: center; justify-content: center; padding: 20px; }
+        #imageModal img { max-width: 100%; max-height: 90vh; border: 5px solid white; }
+
         @media print { .no-print { display: none; } }
     </style>
 </head>
 <body>
+
+<!-- Full View Modal -->
+<div id="imageModal" onclick="this.style.display='none'">
+    <img id="modalImg" src="">
+</div>
 
 <div class="main-container">
     <div class="flex justify-between items-end pt-6">
@@ -82,6 +92,14 @@
     let masterData = [];
     let designMap = {};
 
+    // Modal logic
+    function openImage(url) {
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImg');
+        modal.style.display = 'flex';
+        modalImg.src = url;
+    }
+
     async function initPortal() {
         try {
             const resImg = await fetch('design.json?v=' + Date.now());
@@ -105,31 +123,25 @@
     function setupFilters() {
         const sizes = new Set();
         const variants = new Set();
-
         masterData.forEach(item => {
             if (item["Size"]) sizes.add(item["Size"].trim());
             if (item["Variant"]) variants.add(item["Variant"].trim());
         });
-
         const sizeSelect = document.getElementById('filterSize');
         [...sizes].sort().forEach(s => sizeSelect.innerHTML += `<option value="${s}">${s}</option>`);
-
         const variantSelect = document.getElementById('filterVariant');
         [...variants].sort().forEach(v => variantSelect.innerHTML += `<option value="${v}">${v}</option>`);
-
         updateSeriesOptions(); 
     }
 
     function updateSeriesOptions() {
         const selectedSize = document.getElementById('filterSize').value;
         const seriesSet = new Set();
-
         masterData.forEach(item => {
             if (selectedSize === "" || (item["Size"] || "").trim() === selectedSize) {
                 if (item["Series"]) seriesSet.add(item["Series"].trim());
             }
         });
-
         const seriesSelect = document.getElementById('filterSeries');
         seriesSelect.innerHTML = '<option value="">All Series</option>';
         [...seriesSet].sort().forEach(sr => seriesSelect.innerHTML += `<option value="${sr}">${sr}</option>`);
@@ -140,7 +152,6 @@
         const sizeVal = document.getElementById('filterSize').value;
         const seriesVal = document.getElementById('filterSeries').value;
         const variantVal = document.getElementById('filterVariant').value;
-
         const groups = {};
 
         masterData.forEach(item => {
@@ -162,7 +173,6 @@
                 groups[key].total += qty;
             }
         });
-
         render(Object.values(groups));
     }
 
@@ -178,7 +188,9 @@
             return `
             <div class="stock-card shadow-sm">
                 <div class="variant-badge">${item.variant}</div>
-                <div class="card-img"><img src="${imgUrl}"></div>
+                <div class="card-img" onclick="openImage('${imgUrl}')">
+                    <img src="${imgUrl}" alt="${item.name}">
+                </div>
                 <div class="card-info">
                     <div class="design-name">${item.name}</div>
                     <div class="design-meta">${item.series} | ${item.size}</div>
