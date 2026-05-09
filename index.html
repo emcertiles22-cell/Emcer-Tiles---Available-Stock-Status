@@ -10,30 +10,33 @@
         .main-container { max-width: 1100px; margin: auto; padding: 20px; }
         .header-line { height: 5px; background: #000; margin: 20px 0; }
         
-        /* Filter UI */
-        .filter-box { background: white; border: 2px solid #000; padding: 20px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; box-shadow: 8px 8px 0px rgba(0,0,0,0.05); }
-        .filter-group { display: flex; flex-direction: column; }
-        label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #64748b; margin-bottom: 6px; letter-spacing: 0.05em; }
-        select, input { border: 1px solid #e2e8f0; padding: 12px; font-weight: 700; font-size: 13px; text-transform: uppercase; outline: none; }
-        select:focus, input:focus { border-color: #000; }
+        /* Stats Cards */
+        .stat-card { background: #fff; border: 2px solid #000; padding: 15px; text-align: center; box-shadow: 4px 4px 0px #000; }
+        .stat-val { font-size: 24px; font-weight: 900; }
+        .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; }
 
+        /* Filter UI */
+        .filter-box { background: white; border: 2px solid #000; padding: 20px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; box-shadow: 8px 8px 0px rgba(0,0,0,0.05); }
+        .filter-group { display: flex; flex-direction: column; }
+        label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #64748b; margin-bottom: 6px; }
+        select, input { border: 1px solid #e2e8f0; padding: 10px; font-weight: 700; font-size: 13px; text-transform: uppercase; outline: none; }
+        
         /* Card UI */
         .stock-card { background: white; border: 2px solid #000; display: flex; margin-bottom: 25px; min-height: 220px; position: relative; }
         .variant-badge { position: absolute; top: 0; right: 20%; background: #000; color: #fff; padding: 5px 15px; font-size: 11px; font-weight: 900; text-transform: uppercase; z-index: 10; }
+        .brand-tag { font-size: 10px; background: #eff6ff; color: #1e40af; padding: 2px 8px; border-radius: 4px; font-weight: 800; display: inline-block; margin-bottom: 5px; }
         
         .card-img { width: 30%; border-right: 2px solid #000; padding: 15px; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
         .card-img img { max-height: 200px; width: auto; max-width: 100%; object-fit: contain; }
         
         .card-info { width: 50%; padding: 25px; display: flex; flex-direction: column; }
-        .design-name { font-size: 28px; font-weight: 900; text-transform: uppercase; line-height: 1; margin-bottom: 8px; }
-        .design-meta { color: #2563eb; font-size: 14px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; }
-        .lot-row { display: flex; justify-content: space-between; border-bottom: 1px dotted #cbd5e1; padding: 8px 0; font-size: 15px; font-weight: 700; }
+        .design-name { font-size: 26px; font-weight: 900; text-transform: uppercase; line-height: 1; margin-bottom: 4px; }
+        .design-meta { color: #2563eb; font-size: 13px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; }
+        .lot-row { display: flex; justify-content: space-between; border-bottom: 1px dotted #cbd5e1; padding: 6px 0; font-size: 14px; font-weight: 700; }
         
         .card-total { width: 20%; border-left: 2px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; }
-        .total-val { font-size: 60px; font-weight: 900; line-height: 1; }
-        .total-label { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+        .total-val { font-size: 50px; font-weight: 900; line-height: 1; }
 
-        /* Image Modal Style */
         #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; cursor: zoom-out; align-items: center; justify-content: center; padding: 20px; }
         #imageModal img { max-width: 100%; max-height: 90vh; border: 5px solid white; }
 
@@ -42,12 +45,10 @@
 </head>
 <body>
 
-<!-- Full View Modal -->
-<div id="imageModal" onclick="this.style.display='none'">
-    <img id="modalImg" src="">
-</div>
+<div id="imageModal" onclick="this.style.display='none'"><img id="modalImg" src=""></div>
 
 <div class="main-container">
+    <!-- Header -->
     <div class="flex justify-between items-end pt-6">
         <div>
             <h1 class="text-4xl font-black text-slate-900 leading-none">EMCER TILES PRIVATE LIMITED</h1>
@@ -58,31 +59,24 @@
             <div class="text-[11px] font-black text-blue-600 mt-2">DEVELOPER: YASHDEEP JIVANI</div>
         </div>
     </div>
+    
     <div class="header-line"></div>
 
+    <!-- Stats Section -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 no-print">
+        <div class="stat-card"><div class="stat-label">Total Designs</div><div id="statDesigns" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="stat-label">Total Boxes</div><div id="statBoxes" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="stat-label">Active Brands</div><div id="statBrands" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="stat-label">Results</div><div id="statFiltered" class="stat-val">0</div></div>
+    </div>
+
+    <!-- Filter UI -->
     <div class="filter-box no-print">
-        <div class="filter-group">
-            <label>Search Design</label>
-            <input type="text" id="searchName" oninput="applyFilters()" placeholder="Search...">
-        </div>
-        <div class="filter-group">
-            <label>1. Select Size</label>
-            <select id="filterSize" onchange="updateSeriesOptions(); applyFilters();">
-                <option value="">All Sizes</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>2. Select Series</label>
-            <select id="filterSeries" onchange="applyFilters()">
-                <option value="">All Series</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>3. Select Variant</label>
-            <select id="filterVariant" onchange="applyFilters()">
-                <option value="">All Variants</option>
-            </select>
-        </div>
+        <div class="filter-group"><label>Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Search..."></div>
+        <div class="filter-group"><label>Brand</label><select id="filterBrand" onchange="applyFilters()"><option value="">All Brands</option></select></div>
+        <div class="filter-group"><label>Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"><option value="">All Sizes</option></select></div>
+        <div class="filter-group"><label>Series</label><select id="filterSeries" onchange="applyFilters()"><option value="">All Series</option></select></div>
+        <div class="filter-group"><label>Variant</label><select id="filterVariant" onchange="applyFilters()"><option value="">All Variants</option></select></div>
     </div>
 
     <div id="reportList"></div>
@@ -92,46 +86,55 @@
     let masterData = [];
     let designMap = {};
 
-    // Modal logic
     function openImage(url) {
         const modal = document.getElementById('imageModal');
-        const modalImg = document.getElementById('modalImg');
+        document.getElementById('modalImg').src = url;
         modal.style.display = 'flex';
-        modalImg.src = url;
     }
 
     async function initPortal() {
         try {
+            // Load Design Images
             const resImg = await fetch('design.json?v=' + Date.now());
             if (resImg.ok) {
                 const designs = await resImg.json();
                 designs.forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
             }
 
+            // Load Stock Data
             let resStock = await fetch('stock.json?v=' + Date.now());
             if (!resStock.ok) resStock = await fetch('STOCK.JSON?v=' + Date.now());
             
-            masterData = await resStock.json();
-            
-            setupFilters();
-            applyFilters();
+            if (resStock.ok) {
+                masterData = await resStock.json();
+                setupFilters();
+                applyFilters();
+            } else {
+                throw new Error("File not found");
+            }
         } catch (err) {
-            document.getElementById('reportList').innerHTML = `<div class="py-20 text-center text-red-500 font-bold uppercase">stock.json not found!</div>`;
+            document.getElementById('reportList').innerHTML = `<div class="py-20 text-center text-red-500 font-bold uppercase">stock.json file mathi data load thayo nathi!</div>`;
         }
     }
 
     function setupFilters() {
-        const sizes = new Set();
-        const variants = new Set();
+        const brands = new Set(), sizes = new Set(), variants = new Set();
         masterData.forEach(item => {
+            if (item["Brand"]) brands.add(item["Brand"].trim());
             if (item["Size"]) sizes.add(item["Size"].trim());
             if (item["Variant"]) variants.add(item["Variant"].trim());
         });
-        const sizeSelect = document.getElementById('filterSize');
-        [...sizes].sort().forEach(s => sizeSelect.innerHTML += `<option value="${s}">${s}</option>`);
-        const variantSelect = document.getElementById('filterVariant');
-        [...variants].sort().forEach(v => variantSelect.innerHTML += `<option value="${v}">${v}</option>`);
-        updateSeriesOptions(); 
+
+        const updateSelect = (id, set) => {
+            const el = document.getElementById(id);
+            el.innerHTML = `<option value="">All ${id.replace('filter','')}</option>` + 
+                [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
+        };
+
+        updateSelect('filterBrand', brands);
+        updateSelect('filterSize', sizes);
+        updateSelect('filterVariant', variants);
+        updateSeriesOptions();
     }
 
     function updateSeriesOptions() {
@@ -143,19 +146,24 @@
             }
         });
         const seriesSelect = document.getElementById('filterSeries');
-        seriesSelect.innerHTML = '<option value="">All Series</option>';
-        [...seriesSet].sort().forEach(sr => seriesSelect.innerHTML += `<option value="${sr}">${sr}</option>`);
+        seriesSelect.innerHTML = '<option value="">All Series</option>' + 
+            [...seriesSet].sort().map(s => `<option value="${s}">${s}</option>`).join('');
     }
 
     function applyFilters() {
         const nameVal = document.getElementById('searchName').value.toLowerCase();
+        const brandVal = document.getElementById('filterBrand').value;
         const sizeVal = document.getElementById('filterSize').value;
         const seriesVal = document.getElementById('filterSeries').value;
         const variantVal = document.getElementById('filterVariant').value;
+
         const groups = {};
+        let totalBoxes = 0;
+        let brandsFound = new Set();
 
         masterData.forEach(item => {
             const name = (item["Item Description"] || "N/A").trim();
+            const brand = (item["Brand"] || "EMCER").trim();
             const series = (item["Series"] || "N/A").trim();
             const size = (item["Size"] || "N/A").trim();
             const variant = (item["Variant"] || "N/A").trim();
@@ -163,17 +171,27 @@
             const lot = (item["Lot no."] || "N/A").trim();
 
             if (name.toLowerCase().includes(nameVal) &&
+                (brandVal === "" || brand === brandVal) &&
                 (sizeVal === "" || size === sizeVal) &&
                 (seriesVal === "" || series === seriesVal) &&
                 (variantVal === "" || variant === variantVal)) {
                 
-                const key = `${name}|${series}|${size}|${variant}`.toLowerCase();
-                if (!groups[key]) groups[key] = { name, series, size, variant, lots: [], total: 0 };
+                const key = `${name}|${brand}|${series}|${size}|${variant}`.toLowerCase();
+                if (!groups[key]) groups[key] = { name, brand, series, size, variant, lots: [], total: 0 };
                 groups[key].lots.push({ lot, qty });
                 groups[key].total += qty;
+                totalBoxes += qty;
+                brandsFound.add(brand);
             }
         });
-        render(Object.values(groups));
+
+        const items = Object.values(groups);
+        document.getElementById('statDesigns').innerText = items.length;
+        document.getElementById('statBoxes').innerText = totalBoxes;
+        document.getElementById('statBrands').innerText = brandsFound.size;
+        document.getElementById('statFiltered').innerText = items.length;
+
+        render(items);
     }
 
     function render(items) {
@@ -186,22 +204,19 @@
         area.innerHTML = items.map(item => {
             const imgUrl = designMap[item.name.toLowerCase().trim()] || 'https://via.placeholder.com/400x600?text=No+Photo';
             return `
-            <div class="stock-card shadow-sm">
+            <div class="stock-card">
                 <div class="variant-badge">${item.variant}</div>
-                <div class="card-img" onclick="openImage('${imgUrl}')">
-                    <img src="${imgUrl}" alt="${item.name}">
-                </div>
+                <div class="card-img" onclick="openImage('${imgUrl}')"><img src="${imgUrl}"></div>
                 <div class="card-info">
+                    <span class="brand-tag">${item.brand}</span>
                     <div class="design-name">${item.name}</div>
                     <div class="design-meta">${item.series} | ${item.size}</div>
-                    <div class="flex-grow">
-                        ${item.lots.map(l => `<div class="lot-row"><span>LOT: ${l.lot}</span><span>${l.qty} Bx</span></div>`).join('')}
-                    </div>
+                    <div class="flex-grow">${item.lots.map(l => `<div class="lot-row"><span>LOT: ${l.lot}</span><span>${l.qty} Bx</span></div>`).join('')}</div>
                 </div>
                 <div class="card-total">
-                    <div class="total-label">Available</div>
+                    <div class="total-label text-[10px] font-bold text-slate-400">STOCK</div>
                     <div class="total-val">${item.total}</div>
-                    <div class="total-label">Boxes</div>
+                    <div class="total-label text-[10px] font-bold text-slate-400">BOXES</div>
                 </div>
             </div>`;
         }).join('');
