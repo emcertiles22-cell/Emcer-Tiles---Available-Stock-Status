@@ -53,6 +53,7 @@
         <div>
             <h1 class="text-4xl font-black text-slate-900 leading-none">EMCER TILES PRIVATE LIMITED</h1>
             <p class="text-sm text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Live Inventory Portal</p>
+            <p id="lastUpdated" class="text-[10px] text-blue-500 font-bold uppercase mt-1">Checking for updates...</p>
         </div>
         <div class="text-right no-print">
             <button onclick="location.reload()" class="bg-black text-white px-5 py-2 text-[11px] font-black uppercase">🔄 Refresh</button>
@@ -107,6 +108,15 @@
             
             if (resStock.ok) {
                 masterData = await resStock.json();
+                // ફાઈલ અપડેટ ટાઈમ બતાવવા માટે
+const lastMod = resStock.headers.get('Last-Modified');
+if (lastMod) {
+    const dateObj = new Date(lastMod);
+    document.getElementById('lastUpdated').innerText = "Last Updated: " + dateObj.toLocaleString();
+} else {
+    // જો સર્વર Last-Modified ન આપે તો કરન્ટ ટાઈમ બતાવશે
+    document.getElementById('lastUpdated').innerText = "Last Updated: " + new Date().toLocaleString();
+}
                 setupFilters();
                 applyFilters();
             } else {
