@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NexTile - Emcer Premium Portal</title>
+    <title>NexTile - Emcer Live Stock</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -10,18 +10,18 @@
         .main-container { max-width: 1100px; margin: auto; padding: 20px; }
         .header-line { height: 5px; background: #000; margin: 20px 0; }
         
-        /* Modern Filter Box */
-        .filter-box { background: white; border: 2px solid #000; padding: 20px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; box-shadow: 10px 10px 0px rgba(0,0,0,0.05); }
+        /* Filter UI */
+        .filter-box { background: white; border: 2px solid #000; padding: 20px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; box-shadow: 8px 8px 0px rgba(0,0,0,0.05); }
         .filter-group { display: flex; flex-direction: column; }
         label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #64748b; margin-bottom: 6px; letter-spacing: 0.05em; }
-        select, input { border: 1px solid #e2e8f0; padding: 12px; font-weight: 700; font-size: 13px; text-transform: uppercase; outline: none; transition: 0.2s; }
-        select:focus, input:focus { border-color: #000; background: #f1f5f9; }
+        select, input { border: 1px solid #e2e8f0; padding: 12px; font-weight: 700; font-size: 13px; text-transform: uppercase; outline: none; }
+        select:focus, input:focus { border-color: #000; }
 
         /* Card UI */
-        .stock-card { background: white; border: 2px solid #000; display: flex; margin-bottom: 25px; min-height: 220px; position: relative; overflow: hidden; }
-        .grade-badge { position: absolute; top: 0; right: 20%; background: #000; color: #fff; padding: 5px 15px; font-size: 11px; font-weight: 900; text-transform: uppercase; z-index: 10; }
+        .stock-card { background: white; border: 2px solid #000; display: flex; margin-bottom: 25px; min-height: 220px; position: relative; }
+        .variant-badge { position: absolute; top: 0; right: 20%; background: #000; color: #fff; padding: 5px 15px; font-size: 11px; font-weight: 900; text-transform: uppercase; z-index: 10; }
         
-        .card-img { width: 30%; border-right: 2px solid #000; padding: 15px; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
+        .card-img { width: 30%; border-right: 2px solid #000; padding: 15px; display: flex; align-items: center; justify-content: center; }
         .card-img img { max-height: 200px; width: auto; max-width: 100%; object-fit: contain; }
         
         .card-info { width: 50%; padding: 25px; display: flex; flex-direction: column; }
@@ -32,7 +32,6 @@
         .card-total { width: 20%; border-left: 2px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; }
         .total-val { font-size: 60px; font-weight: 900; line-height: 1; }
         .total-label { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
-
         @media print { .no-print { display: none; } }
     </style>
 </head>
@@ -42,10 +41,10 @@
     <div class="flex justify-between items-end pt-6">
         <div>
             <h1 class="text-4xl font-black text-slate-900 leading-none">EMCER TILES PRIVATE LIMITED</h1>
-            <p class="text-sm text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Inventory Discovery Portal</p>
+            <p class="text-sm text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Live Inventory Portal</p>
         </div>
         <div class="text-right no-print">
-            <button onclick="location.reload()" class="bg-black text-white px-5 py-2 text-[11px] font-black uppercase">🔄 Refresh Data</button>
+            <button onclick="location.reload()" class="bg-black text-white px-5 py-2 text-[11px] font-black uppercase">🔄 Refresh</button>
             <div class="text-[11px] font-black text-blue-600 mt-2">DEVELOPER: YASHDEEP JIVANI</div>
         </div>
     </div>
@@ -54,24 +53,24 @@
     <div class="filter-box no-print">
         <div class="filter-group">
             <label>Search Design</label>
-            <input type="text" id="searchName" oninput="applyFilters()" placeholder="Type name...">
+            <input type="text" id="searchName" oninput="applyFilters()" placeholder="Search...">
         </div>
         <div class="filter-group">
-            <label>Step 1: Size</label>
+            <label>1. Select Size</label>
             <select id="filterSize" onchange="updateSeriesOptions(); applyFilters();">
                 <option value="">All Sizes</option>
             </select>
         </div>
         <div class="filter-group">
-            <label>Step 2: Series</label>
+            <label>2. Select Series</label>
             <select id="filterSeries" onchange="applyFilters()">
                 <option value="">All Series</option>
             </select>
         </div>
         <div class="filter-group">
-            <label>Step 3: Grade</label>
-            <select id="filterGrade" onchange="applyFilters()">
-                <option value="">All Grades</option>
+            <label>3. Select Variant</label>
+            <select id="filterVariant" onchange="applyFilters()">
+                <option value="">All Variants</option>
             </select>
         </div>
     </div>
@@ -85,45 +84,42 @@
 
     async function initPortal() {
         try {
-            // 1. Images load karo
             const resImg = await fetch('design.json?v=' + Date.now());
             if (resImg.ok) {
                 const designs = await resImg.json();
                 designs.forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
             }
 
-            // 2. Stock load karo (Small/Capital case handle)
             let resStock = await fetch('stock.json?v=' + Date.now());
             if (!resStock.ok) resStock = await fetch('STOCK.JSON?v=' + Date.now());
             
             masterData = await resStock.json();
             
-            setupInitialFilters();
+            setupFilters();
             applyFilters();
         } catch (err) {
-            document.getElementById('reportList').innerHTML = `<div class="py-20 text-center text-red-500 font-bold">STOCK FILE ERROR!</div>`;
+            document.getElementById('reportList').innerHTML = `<div class="py-20 text-center text-red-500 font-bold uppercase">stock.json not found!</div>`;
         }
     }
 
-    function setupInitialFilters() {
+    function setupFilters() {
         const sizes = new Set();
-        const grades = new Set();
+        const variants = new Set();
 
         masterData.forEach(item => {
             if (item["Size"]) sizes.add(item["Size"].trim());
-            if (item["Grade"]) grades.add(item["Grade"].trim());
+            if (item["Variant"]) variants.add(item["Variant"].trim());
         });
 
         const sizeSelect = document.getElementById('filterSize');
         [...sizes].sort().forEach(s => sizeSelect.innerHTML += `<option value="${s}">${s}</option>`);
 
-        const gradeSelect = document.getElementById('filterGrade');
-        [...grades].sort().forEach(g => gradeSelect.innerHTML += `<option value="${g}">${g}</option>`);
+        const variantSelect = document.getElementById('filterVariant');
+        [...variants].sort().forEach(v => variantSelect.innerHTML += `<option value="${v}">${v}</option>`);
 
         updateSeriesOptions(); 
     }
 
-    // DEPENDENT FILTER: Size select thay etle Series badlay
     function updateSeriesOptions() {
         const selectedSize = document.getElementById('filterSize').value;
         const seriesSet = new Set();
@@ -143,7 +139,7 @@
         const nameVal = document.getElementById('searchName').value.toLowerCase();
         const sizeVal = document.getElementById('filterSize').value;
         const seriesVal = document.getElementById('filterSeries').value;
-        const gradeVal = document.getElementById('filterGrade').value;
+        const variantVal = document.getElementById('filterVariant').value;
 
         const groups = {};
 
@@ -151,17 +147,17 @@
             const name = (item["Item Description"] || "N/A").trim();
             const series = (item["Series"] || "N/A").trim();
             const size = (item["Size"] || "N/A").trim();
-            const grade = (item["Grade"] || "N/A").trim();
+            const variant = (item["Variant"] || "N/A").trim();
             const qty = Number(item["Net Qty"] || 0);
             const lot = (item["Lot no."] || "N/A").trim();
 
             if (name.toLowerCase().includes(nameVal) &&
                 (sizeVal === "" || size === sizeVal) &&
                 (seriesVal === "" || series === seriesVal) &&
-                (gradeVal === "" || grade === gradeVal)) {
+                (variantVal === "" || variant === variantVal)) {
                 
-                const key = `${name}|${series}|${size}|${grade}`.toLowerCase();
-                if (!groups[key]) groups[key] = { name, series, size, grade, lots: [], total: 0 };
+                const key = `${name}|${series}|${size}|${variant}`.toLowerCase();
+                if (!groups[key]) groups[key] = { name, series, size, variant, lots: [], total: 0 };
                 groups[key].lots.push({ lot, qty });
                 groups[key].total += qty;
             }
@@ -173,18 +169,16 @@
     function render(items) {
         const area = document.getElementById('reportList');
         if (items.length === 0) {
-            area.innerHTML = "<div class='py-32 text-center text-slate-300 font-bold uppercase'>No Matching Stock</div>";
+            area.innerHTML = "<div class='py-32 text-center text-slate-300 font-bold uppercase tracking-widest'>No Tiles Found</div>";
             return;
         }
 
         area.innerHTML = items.map(item => {
             const imgUrl = designMap[item.name.toLowerCase().trim()] || 'https://via.placeholder.com/400x600?text=No+Photo';
             return `
-            <div class="stock-card shadow-lg">
-                <div class="grade-badge">${item.grade}</div>
-                <div class="card-img">
-                    <img src="${imgUrl}">
-                </div>
+            <div class="stock-card shadow-sm">
+                <div class="variant-badge">${item.variant}</div>
+                <div class="card-img"><img src="${imgUrl}"></div>
                 <div class="card-info">
                     <div class="design-name">${item.name}</div>
                     <div class="design-meta">${item.series} | ${item.size}</div>
