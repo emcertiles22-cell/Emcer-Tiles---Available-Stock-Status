@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <title>NexTile - Emcer Live Stock</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- PDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #000; }
         .main-container { max-width: 1100px; margin: auto; padding: 20px; }
-        .header-line { height: 5px; background: #000; margin: 20px 0; }
+        .header-line { height: 5px; background: #000; margin: 15px 0; }
         
         /* Stats Cards */
         .stat-card { background: #fff; border: 2px solid #000; padding: 15px; text-align: center; box-shadow: 4px 4px 0px #000; }
@@ -21,14 +23,15 @@
         .filter-group { display: flex; flex-direction: column; }
         label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #64748b; margin-bottom: 6px; }
         select, input { border: 1px solid #e2e8f0; padding: 10px; font-weight: 700; font-size: 13px; text-transform: uppercase; outline: none; }
+        select:focus, input:focus { border-color: #000; }
         
         /* Card UI */
-        .stock-card { background: white; border: 2px solid #000; display: flex; margin-bottom: 25px; min-height: 220px; position: relative; }
+        .stock-card { background: white; border: 2px solid #000; display: flex; margin-bottom: 25px; min-height: 220px; position: relative; page-break-inside: avoid; }
         .variant-badge { position: absolute; top: 0; right: 20%; background: #000; color: #fff; padding: 5px 15px; font-size: 11px; font-weight: 900; text-transform: uppercase; z-index: 10; }
         .brand-tag { font-size: 10px; background: #eff6ff; color: #1e40af; padding: 2px 8px; border-radius: 4px; font-weight: 800; display: inline-block; margin-bottom: 5px; }
         
         .card-img { width: 30%; border-right: 2px solid #000; padding: 15px; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
-        .card-img img { max-height: 200px; width: auto; max-width: 100%; object-fit: contain; }
+        .card-img img { max-height: 200px; width: auto; max-width: 100%; object-fit: contain; display: block; }
         
         .card-info { width: 50%; padding: 25px; display: flex; flex-direction: column; }
         .design-name { font-size: 26px; font-weight: 900; text-transform: uppercase; line-height: 1; margin-bottom: 4px; }
@@ -38,16 +41,16 @@
         .card-total { width: 20%; border-left: 2px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; }
         .total-val { font-size: 50px; font-weight: 900; line-height: 1; }
 
-        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; cursor: zoom-out; align-items: center; justify-content: center; padding: 20px; }
+        /* Modal */
+        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; cursor: zoom-out; align-items: center; justify-content: center; padding: 20px; }
         #imageModal img { max-width: 100%; max-height: 90vh; border: 5px solid white; }
 
-        @media print { .no-print { display: none; } }
-        /* PDF જનરેટ કરતી વખતે ઈમેજ કપાય નહીં તે માટે */
-.card-img img { display: block; max-width: 100%; height: auto; }
+        @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body>
 
+<!-- Image Zoom Modal -->
 <div id="imageModal" onclick="this.style.display='none'"><img id="modalImg" src=""></div>
 
 <div class="main-container">
@@ -59,9 +62,9 @@
             <p id="lastUpdated" class="text-[10px] text-blue-500 font-bold uppercase mt-1">Checking for updates...</p>
         </div>
         <div class="text-right no-print">
-            <button onclick="location.reload()" class="bg-black text-white px-5 py-2 text-[11px] font-black uppercase">🔄 Refresh</button>
-            <button onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-2 text-[11px] font-black uppercase mr-2">📄 Download PDF</button>
-            <div class="text-[11px] font-black text-blue-600 mt-2">SYSTEM DEVELOPER: YASHDEEP JIVANI</div>
+            <button onclick="downloadPDF(event)" class="bg-red-600 text-white px-4 py-2 text-[11px] font-black uppercase mr-2">📄 Download PDF</button>
+            <button onclick="location.reload()" class="bg-black text-white px-4 py-2 text-[11px] font-black uppercase">🔄 Refresh</button>
+            <div class="text-[11px] font-black text-blue-600 mt-2">DEV: YASHDEEP JIVANI</div>
         </div>
     </div>
     
@@ -84,6 +87,7 @@
         <div class="filter-group"><label>Variant</label><select id="filterVariant" onchange="applyFilters()"><option value="">All Variants</option></select></div>
     </div>
 
+    <!-- Report Area -->
     <div id="reportList"></div>
 </div>
 
@@ -112,22 +116,19 @@
             
             if (resStock.ok) {
                 masterData = await resStock.json();
-                // ફાઈલ અપડેટ ટાઈમ બતાવવા માટે
-const lastMod = resStock.headers.get('Last-Modified');
-if (lastMod) {
-    const dateObj = new Date(lastMod);
-    document.getElementById('lastUpdated').innerText = "Last Updated: " + dateObj.toLocaleString();
-} else {
-    // જો સર્વર Last-Modified ન આપે તો કરન્ટ ટાઈમ બતાવશે
-    document.getElementById('lastUpdated').innerText = "Last Updated: " + new Date().toLocaleString();
-}
+                
+                // Show Last Updated Time
+                const lastMod = resStock.headers.get('Last-Modified');
+                const dateDisplay = lastMod ? new Date(lastMod).toLocaleString() : new Date().toLocaleString();
+                document.getElementById('lastUpdated').innerText = "Last Updated: " + dateDisplay;
+
                 setupFilters();
                 applyFilters();
             } else {
                 throw new Error("File not found");
             }
         } catch (err) {
-            document.getElementById('reportList').innerHTML = `<div class="py-20 text-center text-red-500 font-bold uppercase">stock.json file mathi data load thayo nathi!</div>`;
+            document.getElementById('reportList').innerHTML = `<div class="py-20 text-center text-red-500 font-bold uppercase">stock.json file load thayo nathi!</div>`;
         }
     }
 
@@ -208,51 +209,6 @@ if (lastMod) {
         render(items);
     }
 
- async function downloadPDF() {
-    const element = document.getElementById('reportList');
-    const btn = event.currentTarget;
-    const originalText = btn.innerText;
-    
-    // બટન લોડિંગ સ્ટેટ
-    btn.innerText = "Please Wait...";
-    btn.disabled = true;
-
-    const opt = {
-        margin: 10,
-        filename: 'Emcer_Live_Stock.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-            scale: 2, 
-            useCORS: true, 
-            allowTaint: true,
-            logging: false,
-            letterRendering: true
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-    };
-
-    try {
-        // html2pdf લાઈબ્રેરીને ખાતરી કરવા દો કે બધું પ્રોપર લોડ થયું છે
-        await html2pdf().set(opt).from(element).save();
-    } catch (err) {
-        console.error("PDF Error:", err);
-        alert("PDF generate કરવામાં ભૂલ આવી રહી છે.");
-    } finally {
-        btn.innerText = originalText;
-        btn.disabled = false;
-    }
-}
-
-    // બટન ટેક્સ્ટ ચેન્જ (યુઝરને ખબર પડે કે પ્રોસેસ ચાલુ છે)
-    const btn = event.target;
-    const originalText = btn.innerText;
-    btn.innerText = "Generating...";
-
-    html2pdf().set(opt).from(element).save().then(() => {
-        btn.innerText = originalText;
-    });
-}
     function render(items) {
         const area = document.getElementById('reportList');
         if (items.length === 0) {
@@ -265,7 +221,7 @@ if (lastMod) {
             return `
             <div class="stock-card">
                 <div class="variant-badge">${item.variant}</div>
-                <div class="card-img" onclick="openImage('${imgUrl}')"><img src="${imgUrl}"></div>
+                <div class="card-img" onclick="openImage('${imgUrl}')"><img src="${imgUrl}" crossorigin="anonymous"></div>
                 <div class="card-info">
                     <span class="brand-tag">${item.brand}</span>
                     <div class="design-name">${item.name}</div>
@@ -279,6 +235,39 @@ if (lastMod) {
                 </div>
             </div>`;
         }).join('');
+    }
+
+    async function downloadPDF(event) {
+        const element = document.getElementById('reportList');
+        const btn = event.currentTarget;
+        const originalText = btn.innerText;
+        
+        btn.innerText = "Generating...";
+        btn.disabled = true;
+
+        const opt = {
+            margin: 10,
+            filename: 'Emcer_Stock_Report.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { 
+                scale: 2, 
+                useCORS: true, 
+                allowTaint: false,
+                letterRendering: true
+            },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        try {
+            await html2pdf().set(opt).from(element).save();
+        } catch (err) {
+            console.error(err);
+            alert("PDF generate કરવામાં સમસ્યા આવી. ઈમેજ સર્વર CORS સપોર્ટ કરતું હોવું જોઈએ.");
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
     }
 
     initPortal();
