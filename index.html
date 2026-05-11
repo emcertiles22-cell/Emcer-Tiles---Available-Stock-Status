@@ -42,6 +42,8 @@
         #imageModal img { max-width: 100%; max-height: 90vh; border: 5px solid white; }
 
         @media print { .no-print { display: none; } }
+        /* PDF જનરેટ કરતી વખતે ઈમેજ કપાય નહીં તે માટે */
+.card-img img { display: block; max-width: 100%; height: auto; }
     </style>
 </head>
 <body>
@@ -206,20 +208,41 @@ if (lastMod) {
         render(items);
     }
 
-    function downloadPDF() {
+ async function downloadPDF() {
     const element = document.getElementById('reportList');
+    const btn = event.currentTarget;
+    const originalText = btn.innerText;
+    
+    // બટન લોડિંગ સ્ટેટ
+    btn.innerText = "Please Wait...";
+    btn.disabled = true;
+
     const opt = {
-        margin: [10, 10],
-        filename: 'Emcer_Stock_Report.pdf',
+        margin: 10,
+        filename: 'Emcer_Live_Stock.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
             scale: 2, 
-            useCORS: true, // આ લાઈન ઈમેજ લોડ કરવા માટે જરૂરી છે
-            letterRendering: true 
+            useCORS: true, 
+            allowTaint: true,
+            logging: false,
+            letterRendering: true
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: 'avoid-all', before: '.stock-card' } // કાર્ડ અધવચ્ચેથી કપાય નહીં તે માટે
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    try {
+        // html2pdf લાઈબ્રેરીને ખાતરી કરવા દો કે બધું પ્રોપર લોડ થયું છે
+        await html2pdf().set(opt).from(element).save();
+    } catch (err) {
+        console.error("PDF Error:", err);
+        alert("PDF generate કરવામાં ભૂલ આવી રહી છે.");
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
     }
+}
 
     // બટન ટેક્સ્ટ ચેન્જ (યુઝરને ખબર પડે કે પ્રોસેસ ચાલુ છે)
     const btn = event.target;
