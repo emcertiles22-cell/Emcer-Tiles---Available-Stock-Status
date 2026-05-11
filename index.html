@@ -6,209 +6,131 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #000; }
         .main-container { max-width: 1100px; margin: auto; padding: 20px; }
         .header-line { height: 5px; background: #000; margin: 15px 0; }
-        
-        /* Stats Cards */
         .stat-card { background: #fff; border: 2px solid #000; padding: 15px; text-align: center; box-shadow: 4px 4px 0px #000; }
         .stat-val { font-size: 24px; font-weight: 900; }
         .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; }
-
-        /* Filter UI */
-        .filter-box { background: white; border: 2px solid #000; padding: 20px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; box-shadow: 8px 8px 0px rgba(0,0,0,0.05); }
+        .filter-box { background: white; border: 2px solid #000; padding: 20px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
         .filter-group { display: flex; flex-direction: column; }
         label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #64748b; margin-bottom: 6px; }
         select, input { border: 1px solid #e2e8f0; padding: 10px; font-weight: 700; font-size: 13px; text-transform: uppercase; outline: none; }
-        
-        /* Card UI */
         .stock-card { background: white; border: 2px solid #000; display: flex; margin-bottom: 25px; min-height: 220px; position: relative; page-break-inside: avoid; }
         .variant-badge { position: absolute; top: 0; right: 20%; background: #000; color: #fff; padding: 5px 15px; font-size: 11px; font-weight: 900; text-transform: uppercase; z-index: 10; }
         .brand-tag { font-size: 10px; background: #eff6ff; color: #1e40af; padding: 2px 8px; border-radius: 4px; font-weight: 800; display: inline-block; margin-bottom: 5px; }
-        
-        .card-img { width: 30%; border-right: 2px solid #000; padding: 15px; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
+        .card-img { width: 30%; border-right: 2px solid #000; padding: 15px; display: flex; align-items: center; justify-content: center; }
         .card-img img { max-height: 200px; width: auto; max-width: 100%; object-fit: contain; display: block; }
-        
         .card-info { width: 50%; padding: 25px; display: flex; flex-direction: column; }
         .design-name { font-size: 26px; font-weight: 900; text-transform: uppercase; line-height: 1; margin-bottom: 4px; }
         .design-meta { color: #2563eb; font-size: 13px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; }
         .lot-row { display: flex; justify-content: space-between; border-bottom: 1px dotted #cbd5e1; padding: 6px 0; font-size: 14px; font-weight: 700; }
-        
         .card-total { width: 20%; border-left: 2px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; }
         .total-val { font-size: 50px; font-weight: 900; line-height: 1; }
-
-        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; cursor: zoom-out; align-items: center; justify-content: center; padding: 20px; }
-        #imageModal img { max-width: 100%; max-height: 90vh; border: 5px solid white; }
-
+        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body>
-
-<div id="imageModal" onclick="this.style.display='none'"><img id="modalImg" src=""></div>
-
+<div id="imageModal" onclick="this.style.display='none'"><img id="modalImg" class="max-w-full max-h-[90vh] border-4 border-white" src=""></div>
 <div class="main-container">
     <div class="flex justify-between items-end pt-6">
         <div>
             <h1 class="text-4xl font-black text-slate-900 leading-none">EMCER TILES PRIVATE LIMITED</h1>
             <p class="text-sm text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Live Inventory Portal</p>
-            <p id="lastUpdated" class="text-[10px] text-blue-500 font-bold uppercase mt-1">Checking for updates...</p>
+            <p id="lastUpdated" class="text-[10px] text-blue-500 font-bold uppercase mt-1">Updating...</p>
         </div>
         <div class="text-right no-print">
             <button onclick="downloadPDF(this)" class="bg-red-600 text-white px-4 py-2 text-[11px] font-black uppercase mr-2">📄 Download PDF</button>
             <button onclick="location.reload()" class="bg-black text-white px-4 py-2 text-[11px] font-black uppercase">🔄 Refresh</button>
-            <div class="text-[11px] font-black text-blue-600 mt-2">DEV: YASHDEEP JIVANI</div>
         </div>
     </div>
-    
     <div class="header-line"></div>
-
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 no-print">
-        <div class="stat-card"><div class="stat-label">Total Designs</div><div id="statDesigns" class="stat-val">0</div></div>
-        <div class="stat-card"><div class="stat-label">Total Boxes</div><div id="statBoxes" class="stat-val">0</div></div>
-        <div class="stat-card"><div class="stat-label">Active Brands</div><div id="statBrands" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="stat-label">Designs</div><div id="statDesigns" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="stat-label">Boxes</div><div id="statBoxes" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="stat-label">Brands</div><div id="statBrands" class="stat-val">0</div></div>
         <div class="stat-card"><div class="stat-label">Results</div><div id="statFiltered" class="stat-val">0</div></div>
     </div>
-
     <div class="filter-box no-print">
-        <div class="filter-group"><label>Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Search..."></div>
-        <div class="filter-group"><label>Brand</label><select id="filterBrand" onchange="applyFilters()"><option value="">All Brands</option></select></div>
-        <div class="filter-group"><label>Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"><option value="">All Sizes</option></select></div>
-        <div class="filter-group"><label>Series</label><select id="filterSeries" onchange="applyFilters()"><option value="">All Series</option></select></div>
-        <div class="filter-group"><label>Variant</label><select id="filterVariant" onchange="applyFilters()"><option value="">All Variants</option></select></div>
+        <div class="filter-group"><label>Search</label><input type="text" id="searchName" oninput="applyFilters()"></div>
+        <div class="filter-group"><label>Brand</label><select id="filterBrand" onchange="applyFilters()"></select></div>
+        <div class="filter-group"><label>Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"></select></div>
+        <div class="filter-group"><label>Series</label><select id="filterSeries" onchange="applyFilters()"></select></div>
+        <div class="filter-group"><label>Variant</label><select id="filterVariant" onchange="applyFilters()"></select></div>
     </div>
-
     <div id="reportList"></div>
 </div>
 
 <script>
-    let masterData = [];
-    let designMap = {};
-
-    function openImage(url) {
-        const modal = document.getElementById('imageModal');
-        document.getElementById('modalImg').src = url;
-        modal.style.display = 'flex';
-    }
+    let masterData = [], designMap = {};
 
     async function initPortal() {
         try {
             const resImg = await fetch('design.json?v=' + Date.now());
             if (resImg.ok) {
-                const designs = await resImg.json();
-                designs.forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
+                (await resImg.json()).forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
             }
-
-            let resStock = await fetch('stock.json?v=' + Date.now());
-            if (!resStock.ok) resStock = await fetch('STOCK.JSON?v=' + Date.now());
-            
+            const resStock = await fetch('stock.json?v=' + Date.now());
             if (resStock.ok) {
                 masterData = await resStock.json();
-                const lastMod = resStock.headers.get('Last-Modified');
-                document.getElementById('lastUpdated').innerText = "Last Updated: " + (lastMod ? new Date(lastMod).toLocaleString() : new Date().toLocaleString());
-                setupFilters();
-                applyFilters();
+                document.getElementById('lastUpdated').innerText = "Updated: " + new Date().toLocaleString();
+                setupFilters(); applyFilters();
             }
-        } catch (err) {
-            document.getElementById('reportList').innerHTML = `<div class="py-20 text-center text-red-500 font-bold uppercase">Data load error!</div>`;
-        }
+        } catch (e) { console.error(e); }
     }
 
     function setupFilters() {
         const brands = new Set(), sizes = new Set(), variants = new Set();
-        masterData.forEach(item => {
-            if (item["Brand"]) brands.add(item["Brand"].trim());
-            if (item["Size"]) sizes.add(item["Size"].trim());
-            if (item["Variant"]) variants.add(item["Variant"].trim());
-        });
-        const updateSelect = (id, set) => {
-            const el = document.getElementById(id);
-            el.innerHTML = `<option value="">All ${id.replace('filter','')}</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
-        };
-        updateSelect('filterBrand', brands);
-        updateSelect('filterSize', sizes);
-        updateSelect('filterVariant', variants);
+        masterData.forEach(i => { if(i.Brand) brands.add(i.Brand); if(i.Size) sizes.add(i.Size); if(i.Variant) variants.add(i.Variant); });
+        const fill = (id, set) => document.getElementById(id).innerHTML = `<option value="">All</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
+        fill('filterBrand', brands); fill('filterSize', sizes); fill('filterVariant', variants);
         updateSeriesOptions();
     }
 
     function updateSeriesOptions() {
-        const selectedSize = document.getElementById('filterSize').value;
-        const seriesSet = new Set();
-        masterData.forEach(item => {
-            if (selectedSize === "" || (item["Size"] || "").trim() === selectedSize) {
-                if (item["Series"]) seriesSet.add(item["Series"].trim());
-            }
-        });
-        const seriesSelect = document.getElementById('filterSeries');
-        seriesSelect.innerHTML = '<option value="">All Series</option>' + [...seriesSet].sort().map(s => `<option value="${s}">${s}</option>`).join('');
+        const sz = document.getElementById('filterSize').value, srs = new Set();
+        masterData.forEach(i => { if(sz==="" || i.Size===sz) if(i.Series) srs.add(i.Series); });
+        document.getElementById('filterSeries').innerHTML = '<option value="">All</option>' + [...srs].sort().map(s => `<option value="${s}">${s}</option>`).join('');
     }
 
     function applyFilters() {
-        const nameVal = document.getElementById('searchName').value.toLowerCase();
-        const brandVal = document.getElementById('filterBrand').value;
-        const sizeVal = document.getElementById('filterSize').value;
-        const seriesVal = document.getElementById('filterSeries').value;
-        const variantVal = document.getElementById('filterVariant').value;
-
-        const groups = {};
-        let totalBoxes = 0;
-        let brandsFound = new Set();
-
+        const f = { n: document.getElementById('searchName').value.toLowerCase(), b: document.getElementById('filterBrand').value, sz: document.getElementById('filterSize').value, s: document.getElementById('filterSeries').value, v: document.getElementById('filterVariant').value };
+        const groups = {}; let total = 0, brands = new Set();
         masterData.forEach(item => {
-            const name = (item["Item Description"] || "N/A").trim();
-            const brand = (item["Brand"] || "EMCER").trim();
-            const series = (item["Series"] || "N/A").trim();
-            const size = (item["Size"] || "N/A").trim();
-            const variant = (item["Variant"] || "N/A").trim();
-            const qty = Number(item["Net Qty"] || 0);
-            const lot = (item["Lot no."] || "N/A").trim();
-
-            if (name.toLowerCase().includes(nameVal) && (brandVal === "" || brand === brandVal) && (sizeVal === "" || size === sizeVal) && (seriesVal === "" || series === seriesVal) && (variantVal === "" || variant === variantVal)) {
-                const key = `${name}|${brand}|${series}|${size}|${variant}`.toLowerCase();
-                if (!groups[key]) groups[key] = { name, brand, series, size, variant, lots: [], total: 0 };
-                groups[key].lots.push({ lot, qty });
-                groups[key].total += qty;
-                totalBoxes += qty;
-                brandsFound.add(brand);
+            const desc = (item["Item Description"]||"").trim(), brand = (item.Brand||"").trim(), series = (item.Series||"").trim(), size = (item.Size||"").trim(), variant = (item.Variant||"").trim(), qty = Number(item["Net Qty"]||0);
+            if (desc.toLowerCase().includes(f.n) && (!f.b || brand===f.b) && (!f.sz || size===f.sz) && (!f.s || series===f.s) && (!f.v || variant===f.v)) {
+                const k = `${desc}|${brand}|${series}|${size}|${variant}`.toLowerCase();
+                if (!groups[k]) groups[k] = { desc, brand, series, size, variant, lots: [], total: 0 };
+                groups[k].lots.push({ lot: item["Lot no."], qty });
+                groups[k].total += qty; total += qty; brands.add(brand);
             }
         });
-
         const items = Object.values(groups);
         document.getElementById('statDesigns').innerText = items.length;
-        document.getElementById('statBoxes').innerText = totalBoxes;
-        document.getElementById('statBrands').innerText = brandsFound.size;
+        document.getElementById('statBoxes').innerText = total;
+        document.getElementById('statBrands').innerText = brands.size;
         document.getElementById('statFiltered').innerText = items.length;
         render(items);
     }
 
     function render(items) {
-        const area = document.getElementById('reportList');
-        if (items.length === 0) {
-            area.innerHTML = "<div class='py-32 text-center text-slate-300 font-bold uppercase tracking-widest'>No Tiles Found</div>";
-            return;
-        }
-
-        area.innerHTML = items.map(item => {
-            const imgUrl = designMap[item.name.toLowerCase().trim()] || 'https://via.placeholder.com/400x600?text=No+Photo';
+        document.getElementById('reportList').innerHTML = items.map(item => {
+            const rawUrl = designMap[item.desc.toLowerCase().trim()] || 'https://via.placeholder.com/400';
+            // PROXY LINK FOR PDF CORRS BYPASS
+            const imgUrl = rawUrl.includes('placeholder') ? rawUrl : "https://images.weserv.nl/?url=" + encodeURIComponent(rawUrl.replace('https://', ''));
             return `
             <div class="stock-card">
                 <div class="variant-badge">${item.variant}</div>
-                <div class="card-img" onclick="openImage('${imgUrl}')">
-                    <img src="${imgUrl}" crossorigin="anonymous" loading="lazy">
-                </div>
+                <div class="card-img" onclick="document.getElementById('modalImg').src='${rawUrl}'; document.getElementById('imageModal').style.display='flex'"><img src="${imgUrl}" crossorigin="anonymous"></div>
                 <div class="card-info">
                     <span class="brand-tag">${item.brand}</span>
-                    <div class="design-name">${item.name}</div>
+                    <div class="design-name">${item.desc}</div>
                     <div class="design-meta">${item.series} | ${item.size}</div>
                     <div class="flex-grow">${item.lots.map(l => `<div class="lot-row"><span>LOT: ${l.lot}</span><span>${l.qty} Bx</span></div>`).join('')}</div>
                 </div>
-                <div class="card-total">
-                    <div class="total-label text-[10px] font-bold text-slate-400">STOCK</div>
-                    <div class="total-val">${item.total}</div>
-                    <div class="total-label text-[10px] font-bold text-slate-400">BOXES</div>
-                </div>
+                <div class="card-total"><div class="total-val">${item.total}</div><div class="text-[10px] font-bold text-slate-400 uppercase">Boxes</div></div>
             </div>`;
         }).join('');
     }
@@ -216,43 +138,21 @@
     async function downloadPDF(btn) {
         const element = document.getElementById('reportList');
         const originalText = btn.innerText;
-        
-        btn.innerText = "Please Wait...";
-        btn.disabled = true;
-
-        // Ensure all images are loaded before generating
-        const images = element.getElementsByTagName('img');
-        const promises = Array.from(images).map(img => {
-            if (img.complete) return Promise.resolve();
-            return new Promise(resolve => { img.onload = img.onerror = resolve; });
-        });
-
-        await Promise.all(promises);
+        btn.innerText = "Please Wait..."; btn.disabled = true;
 
         const opt = {
-            margin: [10, 10],
-            filename: 'Emcer_Stock_Report.pdf',
+            margin: 10,
+            filename: 'Emcer_Stock.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { 
-                scale: 2, 
-                useCORS: true, 
-                allowTaint: true,
-                letterRendering: true,
-                logging: false
-            },
+            html2canvas: { scale: 2, useCORS: true, allowTaint: false },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            pagebreak: { mode: ['avoid-all'] }
         };
 
         try {
             await html2pdf().set(opt).from(element).save();
-        } catch (err) {
-            console.error("PDF Error:", err);
-            alert("Error creating PDF. Please check your connection.");
-        } finally {
-            btn.innerText = originalText;
-            btn.disabled = false;
-        }
+        } catch (e) { alert("PDF Error"); }
+        finally { btn.innerText = originalText; btn.disabled = false; }
     }
 
     initPortal();
