@@ -3,78 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexTile - Professional Live Inventory</title>
+    <title>NexTile - Elite Live Stock Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #000; }
-        .main-container { max-width: 1150px; margin: auto; padding: 20px; }
-        .header-line { height: 4px; background: #000; margin: 15px 0; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #000; }
+        .main-container { max-width: 1200px; margin: auto; padding: 20px; }
         
-        /* Glassmorphism Filters */
-        .filter-box { background: #fff; border: 2px solid #000; padding: 25px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; box-shadow: 10px 10px 0px #000; }
-        label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #64748b; margin-bottom: 5px; display: block; letter-spacing: 1px; }
-        select, input { width: 100%; border: 1px solid #000; padding: 12px; font-weight: 700; font-size: 14px; text-transform: uppercase; outline: none; transition: 0.2s; }
-        select:focus, input:focus { background: #000; color: #fff; }
+        /* Blinking Effect for Developer */
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .dev-highlight { font-weight: 900; color: #2563eb; animation: blink 1.5s infinite; border: 1px solid #2563eb; padding: 2px 8px; border-radius: 4px; }
 
-        /* Premium Stock Cards */
-        .stock-card { background: white; border: 2px solid #000; display: flex; margin-bottom: 20px; min-height: 200px; position: relative; transition: 0.3s; }
-        .stock-card:hover { transform: scale(1.01); }
-        .variant-tag { position: absolute; top: 0; right: 20%; background: #000; color: #fff; padding: 5px 15px; font-size: 10px; font-weight: 900; text-transform: uppercase; z-index: 10; }
-        
-        .card-img { width: 25%; border-right: 2px solid #000; padding: 10px; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
-        .card-img img { max-height: 180px; width: auto; max-width: 100%; object-fit: contain; }
-        
-        .card-info { width: 55%; padding: 25px; display: flex; flex-direction: column; }
-        .design-name { font-size: 26px; font-weight: 900; text-transform: uppercase; line-height: 1; margin-bottom: 5px; }
-        .design-meta { color: #2563eb; font-size: 13px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; }
-        
-        .lot-row { display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding: 8px 0; font-size: 15px; font-weight: 700; }
-        
-        .card-total { width: 20%; border-left: 2px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; }
-        .total-val { font-size: 50px; font-weight: 900; line-height: 1; color: #000; }
+        /* Stock Booking Modal */
+        #bookingModal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; }
+        .modal-content { background: white; padding: 30px; border: 4px solid #000; width: 90%; max-width: 400px; box-shadow: 15px 15px 0px #2563eb; }
 
-        /* Full Screen Modal */
-        #imgModal { display:none; position:fixed; z-index:999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.9); justify-content:center; align-items:center; }
+        /* Premium UI Elements */
+        .header-box { border-bottom: 5px solid #000; padding-bottom: 15px; margin-bottom: 25px; }
+        .filter-section { background: #fff; border: 3px solid #000; padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; box-shadow: 10px 10px 0px rgba(0,0,0,0.05); }
         
-        @media print { .no-print { display: none !important; } }
+        .stock-card { background: white; border: 2px solid #000; display: flex; margin-top: 20px; position: relative; transition: 0.2s; }
+        .card-img { width: 25%; border-right: 2px solid #000; padding: 15px; cursor: pointer; }
+        .card-info { width: 50%; padding: 20px; }
+        .card-action { width: 25%; border-left: 2px solid #000; background: #f1f5f9; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+        .btn-book { background: #000; color: #fff; padding: 10px 20px; font-weight: 900; text-transform: uppercase; margin-top: 10px; cursor: pointer; transition: 0.3s; }
+        .btn-book:hover { background: #2563eb; transform: translateY(-3px); }
+        
+        input, select { border: 1px solid #000; padding: 10px; font-weight: 700; width: 100%; outline: none; }
+        .last-update { font-size: 11px; font-weight: 800; color: #64748b; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-<div id="imgModal" onclick="this.style.display='none'"><img id="modalImg" style="max-height:90%; max-width:90%; border:5px solid white;"></div>
+<div id="bookingModal">
+    <div class="modal-content">
+        <h2 class="text-xl font-black mb-4 uppercase">Book Stock</h2>
+        <p id="bookItemName" class="font-bold text-blue-600 mb-4"></p>
+        <label class="text-[10px] font-black uppercase">Your Name / Party Name</label>
+        <input type="text" id="partyName" class="mb-4" placeholder="Enter Party Name">
+        <label class="text-[10px] font-black uppercase">Quantity (Boxes)</label>
+        <input type="number" id="bookQty" class="mb-6" placeholder="Enter Boxes">
+        <div class="flex gap-2">
+            <button onclick="confirmBooking()" class="flex-1 bg-blue-600 text-white py-3 font-black uppercase">Confirm</button>
+            <button onclick="document.getElementById('bookingModal').style.display='none'" class="flex-1 bg-gray-200 py-3 font-black uppercase">Cancel</button>
+        </div>
+    </div>
+</div>
 
 <div class="main-container">
-    <div class="flex justify-between items-end pt-4">
+    <div class="header-box flex justify-between items-start">
         <div>
-            <h1 class="text-4xl font-black text-slate-900 leading-none">EMCER TILES PRIVATE LIMITED</h1>
-            <p id="sync-status" class="text-[11px] text-green-600 font-bold uppercase tracking-widest mt-2 underline">● Live Inventory Connected</p>
+            <h1 class="text-4xl font-black tracking-tighter">EMCER TILES PRIVATE LIMITED</h1>
+            <div id="sync-status" class="text-green-600 font-black text-[12px] uppercase mt-1">● Live Inventory Connected</div>
+            <div id="updateTime" class="last-update">LAST SYNC: WAITING...</div>
         </div>
-        <div class="text-right space-y-2">
-            <button onclick="downloadPDF()" class="no-print bg-blue-600 text-white px-6 py-2 text-[12px] font-black uppercase hover:bg-blue-700 shadow-lg">📥 Download PDF Report</button>
-            <div class="text-[11px] font-black text-slate-400">DEV: YASHDEEP JIVANI</div>
+        <div class="text-right">
+            <button onclick="downloadPDF()" class="bg-blue-600 text-white px-4 py-2 font-black text-[11px] uppercase mb-2">📥 Download PDF</button>
+            <div class="text-[10px] font-black text-slate-400">SYSTEM DEVELOPER: <span class="dev-highlight">YASHDEEP JIVANI</span></div>
         </div>
     </div>
-    <div class="header-line"></div>
 
-    <div class="filter-box no-print">
-        <div><label>Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Enter name..."></div>
-        <div><label>Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"><option value="">All Sizes</option></select></div>
-        <div><label>Series</label><select id="filterSeries" onchange="applyFilters()"><option value="">All Series</option></select></div>
-        <div><label>Variant</label><select id="filterVariant" onchange="applyFilters()"><option value="">All Variants</option></select></div>
+    <div class="filter-section no-print">
+        <div><label class="text-[10px] font-black uppercase">Search</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Design Name..."></div>
+        <div><label class="text-[10px] font-black uppercase">Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"><option value="">All Sizes</option></select></div>
+        <div><label class="text-[10px] font-black uppercase">Series</label><select id="filterSeries" onchange="applyFilters()"><option value="">All Series</option></select></div>
+        <div><label class="text-[10px] font-black uppercase">Variant</label><select id="filterVariant" onchange="applyFilters()"><option value="">All Variants</option></select></div>
     </div>
 
-    <div id="reportList" class="pb-10"></div>
+    <div id="reportList">
+        <div class="py-20 text-center font-black text-slate-300 text-xl italic uppercase">Fetching Live Data from Warehouse...</div>
+    </div>
 </div>
 
 <script>
-    // --- TAMARI APPS SCRIPT URL AHIYA NAKHO ---
+    // --- APPS SCRIPT URL ---
     const SCRIPT_URL = 'PASTE_YOUR_WEB_APP_URL_HERE';
     
     let masterData = [];
     let designMap = {};
+    let selectedItem = null;
 
     async function init() {
         try {
@@ -91,33 +101,45 @@
         try {
             const response = await fetch(SCRIPT_URL);
             masterData = await response.json();
+            document.getElementById('updateTime').innerText = "LAST SYNC: " + new Date().toLocaleString();
             setupFilters();
             applyFilters();
-        } catch (err) { console.error(err); }
+        } catch (err) { 
+            document.getElementById('sync-status').innerText = "OFFLINE - RECONNECTING...";
+            document.getElementById('sync-status').className = "text-red-600 font-black text-[12px] uppercase mt-1";
+        }
     }
 
-    function openModal(url) {
-        document.getElementById('modalImg').src = url;
-        document.getElementById('imgModal').style.display = 'flex';
+    // Booking Functions
+    function openBooking(name, lot) {
+        selectedItem = { name, lot };
+        document.getElementById('bookItemName').innerText = `${name} (Lot: ${lot})`;
+        document.getElementById('bookingModal').style.display = 'flex';
     }
 
-    async function downloadPDF() {
-        const { jsPDF } = window.jspdf;
-        const btn = document.querySelector('button');
-        btn.innerText = "Generating PDF...";
+    async function confirmBooking() {
+        const party = document.getElementById('partyName').value;
+        const qty = document.getElementById('bookQty').value;
         
-        const element = document.getElementById('reportList');
-        const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-        const imgData = canvas.toDataURL('image/png');
+        if(!party || !qty) { alert("Please enter Party Name and Quantity"); return; }
+
+        const btn = document.querySelector('#bookingModal button');
+        btn.innerText = "Booking...";
         
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        
-        pdf.text("EMCER TILES - STOCK REPORT", 10, 10);
-        pdf.addImage(imgData, 'PNG', 0, 15, pdfWidth, pdfHeight);
-        pdf.save(`Stock_Report_${new Date().toLocaleDateString()}.pdf`);
-        btn.innerText = "📥 Download PDF Report";
+        // POST to Google Apps Script for real-time minus
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ itemName: selectedItem.name, lotNo: selectedItem.lot, orderQty: qty, partyName: party })
+            });
+            
+            alert(`SUCCESS: ${qty} Boxes Booked for ${party}`);
+            document.getElementById('bookingModal').style.display = 'none';
+            fetchLiveStock(); // Refresh data
+        } catch (e) {
+            alert("Booking Error. Please try again.");
+        }
+        btn.innerText = "Confirm";
     }
 
     function setupFilters() {
@@ -181,27 +203,52 @@
 
     function render(items) {
         const area = document.getElementById('reportList');
-        if (items.length === 0) { area.innerHTML = "<div class='py-20 text-center font-bold'>NO DATA</div>"; return; }
+        if (items.length === 0) { 
+            area.innerHTML = `
+                <div class='py-32 text-center'>
+                    <div class='text-6xl mb-4'>📦</div>
+                    <div class='font-black text-2xl uppercase text-slate-400'>No Stock Found in this Category</div>
+                </div>`; 
+            return; 
+        }
         area.innerHTML = items.map(item => {
             const imgUrl = designMap[item.name.toLowerCase().trim()] || 'https://via.placeholder.com/400x600?text=No+Photo';
             return `
-            <div class="stock-card shadow-sm">
-                <div class="variant-tag">${item.variant}</div>
-                <div class="card-img" onclick="openModal('${imgUrl}')"><img src="${imgUrl}" crossorigin="anonymous"></div>
+            <div class="stock-card shadow-md">
+                <div class="card-img" onclick="window.open('${imgUrl}')"><img src="${imgUrl}"></div>
                 <div class="card-info">
-                    <div class="design-name">${item.name}</div>
-                    <div class="design-meta">${item.series} | ${item.size}</div>
-                    <div class="flex-grow">
-                        ${item.lots.map(l => `<div class="lot-row"><span>LOT: ${l.lot}</span><span>${l.qty} Bx</span></div>`).join('')}
+                    <div class="text-[10px] font-black text-blue-600 uppercase mb-1">${item.series}</div>
+                    <div class="text-2xl font-black uppercase leading-tight">${item.name}</div>
+                    <div class="text-[11px] font-bold text-slate-400 border-b pb-2 mb-2">${item.size} | ${item.variant}</div>
+                    <div>
+                        ${item.lots.map(l => `
+                            <div class="flex justify-between items-center py-2 border-dotted border-b">
+                                <span class="font-bold text-sm uppercase text-slate-600">Lot: ${l.lot}</span>
+                                <div class="flex items-center gap-3">
+                                    <span class="font-black text-blue-800">${l.qty} Bx</span>
+                                    <button onclick="openBooking('${item.name}', '${l.lot}')" class="text-[10px] bg-blue-100 text-blue-600 px-2 py-1 font-black uppercase hover:bg-blue-600 hover:text-white">Book</button>
+                                </div>
+                            </div>`).join('')}
                     </div>
                 </div>
-                <div class="card-total">
-                    <div class="text-[10px] font-black text-slate-400 uppercase">Available</div>
-                    <div class="total-val">${item.total}</div>
-                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Boxes</div>
+                <div class="card-action">
+                    <div class="text-[10px] font-black uppercase text-slate-400 mb-1">Total Available</div>
+                    <div class="text-5xl font-black">${item.total}</div>
+                    <div class="text-[11px] font-black uppercase text-slate-400">Boxes</div>
                 </div>
             </div>`;
         }).join('');
+    }
+
+    async function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const element = document.getElementById('reportList');
+        const canvas = await html2canvas(element, { scale: 1.5, useCORS: true });
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        pdf.text("EMCER STOCK STATUS", 10, 10);
+        pdf.addImage(imgData, 'PNG', 0, 15, 210, (canvas.height * 210) / canvas.width);
+        pdf.save(`Emcer_Stock_${new Date().getTime()}.pdf`);
     }
 
     setInterval(fetchLiveStock, 60000);
