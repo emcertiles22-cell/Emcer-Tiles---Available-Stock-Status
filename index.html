@@ -23,7 +23,6 @@
         .filter-group { display: flex; flex-direction: column; }
         label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #64748b; margin-bottom: 6px; }
         select, input { border: 1px solid #e2e8f0; padding: 10px; font-weight: 700; font-size: 13px; text-transform: uppercase; outline: none; }
-        select:focus, input:focus { border-color: #000; }
         
         /* Card UI */
         .stock-card { background: white; border: 2px solid #000; display: flex; margin-bottom: 25px; min-height: 220px; position: relative; page-break-inside: avoid; }
@@ -41,7 +40,6 @@
         .card-total { width: 20%; border-left: 2px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; }
         .total-val { font-size: 50px; font-weight: 900; line-height: 1; }
 
-        /* Modal */
         #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; cursor: zoom-out; align-items: center; justify-content: center; padding: 20px; }
         #imageModal img { max-width: 100%; max-height: 90vh; border: 5px solid white; }
 
@@ -50,35 +48,31 @@
 </head>
 <body>
 
-<!-- Image Zoom Modal -->
 <div id="imageModal" onclick="this.style.display='none'"><img id="modalImg" src=""></div>
 
 <div class="main-container">
-    <!-- Header -->
     <div class="flex justify-between items-end pt-6">
         <div>
             <h1 class="text-4xl font-black text-slate-900 leading-none">EMCER TILES PRIVATE LIMITED</h1>
             <p class="text-sm text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Live Inventory Portal</p>
-            <p id="lastUpdated" class="text-[10px] text-blue-500 font-bold uppercase mt-1">Checking for updates...</p>
+            <p id="lastUpdated" class="text-[10px] text-blue-500 font-bold uppercase mt-1">Fetching update time...</p>
         </div>
         <div class="text-right no-print">
-            <button onclick="downloadPDF(event)" class="bg-red-600 text-white px-4 py-2 text-[11px] font-black uppercase mr-2">📄 Download PDF</button>
+            <button onclick="downloadPDF(this)" class="bg-red-600 text-white px-4 py-2 text-[11px] font-black uppercase mr-2">📄 Download PDF</button>
             <button onclick="location.reload()" class="bg-black text-white px-4 py-2 text-[11px] font-black uppercase">🔄 Refresh</button>
-            <div class="text-[11px] font-black text-blue-600 mt-2">DEV: YASHDEEP JIVANI</div>
+            <div class="text-[11px] font-black text-blue-600 mt-2">DEVELOPER: YASHDEEP JIVANI</div>
         </div>
     </div>
     
     <div class="header-line"></div>
 
-    <!-- Stats Section -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 no-print">
         <div class="stat-card"><div class="stat-label">Total Designs</div><div id="statDesigns" class="stat-val">0</div></div>
         <div class="stat-card"><div class="stat-label">Total Boxes</div><div id="statBoxes" class="stat-val">0</div></div>
         <div class="stat-card"><div class="stat-label">Active Brands</div><div id="statBrands" class="stat-val">0</div></div>
-        <div class="stat-card"><div class="stat-label">Results</div><div id="statFiltered" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="stat-label">Filtered Results</div><div id="statFiltered" class="stat-val">0</div></div>
     </div>
 
-    <!-- Filter UI -->
     <div class="filter-box no-print">
         <div class="filter-group"><label>Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Search..."></div>
         <div class="filter-group"><label>Brand</label><select id="filterBrand" onchange="applyFilters()"><option value="">All Brands</option></select></div>
@@ -87,7 +81,6 @@
         <div class="filter-group"><label>Variant</label><select id="filterVariant" onchange="applyFilters()"><option value="">All Variants</option></select></div>
     </div>
 
-    <!-- Report Area -->
     <div id="reportList"></div>
 </div>
 
@@ -103,32 +96,27 @@
 
     async function initPortal() {
         try {
-            // Load Design Images
             const resImg = await fetch('design.json?v=' + Date.now());
             if (resImg.ok) {
                 const designs = await resImg.json();
                 designs.forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
             }
 
-            // Load Stock Data
             let resStock = await fetch('stock.json?v=' + Date.now());
             if (!resStock.ok) resStock = await fetch('STOCK.JSON?v=' + Date.now());
             
             if (resStock.ok) {
                 masterData = await resStock.json();
                 
-                // Show Last Updated Time
+                // Set Last Modified Time
                 const lastMod = resStock.headers.get('Last-Modified');
-                const dateDisplay = lastMod ? new Date(lastMod).toLocaleString() : new Date().toLocaleString();
-                document.getElementById('lastUpdated').innerText = "Last Updated: " + dateDisplay;
+                document.getElementById('lastUpdated').innerText = "Last Updated: " + (lastMod ? new Date(lastMod).toLocaleString() : new Date().toLocaleString());
 
                 setupFilters();
                 applyFilters();
-            } else {
-                throw new Error("File not found");
             }
         } catch (err) {
-            document.getElementById('reportList').innerHTML = `<div class="py-20 text-center text-red-500 font-bold uppercase">stock.json file load thayo nathi!</div>`;
+            document.getElementById('reportList').innerHTML = `<div class="py-20 text-center text-red-500 font-bold uppercase">Data load error!</div>`;
         }
     }
 
@@ -139,13 +127,11 @@
             if (item["Size"]) sizes.add(item["Size"].trim());
             if (item["Variant"]) variants.add(item["Variant"].trim());
         });
-
         const updateSelect = (id, set) => {
             const el = document.getElementById(id);
             el.innerHTML = `<option value="">All ${id.replace('filter','')}</option>` + 
                 [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
         };
-
         updateSelect('filterBrand', brands);
         updateSelect('filterSize', sizes);
         updateSelect('filterVariant', variants);
@@ -205,7 +191,6 @@
         document.getElementById('statBoxes').innerText = totalBoxes;
         document.getElementById('statBrands').innerText = brandsFound.size;
         document.getElementById('statFiltered').innerText = items.length;
-
         render(items);
     }
 
@@ -221,7 +206,9 @@
             return `
             <div class="stock-card">
                 <div class="variant-badge">${item.variant}</div>
-                <div class="card-img" onclick="openImage('${imgUrl}')"><img src="${imgUrl}" crossorigin="anonymous"></div>
+                <div class="card-img" onclick="openImage('${imgUrl}')">
+                    <img src="${imgUrl}" crossorigin="anonymous" loading="lazy">
+                </div>
                 <div class="card-info">
                     <span class="brand-tag">${item.brand}</span>
                     <div class="design-name">${item.name}</div>
@@ -237,37 +224,38 @@
         }).join('');
     }
 
-    async function downloadPDF(event) {
+    async function downloadPDF(btn) {
         const element = document.getElementById('reportList');
-        const btn = event.currentTarget;
         const originalText = btn.innerText;
         
-        btn.innerText = "Generating...";
+        btn.innerText = "Please Wait...";
         btn.disabled = true;
 
-        const opt = {
-            margin: 10,
-            filename: 'Emcer_Stock_Report.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { 
-                scale: 2, 
-                useCORS: true, 
-                allowTaint: false,
-                letterRendering: true
-            },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-        };
+        // ઈમેજીસ પ્રોપર લોડ થાય એના માટે ૨ સેકન્ડનો વેઈટ (ગિટહબ માટે જરૂરી)
+        setTimeout(async () => {
+            const opt = {
+                margin: [10, 10],
+                filename: 'Emcer_Live_Stock.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 2, 
+                    useCORS: true, 
+                    allowTaint: false,
+                    letterRendering: true
+                },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            };
 
-        try {
-            await html2pdf().set(opt).from(element).save();
-        } catch (err) {
-            console.error(err);
-            alert("PDF generate કરવામાં સમસ્યા આવી. ઈમેજ સર્વર CORS સપોર્ટ કરતું હોવું જોઈએ.");
-        } finally {
-            btn.innerText = originalText;
-            btn.disabled = false;
-        }
+            try {
+                await html2pdf().set(opt).from(element).save();
+            } catch (err) {
+                alert("Error generating PDF. Please check internet connection.");
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }, 1500);
     }
 
     initPortal();
