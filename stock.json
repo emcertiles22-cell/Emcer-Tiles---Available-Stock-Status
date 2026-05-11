@@ -1010,16 +1010,6 @@
     "Net Qty": "60"
   },
   {
-    "Common Item No.": "FG00056",
-    "Size": "800X2400 6MM",
-    "Series": "ESLAB",
-    "Item Description": "Sample",
-    "Brand": "EMCER",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "60.5"
-  },
-  {
     "Common Item No.": "FG00027",
     "Size": "800X2400 6MM",
     "Series": "STONIC E",
@@ -1218,16 +1208,6 @@
     "Variant": "PRE",
     "Lot no.": "240619",
     "Net Qty": "295"
-  },
-  {
-    "Common Item No.": "FG00056",
-    "Size": "800X2400 6MM",
-    "Series": "ESLAB",
-    "Item Description": "Sample",
-    "Brand": "PLAIN",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "313"
   },
   {
     "Common Item No.": "FG00026",
@@ -2149,16 +2129,7 @@
     "Lot no.": "241227",
     "Net Qty": "16"
   },
-  {
-    "Common Item No.": "FG00369",
-    "Size": "800X2400 15MM",
-    "Series": "ESLAB",
-    "Item Description": "Sample",
-    "Brand": "EMCER",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "16"
-  },
+  
   {
     "Common Item No.": "FG02045",
     "Size": "800X2400 15MM",
@@ -3609,16 +3580,7 @@
     "Lot no.": "250103",
     "Net Qty": "129"
   },
-  {
-    "Common Item No.": "FG00369",
-    "Size": "800X2400 15MM",
-    "Series": "ESLAB",
-    "Item Description": "Sample",
-    "Brand": "GENERAL",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "135"
-  },
+  
   {
     "Common Item No.": "FG00232",
     "Size": "800X2400 15MM",
@@ -4139,16 +4101,7 @@
     "Lot no.": "DEFAULT",
     "Net Qty": "9"
   },
-  {
-    "Common Item No.": "FG00431",
-    "Size": "800X1600 MM",
-    "Series": "SAMPLE",
-    "Item Description": "Sample",
-    "Brand": "PLAIN",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "9"
-  },
+ 
   {
     "Common Item No.": "FG00440",
     "Size": "800X1600 MM",
@@ -4349,17 +4302,7 @@
     "Lot no.": "DEFAULT",
     "Net Qty": "11"
   },
-  {
-    "Common Item No.": "FG00431",
-    "Size": "800X1600 MM",
-    "Series": "SAMPLE",
-    "Item Description": "Sample",
-    "Brand": "GENERAL",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "11"
-  },
-  {
+   {
     "Common Item No.": "FG00507",
     "Size": "800X1600 MM",
     "Series": "EGLOSS",
@@ -4999,16 +4942,7 @@
     "Lot no.": "260207",
     "Net Qty": "67"
   },
-  {
-    "Common Item No.": "FG00431",
-    "Size": "800X1600 MM",
-    "Series": "SAMPLE",
-    "Item Description": "Sample",
-    "Brand": "EMCER-ROLLSTAR",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "70"
-  },
+  
   {
     "Common Item No.": "FG00449",
     "Size": "800X1600 MM",
@@ -5029,16 +4963,7 @@
     "Lot no.": "DEFAULT",
     "Net Qty": "74"
   },
-  {
-    "Common Item No.": "FG00431",
-    "Size": "800X1600 MM",
-    "Series": "ESLAB",
-    "Item Description": "Sample",
-    "Brand": "PLAIN",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "77"
-  },
+  
   {
     "Common Item No.": "FG00490",
     "Size": "800X1600 MM",
@@ -5199,16 +5124,7 @@
     "Lot no.": "250523-S1",
     "Net Qty": "13.5"
   },
-  {
-    "Common Item No.": "FGT00404",
-    "Size": "600X600 MM",
-    "Series": "SAMPLE",
-    "Item Description": "Sample",
-    "Brand": "EMCER-IT",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "17"
-  },
+  
   {
     "Common Item No.": "FGT00411",
     "Size": "600X600 MM",
@@ -5279,16 +5195,7 @@
     "Lot no.": "250216-S51",
     "Net Qty": "29.75"
   },
-  {
-    "Common Item No.": "FGT00404",
-    "Size": "600X600 MM",
-    "Series": "SAMPLE",
-    "Item Description": "Sample",
-    "Brand": "EMCER",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "30"
-  },
+ 
   {
     "Common Item No.": "FGT00403",
     "Size": "600X600 MM",
@@ -5299,16 +5206,7 @@
     "Lot no.": "250721",
     "Net Qty": "31"
   },
-  {
-    "Common Item No.": "FGT00404",
-    "Size": "600X600 MM",
-    "Series": "SAMPLE",
-    "Item Description": "Sample",
-    "Brand": "PLAIN",
-    "Variant": "STD",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "33"
-  },
+ 
   {
     "Common Item No.": "FGT00410",
     "Size": "600X600 MM",
@@ -5409,16 +5307,7 @@
     "Lot no.": "220415-S4",
     "Net Qty": "22"
   },
-  {
-    "Common Item No.": "FGT00429",
-    "Size": "600X600 16MM",
-    "Series": "SAMPLE",
-    "Item Description": "Sample",
-    "Brand": "EMCER",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "22"
-  },
+  
   {
     "Common Item No.": "FGT00421",
     "Size": "600X600 16MM",
@@ -5429,16 +5318,7 @@
     "Lot no.": "251114-S34",
     "Net Qty": "35.5"
   },
-  {
-    "Common Item No.": "FGT00429",
-    "Size": "600X600 16MM",
-    "Series": "SAMPLE",
-    "Item Description": "Sample",
-    "Brand": "EMCER-VEL",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "46"
-  },
+  
   {
     "Common Item No.": "FGT00421",
     "Size": "600X600 16MM",
@@ -5839,16 +5719,7 @@
     "Lot no.": "240502",
     "Net Qty": "51"
   },
-  {
-    "Common Item No.": "FGT00140",
-    "Size": "200X1200 MM 5PCS",
-    "Series": "SAMPLE",
-    "Item Description": "Sample",
-    "Brand": "EMCER-LNS",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "53.96"
-  },
+  
   {
     "Common Item No.": "FGT00151",
     "Size": "200X1200 MM 5PCS",
@@ -5939,16 +5810,7 @@
     "Lot no.": "250210",
     "Net Qty": "243"
   },
-  {
-    "Common Item No.": "FGT00140",
-    "Size": "200X1200 MM 5PCS",
-    "Series": "SAMPLE",
-    "Item Description": "Sample",
-    "Brand": "EMCER",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "405"
-  },
+ 
   {
     "Common Item No.": "FG00765",
     "Size": "1200X2400 MM",
@@ -5999,16 +5861,7 @@
     "Lot no.": "240620",
     "Net Qty": "9"
   },
-  {
-    "Common Item No.": "FG01813",
-    "Size": "1200X2400 MM",
-    "Series": "EGLOSS",
-    "Item Description": "Sample",
-    "Brand": "EMCER",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "9"
-  },
+  
   {
     "Common Item No.": "FG02448",
     "Size": "1200X2400 MM",
@@ -6669,26 +6522,7 @@
     "Lot no.": "230528",
     "Net Qty": "16"
   },
-  {
-    "Common Item No.": "FG01813",
-    "Size": "1200X2400 MM",
-    "Series": "EGLOSS",
-    "Item Description": "Sample",
-    "Brand": "PLAIN",
-    "Variant": "STD",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "16"
-  },
-  {
-    "Common Item No.": "FG01813",
-    "Size": "1200X2400 MM",
-    "Series": "EGLOSS",
-    "Item Description": "Sample",
-    "Brand": "EMCER",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "16"
-  },
+
   {
     "Common Item No.": "FG02442",
     "Size": "1200X2400 MM",
@@ -7599,16 +7433,7 @@
     "Lot no.": "250623",
     "Net Qty": "42"
   },
-  {
-    "Common Item No.": "FG01813",
-    "Size": "1200X2400 MM",
-    "Series": "EGLOSS",
-    "Item Description": "Sample",
-    "Brand": "GENERAL",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "42"
-  },
+  
   {
     "Common Item No.": "FG02653",
     "Size": "1200X2400 MM",
@@ -7699,16 +7524,7 @@
     "Lot no.": "260102",
     "Net Qty": "46"
   },
-  {
-    "Common Item No.": "FG01813",
-    "Size": "1200X2400 MM",
-    "Series": "EGLOSS",
-    "Item Description": "Sample",
-    "Brand": "GENERAL",
-    "Variant": "STD",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "46"
-  },
+  
   {
     "Common Item No.": "FG02136",
     "Size": "1200X2400 MM",
@@ -8099,16 +7915,7 @@
     "Lot no.": "241231",
     "Net Qty": "121"
   },
-  {
-    "Common Item No.": "FG01813",
-    "Size": "1200X2400 MM",
-    "Series": "EGLOSS",
-    "Item Description": "Sample",
-    "Brand": "PLAIN",
-    "Variant": "STD",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "129"
-  },
+  
   {
     "Common Item No.": "FG00903",
     "Size": "1200X2400 MM",
@@ -8169,16 +7976,7 @@
     "Lot no.": "260213",
     "Net Qty": "205"
   },
-  {
-    "Common Item No.": "FG01813",
-    "Size": "1200X2400 MM",
-    "Series": "EGLOSS",
-    "Item Description": "Sample",
-    "Brand": "PLAIN",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "206"
-  },
+  
   {
     "Common Item No.": "FG02503",
     "Size": "1200X2400 MM",
@@ -12639,16 +12437,7 @@
     "Lot no.": "240615",
     "Net Qty": "54"
   },
-  {
-    "Common Item No.": "FG01201",
-    "Size": "1200X1800 MM 2PCS",
-    "Series": "ESLAB",
-    "Item Description": "Sample",
-    "Brand": "PLAIN",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "54.5"
-  },
+  
   {
     "Common Item No.": "FG01081",
     "Size": "1200X1800 MM 2PCS",
@@ -13949,16 +13738,7 @@
     "Lot no.": "250504",
     "Net Qty": "9"
   },
-  {
-    "Common Item No.": "FG01339",
-    "Size": "1200X1800 15MM",
-    "Series": "QUARTZITE",
-    "Item Description": "Sample",
-    "Brand": "GENERAL",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "9"
-  },
+  
   {
     "Common Item No.": "FG01348",
     "Size": "1200X1800 15MM",
@@ -14529,16 +14309,7 @@
     "Lot no.": "250317",
     "Net Qty": "19"
   },
-  {
-    "Common Item No.": "FG01339",
-    "Size": "1200X1800 15MM",
-    "Series": "QUARTZITE",
-    "Item Description": "Sample",
-    "Brand": "EMCER",
-    "Variant": "PRE",
-    "Lot no.": "DEFAULT",
-    "Net Qty": "20"
-  },
+ 
   {
     "Common Item No.": "FG01366",
     "Size": "1200X1800 15MM",
