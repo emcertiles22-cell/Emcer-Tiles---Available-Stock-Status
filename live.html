@@ -137,13 +137,13 @@
               
         const oldB = bSel.value, oldS = sSel.value, oldG = gSel.value;
 
-        bSel.innerHTML = '<option value="">All Brands</option>';
+        bSel.innerHTML = '<option value="">All Grades</option>';
         [...brands].sort().forEach(b => bSel.innerHTML += `<option value="${b}">${b}</option>`);
         
         sSel.innerHTML = '<option value="">All Sizes</option>';
         [...sizes].sort().forEach(s => sSel.innerHTML += `<option value="${s}">${s}</option>`);
         
-        gSel.innerHTML = '<option value="">All Grades</option>';
+        gSel.innerHTML = '<option value="">All Brands</option>';
         [...grades].sort().forEach(g => gSel.innerHTML += `<option value="${g}">${g}</option>`);
 
         bSel.value = oldB; sSel.value = oldS; gSel.value = oldG;
