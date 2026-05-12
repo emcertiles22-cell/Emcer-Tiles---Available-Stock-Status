@@ -2,202 +2,171 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NexTile - Emcer Elite Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #000; }
-        .pdf-page { max-width: 1100px; margin: auto; padding: 20px; background: #f1f5f9; }
-        
-        /* Premium Developer Branding */
-        @keyframes blink-glow { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        .dev-tag { font-weight: 900; color: #2563eb; animation: blink-glow 1.5s infinite; text-transform: uppercase; border: 1px solid #2563eb; padding: 2px 8px; border-radius: 4px; }
-
-        .stat-card { background: white; border: 3px solid #000; padding: 15px; text-align: center; box-shadow: 6px 6px 0px #000; }
-        .stock-card { background: white; border: 2px solid #000; display: flex; margin-bottom: 20px; min-height: 220px; page-break-inside: avoid; }
-        .card-img { width: 25%; border-right: 2px solid #000; padding: 10px; display: flex; align-items: center; justify-content: center; background: #fff; }
-        .card-info { width: 55%; padding: 20px; }
-        .card-total { width: 20%; border-left: 2px solid #000; background: #fafafa; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .main-container { max-width: 1000px; margin: auto; padding: 20px; }
+        .stat-card { background: white; border: 2px solid #000; padding: 12px; text-align: center; box-shadow: 4px 4px 0px #000; }
+        .stock-card { background: white; border: 1.5px solid #000; display: flex; margin-bottom: 15px; min-height: 180px; break-inside: avoid; }
+        .card-img { width: 20%; border-right: 1.5px solid #000; padding: 8px; display: flex; align-items: center; justify-content: center; }
+        .card-info { width: 60%; padding: 15px; }
+        .card-total { width: 20%; border-left: 1.5px solid #000; background: #fafafa; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .no-print { display: block; }
-        .only-print { display: none; }
+        /* Hidden Print Header */
+        #pdfHeaderTemplate { display: none; }
     </style>
 </head>
 <body>
 
-<div id="captureArea" class="pdf-page">
-    
-    <div class="flex justify-between items-start mb-6 border-b-4 border-black pb-4">
+<div id="pdfHeaderTemplate">
+    <div style="border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
         <div>
-            <h1 class="text-4xl font-black tracking-tighter uppercase leading-none">Emcer Tiles Private Limited</h1>
-            <p class="text-[10px] font-black text-blue-600 uppercase mt-2">Live Inventory Stock Report</p>
-            <p id="updateTime" class="text-[9px] font-bold text-slate-500 uppercase mt-1">Updated: --</p>
+            <h1 style="font-size: 24px; font-weight: 900; text-transform: uppercase;">Emcer Tiles Private Limited</h1>
+            <p style="font-size: 10px; font-weight: 700; color: #2563eb;">LIVE INVENTORY REPORT</p>
+        </div>
+        <div style="text-align: right;">
+            <p style="font-size: 9px; font-weight: 800; color: #64748b;">DEV: YASHDEEP JIVANI</p>
+        </div>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="flex justify-between items-end mb-6 no-print">
+        <div>
+            <h1 class="text-3xl font-black uppercase">Emcer Tiles Private Limited</h1>
+            <p class="text-xs font-bold text-blue-600">LIVE SYNC ACTIVE</p>
         </div>
         <div class="text-right">
-            <div class="mb-2 no-print">
-                <button onclick="downloadPerfectPDF()" class="bg-red-600 text-white px-5 py-2 font-black text-[11px] uppercase shadow-md hover:bg-red-700 transition">📥 Download Full PDF</button>
-            </div>
-            <div class="text-[10px] font-black text-slate-500">SYSTEM DEVELOPER: <span class="dev-tag">Yashdeep Jivani</span></div>
+            <button onclick="downloadStructuredPDF()" class="bg-red-600 text-white px-4 py-2 font-black text-[10px] uppercase shadow-lg">📥 Download PDF</button>
+            <p class="text-[9px] font-black text-slate-400 mt-2 uppercase">Dev: Yashdeep Jivani</p>
         </div>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div class="stat-card"><div class="text-[9px] font-black uppercase text-slate-400">Total Designs</div><div id="stat-designs" class="text-3xl font-black">0</div></div>
-        <div class="stat-card"><div class="text-[9px] font-black uppercase text-slate-400">Total Boxes</div><div id="stat-boxes" class="text-3xl font-black">0</div></div>
-        <div class="stat-card"><div class="text-[9px] font-black uppercase text-slate-400">Active Brands</div><div id="stat-brands" class="text-3xl font-black">0</div></div>
-        <div class="stat-card"><div class="text-[9px] font-black uppercase text-slate-400">Filtered Count</div><div id="stat-results" class="text-3xl font-black">0</div></div>
+    <div id="statsSection" class="grid grid-cols-4 gap-4 mb-6">
+        <div class="stat-card"><div class="text-[9px] font-bold text-slate-400">DESIGNS</div><div id="stat-designs" class="text-xl font-black">0</div></div>
+        <div class="stat-card"><div class="text-[9px] font-bold text-slate-400">BOXES</div><div id="stat-boxes" class="text-xl font-black">0</div></div>
+        <div class="stat-card"><div class="text-[9px] font-bold text-slate-400">BRANDS</div><div id="stat-brands" class="text-xl font-black">0</div></div>
+        <div class="stat-card"><div class="text-[9px] font-bold text-slate-400">RESULTS</div><div id="stat-results" class="text-xl font-black">0</div></div>
     </div>
 
-    <div id="filterSection" class="bg-white border-[3px] border-black p-6 grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 no-print">
-        <div><label class="text-[10px] font-black uppercase">Search</label><input type="text" id="searchName" oninput="applyFilters()" class="w-full border-2 p-2 font-bold outline-none"></div>
-        <div><label class="text-[10px] font-black uppercase">Brand</label><select id="filterBrand" onchange="applyFilters()" class="w-full border-2 p-2 font-bold"></select></div>
-        <div><label class="text-[10px] font-black uppercase">Size</label><select id="filterSize" onchange="applyFilters()" class="w-full border-2 p-2 font-bold"></select></div>
-        <div><label class="text-[10px] font-black uppercase">Grade</label><select id="filterGrade" onchange="applyFilters()" class="w-full border-2 p-2 font-bold"></select></div>
+    <div class="bg-white border-2 border-black p-4 grid grid-cols-4 gap-3 mb-6 no-print">
+        <input type="text" id="sN" oninput="applyFilters()" placeholder="SEARCH..." class="border p-2 text-xs font-bold uppercase">
+        <select id="fB" onchange="applyFilters()" class="border p-2 text-xs font-bold uppercase"></select>
+        <select id="fS" onchange="applyFilters()" class="border p-2 text-xs font-bold uppercase"></select>
+        <select id="fG" onchange="applyFilters()" class="border p-2 text-xs font-bold uppercase"></select>
     </div>
 
-    <div id="reportList" class="space-y-6"></div>
+    <div id="reportArea"></div>
 </div>
 
 <script>
     let masterData = [], designMap = {};
 
     async function init() {
-        const resImg = await fetch('design.json?v=' + Date.now());
-        if (resImg.ok) {
-            const designs = await resImg.json();
-            designs.forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
-        }
-        fetchStock();
-    }
-
-    async function fetchStock() {
-        const res = await fetch('stock.json?v=' + Date.now());
-        masterData = await res.json();
-        document.getElementById('updateTime').innerText = "LAST SYNC: " + new Date().toLocaleString();
-        setupFilters();
-        applyFilters();
+        const resI = await fetch('design.json?v=' + Date.now());
+        if (resI.ok) (await resI.json()).forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
+        const resS = await fetch('stock.json?v=' + Date.now());
+        masterData = await resS.json();
+        setupFilters(); applyFilters();
     }
 
     function setupFilters() {
         const b = new Set(), s = new Set(), g = new Set();
-        masterData.forEach(i => {
-            if(i.Brand) b.add(i.Brand.trim());
-            if(i.Size) s.add(i.Size.trim());
-            if(i.Variant) g.add(i.Variant.trim());
-        });
+        masterData.forEach(i => { b.add(i.Brand); s.add(i.Size); g.add(i.Variant); });
         const fill = (id, set) => document.getElementById(id).innerHTML = `<option value="">ALL</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
-        fill('filterBrand', b); fill('filterSize', s); fill('filterGrade', g);
+        fill('fB', b); fill('fS', s); fill('fG', g);
     }
 
     function applyFilters() {
-        const nVal = document.getElementById('searchName').value.toLowerCase();
-        const bVal = document.getElementById('filterBrand').value;
-        const sVal = document.getElementById('filterSize').value;
-        const gVal = document.getElementById('filterGrade').value;
-
-        const groups = {};
-        let tBoxes = 0;
-        const uBrands = new Set();
+        const nV = document.getElementById('sN').value.toLowerCase();
+        const bV = document.getElementById('fB').value, sV = document.getElementById('fS').value, gV = document.getElementById('fG').value;
+        const groups = {}; let tB = 0, uB = new Set();
 
         masterData.forEach(item => {
-            const name = (item["Item Description"] || "").trim();
-            const brand = (item.Brand || "").trim();
-            const variant = (item.Variant || "").trim();
-            const size = (item.Size || "").trim();
-            const qty = parseFloat(item["Total"] || item["Net Qty"] || 0);
-
-            if (name.toLowerCase().includes(nVal) && (bVal==="" || brand===bVal) && (sVal==="" || size===sVal) && (gVal==="" || variant===gVal)) {
-                const k = `${name}|${brand}|${size}|${variant}`.toLowerCase();
-                if (!groups[k]) groups[k] = { name, brand, size, variant, lots: [], total: 0 };
-                groups[k].lots.push({ lot: item["Lot No"] || item["Lot no."], qty });
-                groups[k].total += qty;
-                tBoxes += qty;
-                uBrands.add(brand);
+            const name = (item["Item Description"] || "").trim(), brand = (item.Brand || "").trim(), varnt = (item.Variant || "").trim(), size = (item.Size || "").trim(), qty = parseFloat(item.Total || 0);
+            if (name.toLowerCase().includes(nV) && (!bV || brand===bV) && (!sV || size===sV) && (!gV || varnt===gV)) {
+                const k = `${name}|${brand}|${size}|${varnt}`.toLowerCase();
+                if (!groups[k]) groups[k] = { name, brand, size, varnt, lots: [], total: 0 };
+                groups[k].lots.push({ lot: item["Lot No"], qty });
+                groups[k].total += qty; tB += qty; uB.add(brand);
             }
         });
 
         const items = Object.values(groups);
         document.getElementById('stat-designs').innerText = items.length;
-        document.getElementById('stat-boxes').innerText = tBoxes.toLocaleString();
-        document.getElementById('stat-brands').innerText = uBrands.size;
+        document.getElementById('stat-boxes').innerText = tB.toLocaleString();
+        document.getElementById('stat-brands').innerText = uBrands = uB.size;
         document.getElementById('stat-results').innerText = items.length;
-
         render(items);
     }
 
     function render(items) {
-        document.getElementById('reportList').innerHTML = items.map(item => {
-            const imgUrl = designMap[item.name.toLowerCase().trim()] || 'https://via.placeholder.com/400x600?text=No+Photo';
+        document.getElementById('reportArea').innerHTML = items.map(item => {
+            const img = designMap[item.name.toLowerCase().trim()] || 'https://via.placeholder.com/150';
             return `
             <div class="stock-card">
-                <div class="card-img"><img src="${imgUrl}" crossorigin="anonymous" style="max-height:180px;"></div>
+                <div class="card-img"><img src="${img}" crossorigin="anonymous" style="max-height:120px;"></div>
                 <div class="card-info">
-                    <div class="flex justify-between items-start">
-                        <span class="text-[9px] font-black text-blue-600 uppercase">${item.brand}</span>
-                        <span class="bg-black text-white px-2 py-0.5 text-[9px] font-black uppercase">${item.variant}</span>
-                    </div>
-                    <div class="text-2xl font-black uppercase mb-1">${item.name}</div>
-                    <div class="text-[10px] font-bold text-slate-400 mb-4 border-b pb-1">${item.size}</div>
-                    <div class="space-y-1">
-                        ${item.lots.map(l => `<div class="flex justify-between text-[11px] border-b border-dashed py-1"><b>LOT: ${l.lot}</b><span>${l.qty} Bx</span></div>`).join('')}
-                    </div>
+                    <div class="flex justify-between text-[8px] font-black uppercase text-blue-600"><span>${item.brand}</span><span>${item.varnt}</span></div>
+                    <div class="text-lg font-black uppercase leading-tight">${item.name}</div>
+                    <div class="text-[9px] font-bold text-slate-400 border-b mb-2">${item.size}</div>
+                    ${item.lots.map(l => `<div class="flex justify-between text-[10px] border-b border-dotted py-0.5"><b>LOT: ${l.lot}</b><span>${l.qty} Bx</span></div>`).join('')}
                 </div>
-                <div class="card-total">
-                    <div class="text-4xl font-black">${item.total}</div>
-                    <div class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Boxes</div>
-                </div>
+                <div class="card-total"><div class="text-3xl font-black">${item.total}</div><div class="text-[8px] font-bold uppercase">Boxes</div></div>
             </div>`;
         }).join('');
     }
 
-    async function downloadPerfectPDF() {
+    async function downloadStructuredPDF() {
         const { jsPDF } = window.jspdf;
-        const captureArea = document.getElementById('captureArea');
-        const filters = document.getElementById('filterSection');
-        const buttons = document.querySelectorAll('.no-print');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const cards = document.querySelectorAll('.stock-card');
+        const headerHtml = document.getElementById('pdfHeaderTemplate').innerHTML;
+        const statsHtml = document.getElementById('statsSection').outerHTML;
+        
+        let yOffset = 15;
+        const pageHeight = 280;
 
-        // 1. Temporary Hide Filters and Buttons for PDF
-        filters.style.display = 'none';
-        buttons.forEach(b => b.style.visibility = 'hidden');
+        // Create a temporary container for rendering
+        const temp = document.createElement('div');
+        temp.style.width = '800px'; 
+        temp.style.padding = '20px';
+        temp.style.background = '#f1f5f9';
+        document.body.appendChild(temp);
 
-        try {
-            const canvas = await html2canvas(captureArea, {
-                scale: 2,
-                useCORS: true,
-                backgroundColor: "#f1f5f9"
-            });
+        // Function to add Header and Stats on each page
+        const addPageHeader = async (isFirstPage) => {
+            temp.innerHTML = headerHtml + (isFirstPage ? statsHtml : "");
+            const canvas = await html2canvas(temp, { scale: 2, useCORS: true });
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            const h = (canvas.height * 190) / canvas.width;
+            pdf.addImage(imgData, 'JPEG', 10, 10, 190, h);
+            return h + 15;
+        };
 
-            const imgData = canvas.toDataURL('image/jpeg', 1.0);
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const pageHeight = pdf.internal.pageSize.getHeight();
-            const imgWidth = pageWidth;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        yOffset = await addPageHeader(true);
 
-            let heightLeft = imgHeight;
-            let position = 0;
+        for (let i = 0; i < cards.length; i++) {
+            temp.innerHTML = cards[i].outerHTML;
+            const canvas = await html2canvas(temp, { scale: 2, useCORS: true });
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            const h = (canvas.height * 190) / canvas.width;
 
-            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-
-            while (heightLeft >= 0) {
-                position = heightLeft - imgHeight;
+            if (yOffset + h > pageHeight) {
                 pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
+                yOffset = await addPageHeader(false);
             }
 
-            pdf.save(`Emcer_LiveStock_Report.pdf`);
-        } catch (e) {
-            alert("Error generating PDF.");
-        } finally {
-            // 2. Show Filters and Buttons back
-            filters.style.display = 'grid';
-            buttons.forEach(b => b.style.visibility = 'visible');
+            pdf.addImage(imgData, 'JPEG', 10, yOffset, 190, h);
+            yOffset += h + 5;
         }
+
+        document.body.removeChild(temp);
+        pdf.save("Emcer_Live_Stock.pdf");
     }
 
     init();
