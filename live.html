@@ -2,74 +2,82 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NexTile - Emcer Elite Portal</title>
+    <title>NexTile - Emcer Elite Inventory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
-        .main-container { max-width: 1000px; margin: auto; padding: 20px; }
-        .stat-card { background: white; border: 2px solid #000; padding: 12px; text-align: center; box-shadow: 4px 4px 0px #000; }
-        .stock-card { background: white; border: 1.5px solid #000; display: flex; margin-bottom: 15px; min-height: 180px; break-inside: avoid; }
-        .card-img { width: 20%; border-right: 1.5px solid #000; padding: 8px; display: flex; align-items: center; justify-content: center; }
-        .card-info { width: 60%; padding: 15px; }
-        .card-total { width: 20%; border-left: 1.5px solid #000; background: #fafafa; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .pdf-container { width: 210mm; margin: auto; padding: 15mm; background: white; min-height: 297mm; }
+        
+        /* Premium Card Style */
+        .stock-card { 
+            display: flex; border: 1px solid #e2e8f0; margin-bottom: 12px; 
+            min-height: 160px; break-inside: avoid; border-radius: 8px; overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .card-img { width: 22%; background: #fefefe; display: flex; align-items: center; justify-content: center; padding: 10px; border-right: 1px solid #f1f5f9; }
+        .card-info { width: 58%; padding: 16px; display: flex; flex-direction: column; justify-content: center; }
+        .card-qty { width: 20%; background: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; border-left: 1px solid #f1f5f9; }
+        
+        .badge { font-size: 8px; font-weight: 800; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
+        .badge-blue { background: #eff6ff; color: #2563eb; }
+        
+        #pdfHeader { border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 25px; }
         .no-print { display: block; }
-        /* Hidden Print Header */
-        #pdfHeaderTemplate { display: none; }
     </style>
 </head>
 <body>
 
-<div id="pdfHeaderTemplate">
-    <div style="border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+<div class="max-w-5xl mx-auto p-6 no-print">
+    <div class="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border mb-6">
         <div>
-            <h1 style="font-size: 24px; font-weight: 900; text-transform: uppercase;">Emcer Tiles Private Limited</h1>
-            <p style="font-size: 10px; font-weight: 700; color: #2563eb;">LIVE INVENTORY REPORT</p>
+            <h1 class="text-2xl font-extrabold tracking-tight">EMCER TILES PRIVATE LIMITED</h1>
+            <p class="text-sm font-semibold text-slate-400">Inventory Management Portal</p>
         </div>
-        <div style="text-align: right;">
-            <p style="font-size: 9px; font-weight: 800; color: #64748b;">DEV: YASHDEEP JIVANI</p>
-        </div>
+        <button onclick="generatePremiumPDF()" class="bg-black text-white px-8 py-3 rounded-lg font-bold hover:bg-slate-800 transition shadow-lg">📥 EXPORT PREMIUM PDF</button>
+    </div>
+
+    <div class="grid grid-cols-4 gap-4 mb-8">
+        <input type="text" id="sN" oninput="applyFilters()" placeholder="Search Design..." class="border rounded-lg p-3 text-sm font-medium focus:ring-2 ring-blue-500 outline-none">
+        <select id="fB" onchange="applyFilters()" class="border rounded-lg p-3 text-sm font-medium outline-none"></select>
+        <select id="fS" onchange="applyFilters()" class="border rounded-lg p-3 text-sm font-medium outline-none"></select>
+        <select id="fG" onchange="applyFilters()" class="border rounded-lg p-3 text-sm font-medium outline-none"></select>
     </div>
 </div>
 
-<div class="main-container">
-    <div class="flex justify-between items-end mb-6 no-print">
+<div id="pdfContent" class="pdf-container">
+    <div id="pdfHeader" class="flex justify-between items-end">
         <div>
-            <h1 class="text-3xl font-black uppercase">Emcer Tiles Private Limited</h1>
-            <p class="text-xs font-bold text-blue-600">LIVE SYNC ACTIVE</p>
+            <h1 class="text-3xl font-extrabold tracking-tighter">EMCER TILES PRIVATE LIMITED</h1>
+            <p class="text-[10px] font-bold text-blue-600 tracking-widest mt-1 uppercase">Live Inventory Stock Report</p>
         </div>
         <div class="text-right">
-            <button onclick="downloadStructuredPDF()" class="bg-red-600 text-white px-4 py-2 font-black text-[10px] uppercase shadow-lg">📥 Download PDF</button>
-            <p class="text-[9px] font-black text-slate-400 mt-2 uppercase">Dev: Yashdeep Jivani</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase">System Developer</p>
+            <p class="text-xs font-extrabold text-black uppercase">Yashdeep Jivani</p>
         </div>
     </div>
 
-    <div id="statsSection" class="grid grid-cols-4 gap-4 mb-6">
-        <div class="stat-card"><div class="text-[9px] font-bold text-slate-400">DESIGNS</div><div id="stat-designs" class="text-xl font-black">0</div></div>
-        <div class="stat-card"><div class="text-[9px] font-bold text-slate-400">BOXES</div><div id="stat-boxes" class="text-xl font-black">0</div></div>
-        <div class="stat-card"><div class="text-[9px] font-bold text-slate-400">BRANDS</div><div id="stat-brands" class="text-xl font-black">0</div></div>
-        <div class="stat-card"><div class="text-[9px] font-bold text-slate-400">RESULTS</div><div id="stat-results" class="text-xl font-black">0</div></div>
+    <div id="statsBox" class="grid grid-cols-4 gap-4 mb-8">
+        <div class="border-l-4 border-black pl-4 py-2 bg-slate-50"><p class="text-[9px] font-bold text-slate-400 uppercase">Designs</p><p id="st-d" class="text-xl font-black">0</p></div>
+        <div class="border-l-4 border-black pl-4 py-2 bg-slate-50"><p class="text-[9px] font-bold text-slate-400 uppercase">Total Boxes</p><p id="st-b" class="text-xl font-black">0</p></div>
+        <div class="border-l-4 border-black pl-4 py-2 bg-slate-50"><p class="text-[9px] font-bold text-slate-400 uppercase">Active Brands</p><p id="st-br" class="text-xl font-black">0</p></div>
+        <div class="border-l-4 border-black pl-4 py-2 bg-slate-50"><p class="text-[9px] font-bold text-slate-400 uppercase">Filtered</p><p id="st-f" class="text-xl font-black">0</p></div>
     </div>
 
-    <div class="bg-white border-2 border-black p-4 grid grid-cols-4 gap-3 mb-6 no-print">
-        <input type="text" id="sN" oninput="applyFilters()" placeholder="SEARCH..." class="border p-2 text-xs font-bold uppercase">
-        <select id="fB" onchange="applyFilters()" class="border p-2 text-xs font-bold uppercase"></select>
-        <select id="fS" onchange="applyFilters()" class="border p-2 text-xs font-bold uppercase"></select>
-        <select id="fG" onchange="applyFilters()" class="border p-2 text-xs font-bold uppercase"></select>
-    </div>
-
-    <div id="reportArea"></div>
+    <div id="reportList" class="space-y-4"></div>
 </div>
 
 <script>
     let masterData = [], designMap = {};
 
     async function init() {
-        const resI = await fetch('design.json?v=' + Date.now());
-        if (resI.ok) (await resI.json()).forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
-        const resS = await fetch('stock.json?v=' + Date.now());
+        const [resI, resS] = await Promise.all([
+            fetch('design.json?v=' + Date.now()),
+            fetch('stock.json?v=' + Date.now())
+        ]);
+        if (resI.ok) (await resI.json()).forEach(d => designMap[d.name?.toLowerCase().trim()] = d.url);
         masterData = await resS.json();
         setupFilters(); applyFilters();
     }
@@ -77,7 +85,7 @@
     function setupFilters() {
         const b = new Set(), s = new Set(), g = new Set();
         masterData.forEach(i => { b.add(i.Brand); s.add(i.Size); g.add(i.Variant); });
-        const fill = (id, set) => document.getElementById(id).innerHTML = `<option value="">ALL</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
+        const fill = (id, set) => document.getElementById(id).innerHTML = `<option value="">All ${id.slice(1)}</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
         fill('fB', b); fill('fS', s); fill('fG', g);
     }
 
@@ -97,76 +105,76 @@
         });
 
         const items = Object.values(groups);
-        document.getElementById('stat-designs').innerText = items.length;
-        document.getElementById('stat-boxes').innerText = tB.toLocaleString();
-        document.getElementById('stat-brands').innerText = uBrands = uB.size;
-        document.getElementById('stat-results').innerText = items.length;
+        document.getElementById('st-d').innerText = items.length;
+        document.getElementById('st-b').innerText = tB.toLocaleString();
+        document.getElementById('st-br').innerText = uB.size;
+        document.getElementById('st-f').innerText = items.length;
         render(items);
     }
 
     function render(items) {
-        document.getElementById('reportArea').innerHTML = items.map(item => {
-            const img = designMap[item.name.toLowerCase().trim()] || 'https://via.placeholder.com/150';
+        document.getElementById('reportList').innerHTML = items.map(item => {
+            const img = designMap[item.name.toLowerCase().trim()] || 'https://via.placeholder.com/200?text=No+Design';
             return `
             <div class="stock-card">
-                <div class="card-img"><img src="${img}" crossorigin="anonymous" style="max-height:120px;"></div>
+                <div class="card-img"><img src="${img}" crossorigin="anonymous" class="max-h-32 rounded"></div>
                 <div class="card-info">
-                    <div class="flex justify-between text-[8px] font-black uppercase text-blue-600"><span>${item.brand}</span><span>${item.varnt}</span></div>
-                    <div class="text-lg font-black uppercase leading-tight">${item.name}</div>
-                    <div class="text-[9px] font-bold text-slate-400 border-b mb-2">${item.size}</div>
-                    ${item.lots.map(l => `<div class="flex justify-between text-[10px] border-b border-dotted py-0.5"><b>LOT: ${l.lot}</b><span>${l.qty} Bx</span></div>`).join('')}
+                    <div class="flex gap-2 mb-1"><span class="badge badge-blue">${item.brand}</span><span class="badge bg-slate-100">${item.varnt}</span></div>
+                    <h3 class="text-lg font-extrabold text-slate-900 uppercase leading-tight">${item.name}</h3>
+                    <p class="text-[10px] font-bold text-slate-400 mb-3">${item.size}</p>
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+                        ${item.lots.map(l => `<div class="flex justify-between border-b border-slate-50 text-[10px] py-1 font-semibold"><span>LOT: ${l.lot}</span><span class="text-blue-600">${l.qty} Bx</span></div>`).join('')}
+                    </div>
                 </div>
-                <div class="card-total"><div class="text-3xl font-black">${item.total}</div><div class="text-[8px] font-bold uppercase">Boxes</div></div>
+                <div class="card-qty">
+                    <p class="text-2xl font-black text-black">${item.total}</p>
+                    <p class="text-[8px] font-extrabold text-slate-400 uppercase tracking-tighter">Total Boxes</p>
+                </div>
             </div>`;
         }).join('');
     }
 
-    async function downloadStructuredPDF() {
+    async function generatePremiumPDF() {
         const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const cards = document.querySelectorAll('.stock-card');
-        const headerHtml = document.getElementById('pdfHeaderTemplate').innerHTML;
-        const statsHtml = document.getElementById('statsSection').outerHTML;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const content = document.getElementById('reportList').children;
+        const headerTpl = document.getElementById('pdfHeader').outerHTML;
+        const statsTpl = document.getElementById('statsBox').outerHTML;
         
-        let yOffset = 15;
-        const pageHeight = 280;
+        let yPos = 15;
+        const pageH = 285;
 
-        // Create a temporary container for rendering
         const temp = document.createElement('div');
-        temp.style.width = '800px'; 
-        temp.style.padding = '20px';
-        temp.style.background = '#f1f5f9';
+        temp.style.width = '190mm'; temp.style.padding = '10px'; temp.style.background = 'white';
         document.body.appendChild(temp);
 
-        // Function to add Header and Stats on each page
-        const addPageHeader = async (isFirstPage) => {
-            temp.innerHTML = headerHtml + (isFirstPage ? statsHtml : "");
-            const canvas = await html2canvas(temp, { scale: 2, useCORS: true });
-            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const addHeader = async (isFirst) => {
+            temp.innerHTML = headerTpl + (isFirst ? statsTpl : "");
+            const canvas = await html2canvas(temp, { scale: 2 });
+            const img = canvas.toDataURL('image/jpeg', 0.95);
             const h = (canvas.height * 190) / canvas.width;
-            pdf.addImage(imgData, 'JPEG', 10, 10, 190, h);
+            doc.addImage(img, 'JPEG', 10, 10, 190, h);
             return h + 15;
         };
 
-        yOffset = await addPageHeader(true);
+        yPos = await addHeader(true);
 
-        for (let i = 0; i < cards.length; i++) {
-            temp.innerHTML = cards[i].outerHTML;
+        for (let i = 0; i < content.length; i++) {
+            temp.innerHTML = content[i].outerHTML;
             const canvas = await html2canvas(temp, { scale: 2, useCORS: true });
-            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            const img = canvas.toDataURL('image/jpeg', 0.95);
             const h = (canvas.height * 190) / canvas.width;
 
-            if (yOffset + h > pageHeight) {
-                pdf.addPage();
-                yOffset = await addPageHeader(false);
+            if (yPos + h > pageH) {
+                doc.addPage();
+                yPos = await addHeader(false);
             }
-
-            pdf.addImage(imgData, 'JPEG', 10, yOffset, 190, h);
-            yOffset += h + 5;
+            doc.addImage(img, 'JPEG', 10, yPos, 190, h);
+            yPos += h + 4;
         }
 
         document.body.removeChild(temp);
-        pdf.save("Emcer_Live_Stock.pdf");
+        doc.save("Emcer_Inventory_Premium.pdf");
     }
 
     init();
