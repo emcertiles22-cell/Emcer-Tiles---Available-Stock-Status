@@ -7,135 +7,136 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #1e293b; }
-        .glass-card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; transition: all 0.2s ease; }
-        .glass-card:hover { transform: translateY(-3px); box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f4f7fa; color: #1e293b; }
+        .glass-card { background: white; border: 1px solid #e2e8f0; border-radius: 20px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        #imgModal { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.95); align-items: center; justify-content: center; cursor: pointer; }
         .loader { border-top-color: #2563eb; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* Image Modal */
-        #imgModal { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; }
-        #modalImg { max-width: 90%; max-height: 85%; border: 4px solid white; border-radius: 12px; }
     </style>
 </head>
 <body>
 
 <div id="imgModal" onclick="this.style.display='none'">
-    <img id="modalImg" src="">
-    <div class="absolute bottom-10 text-white font-bold tracking-widest animate-bounce">CLICK ANYWHERE TO CLOSE</div>
+    <img id="modalImg" src="" class="max-w-[90%] max-h-[85%] border-[6px] border-white rounded-xl shadow-2xl">
+    <div class="absolute bottom-8 text-white font-bold tracking-widest bg-black/50 px-6 py-2 rounded-full">CLOSE PANEL</div>
 </div>
 
 <div class="max-w-7xl mx-auto p-4 md:p-8">
-    <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-        <div>
-            <h1 class="text-3xl font-[800] text-slate-900 tracking-tight">EMCER TILES PRIVATE LIMITED</h1>
-            <div class="flex items-center gap-2 mt-1">
-                <span id="indicator" class="h-2.5 w-2.5 rounded-full bg-orange-500 animate-pulse"></span>
-                <span id="status" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Initialising...</span>
+    <header class="flex flex-col lg:flex-row justify-between items-center mb-8 gap-6 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+        <div class="text-center lg:text-left">
+            <h1 class="text-3xl font-[900] text-slate-900 tracking-tight leading-none">EMCER TILES PVT LTD</h1>
+            <div class="flex items-center justify-center lg:justify-start gap-2 mt-3">
+                <span id="indicator" class="h-3 w-3 rounded-full bg-orange-500 animate-pulse"></span>
+                <span id="status" class="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">Initialising Portal...</span>
             </div>
         </div>
         
-        <div class="flex flex-wrap gap-2">
-            <button onclick="fetchStockData()" class="bg-white border-2 border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2">
-                🔄 REFRESH
-            </button>
-            <button onclick="downloadExcel()" class="bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-emerald-700 shadow-lg shadow-emerald-100 flex items-center gap-2">
-                📊 EXCEL
-            </button>
-            <div class="hidden md:block bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold">
-                <span class="text-[10px] text-slate-400 block uppercase leading-none">Developer</span>
-                YASHDEEP JIVANI
-            </div>
+        <div class="flex flex-wrap justify-center gap-3">
+            <button onclick="fetchAllData()" class="bg-white border-2 border-slate-100 text-slate-700 px-5 py-3 rounded-2xl font-bold hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm">🔄 REFRESH</button>
+            <button onclick="downloadExcel()" class="bg-emerald-600 text-white px-5 py-3 rounded-2xl font-bold hover:bg-emerald-700 shadow-lg shadow-emerald-100 flex items-center gap-2">📊 EXCEL</button>
+            <button onclick="downloadPDF()" class="bg-blue-600 text-white px-5 py-3 rounded-2xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-100 flex items-center gap-2">📥 PDF REPORT</button>
         </div>
     </header>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div class="md:col-span-1 bg-blue-600 rounded-2xl p-5 text-white shadow-xl shadow-blue-100">
-            <p class="text-[10px] font-bold text-blue-100 uppercase tracking-widest">Total Live Stock</p>
-            <h2 id="grandTotal" class="text-3xl font-black">0</h2>
-            <p class="text-[10px] font-bold text-blue-200 uppercase">Boxes Available</p>
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
+        <div class="md:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="relative">
+                <input type="text" id="search" oninput="render()" placeholder="Search Design Name..." class="w-full p-4 rounded-2xl border border-slate-200 outline-none focus:ring-4 ring-blue-500/10 font-bold shadow-sm transition-all">
+                <span class="absolute right-4 top-4.5 opacity-20 text-xl">🔍</span>
+            </div>
+            <select id="brandFilter" onchange="render()" class="bg-white border border-slate-200 rounded-2xl p-4 font-bold outline-none cursor-pointer hover:border-blue-400 transition-all"></select>
+            <select id="sizeFilter" onchange="render()" class="bg-white border border-slate-200 rounded-2xl p-4 font-bold outline-none cursor-pointer hover:border-blue-400 transition-all"></select>
         </div>
         
-        <div class="md:col-span-3 glass-card p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="relative">
-                <input type="text" id="searchInput" oninput="filterAndDisplay()" placeholder="Search Design Name..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 pl-10 text-sm font-semibold outline-none focus:ring-2 ring-blue-500">
-                <span class="absolute left-3.5 top-4 opacity-30">🔍</span>
+        <div class="md:col-span-4 bg-slate-900 rounded-2xl p-4 flex justify-between items-center text-white shadow-2xl">
+            <div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Available</p>
+                <h2 id="grandTotal" class="text-3xl font-black">0</h2>
             </div>
-            <select id="brandFilter" onchange="filterAndDisplay()" class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-semibold outline-none"></select>
-            <select id="sizeFilter" onchange="filterAndDisplay()" class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-semibold outline-none"></select>
+            <div class="text-right">
+                <span class="text-blue-400 font-black text-xs uppercase">Boxes</span>
+            </div>
         </div>
     </div>
 
-    <div id="loaderUI" class="flex flex-col items-center justify-center py-24">
-        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
-        <p class="text-slate-400 font-bold animate-pulse uppercase tracking-tighter">Connecting to Google Sheet...</p>
+    <div id="loaderUI" class="flex flex-col items-center justify-center py-32">
+        <div class="loader ease-linear rounded-full border-4 border-t-4 border-slate-200 h-14 w-14 mb-4"></div>
+        <p class="text-slate-400 font-extrabold uppercase tracking-widest text-sm animate-pulse">Syncing with GitHub & Google...</p>
     </div>
 
-    <div id="stockContainer" class="grid grid-cols-1 gap-4 hidden"></div>
+    <div id="stockContainer" class="grid grid-cols-1 gap-6 hidden"></div>
 </div>
 
 <script>
-    // 🚨 TAMARI WEB APP URL AHIYA MUKO
+    // 🚨 UPDATE THESE URLS
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnzgi_K-xT08WBT6_F2eeUSrdHfI18qcihJozbCUIBvWJ6RFSEZ0BtnRTKyd9hG-U53A/exec";
+    const DESIGN_JSON_URL = "https://raw.githubusercontent.com/emcertiles22-cell/Emcer-Tiles---Available-Stock-Status/main/design.json";
 
-    let rawData = [];
+    let masterData = [], designMap = {};
 
-    async function fetchStockData() {
+    async function fetchAllData() {
         const status = document.getElementById('status');
         const indicator = document.getElementById('indicator');
         
-        status.innerText = "Syncing...";
         try {
-            const response = await fetch(APPS_SCRIPT_URL);
-            rawData = await response.json();
+            // 1. Fetch Designs from GitHub JSON
+            const designRes = await fetch(DESIGN_JSON_URL);
+            const designData = await designRes.json();
+            // Convert array to map for easy access
+            designMap = {};
+            designData.forEach(d => {
+                if(d.name) designMap[d.name.toLowerCase().trim()] = d.url || d.jpg || d.image;
+            });
+
+            // 2. Fetch Stock from Google App Script
+            const stockRes = await fetch(APPS_SCRIPT_URL);
+            masterData = await stockRes.json();
             
-            // UI Update
-            status.innerText = "Live Sync Active";
-            status.className = "text-xs font-bold text-green-600 uppercase tracking-widest";
-            indicator.className = "h-2.5 w-2.5 rounded-full bg-green-500";
+            status.innerText = "● LIVE SYSTEM ACTIVE";
+            status.className = "text-xs font-black text-green-600 uppercase tracking-[0.2em]";
+            indicator.className = "h-3 w-3 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]";
             
             document.getElementById('loaderUI').classList.add('hidden');
             document.getElementById('stockContainer').classList.remove('hidden');
             
             setupFilters();
-            filterAndDisplay();
+            render();
         } catch (err) {
-            status.innerText = "Connection Error";
-            status.className = "text-xs font-bold text-red-500 uppercase tracking-widest";
-            indicator.className = "h-2.5 w-2.5 rounded-full bg-red-500";
-            alert("Error fetching data. Check Web App URL and Permissions.");
+            status.innerText = "Connection Failed";
+            status.className = "text-xs font-black text-red-600 uppercase tracking-[0.2em]";
+            indicator.className = "h-3 w-3 rounded-full bg-red-500";
         }
     }
 
     function setupFilters() {
         const brands = new Set(), sizes = new Set();
-        rawData.forEach(item => {
+        masterData.forEach(item => {
             if(item.Brand) brands.add(item.Brand);
             if(item.Size) sizes.add(item.Size);
         });
-
-        const populate = (id, set, label) => {
-            const el = document.getElementById(id);
-            el.innerHTML = `<option value="">All ${label}</option>` + 
+        const fill = (id, set, label) => {
+            document.getElementById(id).innerHTML = `<option value="">All ${label}</option>` + 
                 [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
         };
-        populate('brandFilter', brands, 'Brands');
-        populate('sizeFilter', sizes, 'Sizes');
+        fill('brandFilter', brands, 'Brands');
+        fill('sizeFilter', sizes, 'Sizes');
     }
 
-    function filterAndDisplay() {
-        const search = document.getElementById('searchInput').value.toLowerCase();
+    function render() {
+        const search = document.getElementById('search').value.toLowerCase();
         const brand = document.getElementById('brandFilter').value;
         const size = document.getElementById('sizeFilter').value;
         const container = document.getElementById('stockContainer');
-        
         const groups = {};
-        let grandTotal = 0;
+        let totalSum = 0;
 
-        rawData.forEach(item => {
+        masterData.forEach(item => {
             const name = String(item["Item Description"] || "").trim();
             const b = String(item.Brand || "").trim();
             const s = String(item.Size || "").trim();
@@ -144,59 +145,76 @@
 
             if (name.toLowerCase().includes(search) && (!brand || b === brand) && (!size || s === size)) {
                 const key = `${name}|${b}|${s}`.toLowerCase();
-                if (!groups[key]) {
-                    groups[key] = { name, brand: b, size: s, lots: [], total: 0 };
-                }
+                if (!groups[key]) groups[key] = { name, brand: b, size: s, lots: [], total: 0 };
                 groups[key].lots.push({ lot, qty });
                 groups[key].total += qty;
-                grandTotal += qty;
+                totalSum += qty;
             }
         });
 
-        document.getElementById('grandTotal').innerText = Math.round(grandTotal).toLocaleString();
+        document.getElementById('grandTotal').innerText = Math.round(totalSum).toLocaleString();
 
-        const items = Object.values(groups);
-        if(items.length === 0) {
-            container.innerHTML = `<div class="text-center py-20 font-bold text-slate-400">NO STOCK MATCHES YOUR FILTERS</div>`;
-            return;
-        }
-
-        container.innerHTML = items.map(item => `
-            <div class="glass-card p-5 flex flex-col md:flex-row items-center gap-6">
-                <div class="w-full md:flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="text-[10px] font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase">${item.brand}</span>
-                        <span class="text-[10px] font-extrabold text-slate-400 bg-slate-50 px-2 py-0.5 rounded uppercase">${item.size}</span>
+        container.innerHTML = Object.values(groups).map(item => {
+            const img = designMap[item.name.toLowerCase().trim()] || 'https://via.placeholder.com/200?text=No+Preview';
+            return `
+            <div class="glass-card flex flex-col md:flex-row overflow-hidden">
+                <div class="md:w-44 bg-white p-4 flex items-center justify-center border-r border-slate-50 cursor-zoom-in" onclick="zoom('${img}')">
+                    <img src="${img}" class="max-h-32 rounded-xl object-contain shadow-sm hover:scale-105 transition-transform" onerror="this.src='https://via.placeholder.com/200?text=Image+Error'">
+                </div>
+                <div class="flex-1 p-6">
+                    <div class="flex flex-wrap items-center gap-2 mb-2">
+                        <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">${item.brand}</span>
+                        <span class="text-[10px] font-black text-slate-500 bg-slate-100 px-3 py-1 rounded-full uppercase">${item.size}</span>
                     </div>
-                    <h3 class="text-xl font-bold text-slate-800 uppercase tracking-tight">${item.name}</h3>
-                    
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+                    <h3 class="text-xl font-extrabold text-slate-900 uppercase mb-4">${item.name}</h3>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
                         ${item.lots.map(l => `
-                            <div class="bg-slate-50 border border-slate-100 p-2 rounded-lg">
-                                <p class="text-[9px] font-bold text-slate-400 uppercase leading-none">Lot No</p>
-                                <p class="text-xs font-extrabold text-slate-700">${l.lot}</p>
-                                <p class="text-[11px] font-bold text-blue-600">${l.qty} Bx</p>
+                            <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Lot Number</p>
+                                <p class="text-sm font-black text-slate-700 leading-tight">${l.lot}</p>
+                                <p class="text-xs font-bold text-blue-600 mt-1">${l.qty} Boxes</p>
                             </div>
                         `).join('')}
                     </div>
                 </div>
-                <div class="w-full md:w-36 bg-slate-900 rounded-2xl p-4 text-center shadow-lg shadow-slate-200">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Stock</p>
-                    <p class="text-3xl font-black text-white">${Math.round(item.total)}</p>
-                    <p class="text-[10px] font-bold text-blue-400 uppercase">Boxes</p>
+                <div class="md:w-40 bg-slate-50/50 flex flex-col items-center justify-center p-6 border-l border-slate-50">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Stock</p>
+                    <p class="text-4xl font-[1000] text-slate-900">${Math.round(item.total)}</p>
+                    <p class="text-[10px] font-black text-blue-600 uppercase mt-1">Available</p>
                 </div>
-            </div>
-        `).join('');
+            </div>`;
+        }).join('');
+    }
+
+    function zoom(url) {
+        document.getElementById('modalImg').src = url;
+        document.getElementById('imgModal').style.display = 'flex';
     }
 
     function downloadExcel() {
-        const ws = XLSX.utils.json_to_sheet(rawData);
+        const ws = XLSX.utils.json_to_sheet(masterData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Inventory");
-        XLSX.writeFile(wb, `Emcer_Stock_Report.xlsx`);
+        XLSX.writeFile(wb, "Emcer_LiveStock_Status.xlsx");
     }
 
-    window.onload = fetchStockData;
+    async function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const content = document.getElementById('stockContainer');
+        
+        await html2canvas(content, { scale: 2, useCORS: true }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const w = 190;
+            const h = (canvas.height * w) / canvas.width;
+            doc.setFontSize(18);
+            doc.text("EMCER TILES PVT LTD - STOCK STATUS", 10, 15);
+            doc.addImage(imgData, 'PNG', 10, 25, w, h);
+            doc.save("Emcer_Live_Report.pdf");
+        });
+    }
+
+    window.onload = fetchAllData;
 </script>
 </body>
 </html>
