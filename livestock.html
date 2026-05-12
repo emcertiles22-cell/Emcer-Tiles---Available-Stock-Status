@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emcer Elite | Yashdeep Jivani v3.0</title>
+    <title>Emcer Elite | Yashdeep Jivani</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -12,70 +12,102 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
 
     <style>
-        :root { --gold: #b39359; --slate: #0f172a; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f4f7f9; color: #1a1a1a; }
-        
-        .stat-card {
-            background: white; border-radius: 12px; padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-bottom: 4px solid #000;
-            transition: 0.3s;
-        }
-        .stat-card:hover { transform: translateY(-5px); border-bottom-color: var(--gold); }
-
-        @keyframes sparkle {
-            0%, 100% { opacity: 1; text-shadow: 0 0 10px #fff, 0 0 15px var(--gold); }
-            50% { opacity: 0.5; text-shadow: none; }
-        }
-        .dev-badge {
-            background: var(--slate); color: white; padding: 6px 15px;
-            border-radius: 50px; font-weight: 800; font-size: 11px;
-            animation: sparkle 1.5s infinite; border: 1px solid var(--gold);
+        :root { --gold: #b39359; --dark: #0f172a; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #f0f2f5; 
+            background-image: radial-gradient(#d1d5db 0.5px, transparent 0.5px);
+            background-size: 24px 24px;
         }
 
-        .tile-card {
-            background: white; border-radius: 20px; overflow: hidden;
-            display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-            border: 1px solid rgba(0,0,0,0.05);
+        /* Developer Sparkle */
+        @keyframes shine { 0% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 15px var(--gold); } 100% { opacity: 0.7; transform: scale(1); } }
+        .yashdeep-tag {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white; border: 1px solid var(--gold);
+            padding: 5px 15px; border-radius: 12px;
+            font-weight: 800; font-size: 12px; animation: shine 2s infinite ease-in-out;
         }
-        .tile-img { height: 250px; width: 100%; object-fit: cover; }
+
+        /* Luxury Card Styling */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .glass-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(179, 147, 89, 0.15);
+            border-color: var(--gold);
+        }
+
+        .stat-box {
+            background: white; border-radius: 20px; padding: 20px;
+            border-left: 5px solid var(--dark);
+        }
+
+        /* Image Mask */
+        .tile-mask {
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 md:p-10">
 
 <div class="max-w-7xl mx-auto">
-    <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-white p-6 rounded-2xl shadow-sm">
-        <div>
-            <h1 style="font-family: 'Cinzel', serif;" class="text-3xl font-bold tracking-tight text-slate-900">EMCER TILES PVT LTD</h1>
-            <p class="text-[10px] font-bold text-blue-600 mt-1 uppercase tracking-widest" id="lastUpdated">FETCHING LIVE DATA...</p>
+    <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+        <div class="text-center md:text-left">
+            <h1 style="font-family: 'Cinzel', serif;" class="text-4xl font-bold tracking-tight text-slate-900">EMCER TILES</h1>
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-[0.4em] mt-1">Live Stock Management</p>
         </div>
-        <div class="flex items-center gap-4">
-            <div class="text-right hidden md:block">
-                <p class="text-[9px] font-bold text-gray-400 uppercase">System Developer</p>
-                <div class="dev-badge">✨ YASHDEEP JIVANI ✨</div>
-            </div>
-            <button onclick="location.reload()" class="bg-black text-white p-3 rounded-full hover:rotate-180 transition-all duration-500">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-            </button>
+        <div class="flex flex-col items-center md:items-end">
+            <span class="text-[9px] font-black text-slate-400 uppercase mb-1">Architect & Developer</span>
+            <div class="yashdeep-tag">✨ YASHDEEP JIVANI ✨</div>
         </div>
     </header>
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div class="stat-card"><p class="text-[10px] font-bold text-gray-400 uppercase">Total Designs</p><h2 id="stat-total" class="text-2xl font-black">0</h2></div>
-        <div class="stat-card"><p class="text-[10px] font-bold text-gray-400 uppercase">Available Boxes</p><h2 id="stat-boxes" class="text-2xl font-black">0</h2></div>
-        <div class="stat-card"><p class="text-[10px] font-bold text-gray-400 uppercase">Active Brands</p><h2 id="stat-brands" class="text-2xl font-black">0</h2></div>
-        <div class="stat-card"><p class="text-[10px] font-bold text-gray-400 uppercase">Filtered Items</p><h2 id="stat-filtered" class="text-2xl font-black text-blue-600">0</h2></div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+        <div class="stat-box">
+            <p class="text-[10px] font-bold text-gray-400 uppercase">Total Designs</p>
+            <h2 id="stat-total" class="text-2xl font-black">0</h2>
+        </div>
+        <div class="stat-box" style="border-left-color: #b39359;">
+            <p class="text-[10px] font-bold text-gray-400 uppercase">Available Boxes</p>
+            <h2 id="stat-boxes" class="text-2xl font-black">0</h2>
+        </div>
+        <div class="stat-box">
+            <p class="text-[10px] font-bold text-gray-400 uppercase">Active Brands</p>
+            <h2 id="stat-brands" class="text-2xl font-black">0</h2>
+        </div>
+        <div class="stat-box" style="border-left-color: #3b82f6;">
+            <p class="text-[10px] font-bold text-gray-400 uppercase">Filtered Result</p>
+            <h2 id="stat-filtered" class="text-2xl font-black text-blue-600">0</h2>
+        </div>
     </div>
 
-    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-8 flex flex-wrap gap-4">
-        <input type="text" id="search" oninput="render()" placeholder="Search Design..." class="flex-grow p-3 bg-gray-50 rounded-xl outline-none border focus:border-blue-500">
-        <select id="brandFilter" onchange="render()" class="p-3 bg-gray-50 rounded-xl outline-none border min-w-[150px] font-bold text-sm"></select>
-        <select id="sizeFilter" onchange="render()" class="p-3 bg-gray-50 rounded-xl outline-none border min-w-[150px] font-bold text-sm"></select>
-        <select id="gradeFilter" onchange="render()" class="p-3 bg-gray-50 rounded-xl outline-none border min-w-[150px] font-bold text-sm"></select>
-        <button onclick="generatePDFWithImages()" class="bg-red-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-red-600 transition-all">PDF (JPG)</button>
-        <button onclick="downloadExcel()" class="bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-600 transition-all">EXCEL</button>
+    <div class="glass-card p-6 mb-10 grid grid-cols-1 md:grid-cols-5 gap-4">
+        <input type="text" id="search" oninput="render()" placeholder="🔍 Search Tile Name..." class="md:col-span-2 p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-[#b39359] border-none font-medium">
+        <select id="brandFilter" onchange="render()" class="p-4 bg-gray-50 rounded-2xl outline-none font-bold text-sm"></select>
+        <select id="sizeFilter" onchange="render()" class="p-4 bg-gray-50 rounded-2xl outline-none font-bold text-sm"></select>
+        <select id="gradeFilter" onchange="render()" class="p-4 bg-gray-50 rounded-2xl outline-none font-bold text-sm"></select>
     </div>
 
-    <div id="stockContainer" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+    <div class="flex justify-end gap-3 mb-6">
+        <button onclick="generatePDF()" class="bg-red-500 hover:bg-black text-white px-6 py-3 rounded-2xl font-bold transition-all shadow-lg">📥 PDF (WITH IMAGES)</button>
+        <button onclick="downloadExcel()" class="bg-green-600 hover:bg-black text-white px-6 py-3 rounded-2xl font-bold transition-all shadow-lg text-sm">📊 EXCEL REPORT</button>
+        <button onclick="location.reload()" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-200">🔄</button>
+    </div>
+
+    <div id="stockContainer" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="col-span-full py-20 text-center opacity-30">
+            <p class="animate-pulse font-black tracking-widest">CONNECTING TO LIVE SERVER...</p>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -85,7 +117,6 @@
     let masterData = [], designMap = {}, currentFilteredData = [];
 
     async function init() {
-        document.getElementById('lastUpdated').innerText = "LIVE SYNC: " + new Date().toLocaleTimeString();
         try {
             const [dRes, sRes] = await Promise.all([fetch(DESIGN_JSON_URL), fetch(APPS_SCRIPT_URL)]);
             const dData = await dRes.json();
@@ -93,7 +124,7 @@
             masterData = await sRes.json();
             setupFilters();
             render();
-        } catch (e) { alert("Connection Error!"); }
+        } catch (e) { alert("Data Sync Failed!"); }
     }
 
     function setupFilters() {
@@ -104,8 +135,7 @@
         };
         fill('brandFilter', 'Brand', 'Brands');
         fill('sizeFilter', 'Size', 'Sizes');
-        // Variant mapping as requested
-        fill('gradeFilter', 'Variant', 'Grades'); 
+        fill('gradeFilter', 'Variant', 'Grades'); // "Variant" column map to Grade
     }
 
     function render() {
@@ -121,7 +151,6 @@
             (!g || i.Variant === g)
         );
 
-        // Grouping for UI
         const groups = {};
         let totalBoxes = 0;
         const brands = new Set();
@@ -141,84 +170,68 @@
         document.getElementById('stat-filtered').innerText = currentFilteredData.length;
 
         document.getElementById('stockContainer').innerHTML = Object.values(groups).map(item => {
-            const img = designMap[item["Item Description"].toLowerCase().trim()] || 'https://via.placeholder.com/400x300?text=No+Image';
+            const img = designMap[item["Item Description"].toLowerCase().trim()] || 'https://via.placeholder.com/600x400?text=IMAGE+PENDING';
             return `
-            <div class="tile-card">
-                <img src="${img}" class="tile-img" onerror="this.src='https://via.placeholder.com/400?text=Loading...'">
-                <div class="p-5 flex flex-col flex-grow">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="text-[9px] font-black text-blue-500 uppercase bg-blue-50 px-2 py-1 rounded">${item.Brand}</span>
-                        <span class="text-[9px] font-bold text-gray-400">${item.Size}</span>
-                    </div>
-                    <h3 class="text-md font-extrabold uppercase mb-4 leading-tight">${item["Item Description"]}</h3>
-                    <div class="flex-grow space-y-2 mb-4">
-                        ${item.lots.map(l => `
-                            <div class="flex justify-between text-[11px] border-b border-gray-50 pb-1">
-                                <span class="text-gray-400 font-semibold">LOT ${l.lot}</span>
-                                <span class="font-bold">${l.qty} BX</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div class="pt-3 border-t flex justify-between items-end">
-                        <div>
-                            <p class="text-[8px] font-bold text-gray-400 uppercase">Stock</p>
-                            <p class="text-xl font-black">${Math.round(item.total)}</p>
+            <div class="glass-card p-4 flex flex-col md:flex-row gap-6">
+                <div class="md:w-1/2 tile-mask">
+                    <img src="${img}" class="h-full w-full object-cover min-h-[220px]">
+                </div>
+                <div class="md:w-1/2 flex flex-col justify-between py-2">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] font-black text-[#b39359] uppercase">${item.Brand}</span>
+                            <span class="text-[10px] font-bold text-gray-400">${item.Size}</span>
                         </div>
-                        <span class="text-[9px] font-bold text-gray-300 uppercase">${item.Variant || 'Std'}</span>
+                        <h3 class="text-xl font-extrabold uppercase mb-4 text-slate-800 leading-tight">${item["Item Description"]}</h3>
+                        
+                        <div class="space-y-2 mb-4">
+                            ${item.lots.map(l => `
+                                <div class="flex justify-between items-center bg-white/50 px-3 py-1.5 rounded-xl border border-gray-100">
+                                    <span class="text-[11px] font-bold text-gray-400">LOT: ${l.lot}</span>
+                                    <span class="text-sm font-black text-slate-700">${l.qty} BX</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-end border-t border-dashed border-gray-200 pt-4">
+                        <div>
+                            <p class="text-[9px] font-bold text-gray-300 uppercase">Available</p>
+                            <p class="text-3xl font-black text-slate-900">${Math.round(item.total)}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[9px] font-bold text-gray-300 uppercase">Grade</p>
+                            <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-[10px] font-black italic">${item.Variant || 'STANDARD'}</span>
+                        </div>
                     </div>
                 </div>
             </div>`;
         }).join('');
     }
 
-    // PDF image helper
-    const getBase64ImageFromURL = url => {
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.setAttribute("crossOrigin", "anonymous");
-            img.onload = () => {
-                const canvas = document.createElement("canvas");
-                canvas.width = img.width; canvas.height = img.height;
-                const ctx = canvas.getContext("2d");
-                ctx.drawImage(img, 0, 0);
-                resolve(canvas.toDataURL("image/jpeg"));
-            };
-            img.onerror = error => reject(error);
-            img.src = url;
-        });
-    };
-
-    async function generatePDFWithImages() {
+    async function generatePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        
         doc.setFontSize(20);
         doc.text("EMCER TILES PVT LTD", 14, 15);
         doc.setFontSize(10);
-        doc.text(`Developed By: Yashdeep Jivani | Filtered Results: ${currentFilteredData.length}`, 14, 22);
+        doc.text(`Developed By: Yashdeep Jivani | Filtered Designs: ${currentFilteredData.length}`, 14, 22);
 
-        const tableData = [];
-        // Limit to 40 for fast generation or loop all
-        for (let i = 0; i < Math.min(currentFilteredData.length, 50); i++) {
-            const item = currentFilteredData[i];
-            tableData.push([item.Brand, item["Item Description"], item.Size, item["Lot No"], item.Total, item.Variant]);
-        }
-
+        const rows = currentFilteredData.slice(0, 50).map(i => [i.Brand, i["Item Description"], i.Size, i["Lot No"], i.Total, i.Variant]);
         doc.autoTable({
-            startY: 30,
-            head: [['Brand', 'Design Name', 'Size', 'Lot', 'Qty', 'Variant']],
-            body: tableData,
-            theme: 'grid',
-            headStyles: { fillColor: [15, 23, 42] }
+            startY: 28,
+            head: [['Brand', 'Design Name', 'Size', 'Lot', 'Boxes', 'Grade']],
+            body: rows,
+            headStyles: { fillColor: [15, 23, 42] },
+            theme: 'striped'
         });
-
-        doc.save("Emcer_Stock_Report.pdf");
+        doc.save("Emcer_Live_Report.pdf");
     }
 
     function downloadExcel() {
         const ws = XLSX.utils.json_to_sheet(currentFilteredData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "StockData");
+        XLSX.utils.book_append_sheet(wb, ws, "Stock");
         XLSX.writeFile(wb, "Emcer_Live_Stock.xlsx");
     }
 
