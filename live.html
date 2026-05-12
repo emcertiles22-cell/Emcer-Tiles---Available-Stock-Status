@@ -6,64 +6,57 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .pdf-container { width: 210mm; margin: auto; padding: 15mm; background: white; min-height: 297mm; }
-        
-        /* Premium Card Style */
+        body { font-family: 'Inter', sans-serif; background: #f3f4f6; }
+        .pdf-page { width: 210mm; padding: 15mm; margin: auto; background: white; }
         .stock-card { 
-            display: flex; border: 1px solid #e2e8f0; margin-bottom: 12px; 
-            min-height: 160px; break-inside: avoid; border-radius: 8px; overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            display: flex; border: 1.5px solid #000; margin-bottom: 15px; 
+            min-height: 170px; break-inside: avoid; background: white;
+            box-shadow: 5px 5px 0px #e2e8f0;
         }
-        .card-img { width: 22%; background: #fefefe; display: flex; align-items: center; justify-content: center; padding: 10px; border-right: 1px solid #f1f5f9; }
-        .card-info { width: 58%; padding: 16px; display: flex; flex-direction: column; justify-content: center; }
-        .card-qty { width: 20%; background: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; border-left: 1px solid #f1f5f9; }
-        
-        .badge { font-size: 8px; font-weight: 800; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
-        .badge-blue { background: #eff6ff; color: #2563eb; }
-        
-        #pdfHeader { border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 25px; }
+        .card-img { width: 25%; border-right: 1.5px solid #000; display: flex; align-items: center; justify-content: center; padding: 10px; }
+        .card-info { width: 55%; padding: 15px; position: relative; }
+        .card-qty { width: 20%; border-left: 1.5px solid #000; background: #fafafa; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .no-print { display: block; }
     </style>
 </head>
 <body>
 
-<div class="max-w-5xl mx-auto p-6 no-print">
-    <div class="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border mb-6">
+<div class="max-w-6xl mx-auto p-6 no-print">
+    <div class="flex justify-between items-center bg-white border-2 border-black p-6 mb-6 shadow-[8px_8px_0px_rgba(0,0,0,1)]">
         <div>
-            <h1 class="text-2xl font-extrabold tracking-tight">EMCER TILES PRIVATE LIMITED</h1>
-            <p class="text-sm font-semibold text-slate-400">Inventory Management Portal</p>
+            <h1 class="text-3xl font-extrabold uppercase tracking-tighter">Emcer Tiles Private Limited</h1>
+            <p id="status" class="text-xs font-bold text-orange-500">⏳ LOADING DATA...</p>
         </div>
-        <button onclick="generatePremiumPDF()" class="bg-black text-white px-8 py-3 rounded-lg font-bold hover:bg-slate-800 transition shadow-lg">📥 EXPORT PREMIUM PDF</button>
+        <button onclick="generateUltraPDF()" class="bg-black text-white px-10 py-4 font-black hover:scale-105 transition-transform shadow-lg">EXPORT PREMIUM PDF</button>
     </div>
 
-    <div class="grid grid-cols-4 gap-4 mb-8">
-        <input type="text" id="sN" oninput="applyFilters()" placeholder="Search Design..." class="border rounded-lg p-3 text-sm font-medium focus:ring-2 ring-blue-500 outline-none">
-        <select id="fB" onchange="applyFilters()" class="border rounded-lg p-3 text-sm font-medium outline-none"></select>
-        <select id="fS" onchange="applyFilters()" class="border rounded-lg p-3 text-sm font-medium outline-none"></select>
-        <select id="fG" onchange="applyFilters()" class="border rounded-lg p-3 text-sm font-medium outline-none"></select>
+    <div class="grid grid-cols-4 gap-4 mb-8 bg-white p-4 border-2 border-black">
+        <input type="text" id="sN" oninput="applyFilters()" placeholder="SEARCH DESIGN..." class="border-2 border-black p-3 font-bold uppercase outline-none">
+        <select id="fB" onchange="applyFilters()" class="border-2 border-black p-3 font-bold outline-none"></select>
+        <select id="fS" onchange="applyFilters()" class="border-2 border-black p-3 font-bold outline-none"></select>
+        <select id="fG" onchange="applyFilters()" class="border-2 border-black p-3 font-bold outline-none"></select>
     </div>
 </div>
 
-<div id="pdfContent" class="pdf-container">
-    <div id="pdfHeader" class="flex justify-between items-end">
+<div id="pdfContent" class="pdf-page">
+    <div id="pdfHeader" class="flex justify-between items-start border-b-4 border-black pb-4 mb-6">
         <div>
-            <h1 class="text-3xl font-extrabold tracking-tighter">EMCER TILES PRIVATE LIMITED</h1>
-            <p class="text-[10px] font-bold text-blue-600 tracking-widest mt-1 uppercase">Live Inventory Stock Report</p>
+            <h1 class="text-4xl font-[900] uppercase leading-none">Emcer Tiles</h1>
+            <p class="text-[10px] font-bold text-blue-600 tracking-widest mt-2 uppercase">Official Stock Status Report</p>
         </div>
         <div class="text-right">
             <p class="text-[10px] font-bold text-slate-400 uppercase">System Developer</p>
-            <p class="text-xs font-extrabold text-black uppercase">Yashdeep Jivani</p>
+            <p class="text-sm font-black text-black">Yashdeep Jivani</p>
         </div>
     </div>
 
-    <div id="statsBox" class="grid grid-cols-4 gap-4 mb-8">
-        <div class="border-l-4 border-black pl-4 py-2 bg-slate-50"><p class="text-[9px] font-bold text-slate-400 uppercase">Designs</p><p id="st-d" class="text-xl font-black">0</p></div>
-        <div class="border-l-4 border-black pl-4 py-2 bg-slate-50"><p class="text-[9px] font-bold text-slate-400 uppercase">Total Boxes</p><p id="st-b" class="text-xl font-black">0</p></div>
-        <div class="border-l-4 border-black pl-4 py-2 bg-slate-50"><p class="text-[9px] font-bold text-slate-400 uppercase">Active Brands</p><p id="st-br" class="text-xl font-black">0</p></div>
-        <div class="border-l-4 border-black pl-4 py-2 bg-slate-50"><p class="text-[9px] font-bold text-slate-400 uppercase">Filtered</p><p id="st-f" class="text-xl font-black">0</p></div>
+    <div id="statsBox" class="grid grid-cols-4 gap-4 mb-10">
+        <div class="border-2 border-black p-4 text-center"><p class="text-[9px] font-bold uppercase text-slate-400">Designs</p><p id="st-d" class="text-2xl font-black">0</p></div>
+        <div class="border-2 border-black p-4 text-center"><p class="text-[9px] font-bold uppercase text-slate-400">Total Boxes</p><p id="st-b" class="text-2xl font-black">0</p></div>
+        <div class="border-2 border-black p-4 text-center"><p class="text-[9px] font-bold uppercase text-slate-400">Brands</p><p id="st-br" class="text-2xl font-black">0</p></div>
+        <div class="border-2 border-black p-4 text-center bg-black text-white"><p class="text-[9px] font-bold uppercase text-slate-300">Results</p><p id="st-f" class="text-2xl font-black">0</p></div>
     </div>
 
     <div id="reportList" class="space-y-4"></div>
@@ -72,20 +65,28 @@
 <script>
     let masterData = [], designMap = {};
 
+    // Fix for CORS and Data Loading
     async function init() {
-        const [resI, resS] = await Promise.all([
-            fetch('design.json?v=' + Date.now()),
-            fetch('stock.json?v=' + Date.now())
-        ]);
-        if (resI.ok) (await resI.json()).forEach(d => designMap[d.name?.toLowerCase().trim()] = d.url);
-        masterData = await resS.json();
-        setupFilters(); applyFilters();
+        try {
+            const [resI, resS] = await Promise.all([
+                fetch('design.json?t=' + Date.now()).then(r => r.json()),
+                fetch('stock.json?t=' + Date.now()).then(r => r.json())
+            ]);
+            resI.forEach(d => designMap[d.name?.toLowerCase().trim()] = d.url);
+            masterData = resS;
+            document.getElementById('status').innerText = "✅ LIVE SYNC ACTIVE";
+            document.getElementById('status').className = "text-xs font-bold text-green-600";
+            setupFilters(); applyFilters();
+        } catch (e) {
+            document.getElementById('status').innerText = "❌ SYNC ERROR: CHECK DATA FILES";
+            console.error(e);
+        }
     }
 
     function setupFilters() {
         const b = new Set(), s = new Set(), g = new Set();
-        masterData.forEach(i => { b.add(i.Brand); s.add(i.Size); g.add(i.Variant); });
-        const fill = (id, set) => document.getElementById(id).innerHTML = `<option value="">All ${id.slice(1)}</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
+        masterData.forEach(i => { if(i.Brand) b.add(i.Brand); if(i.Size) s.add(i.Size); if(i.Variant) g.add(i.Variant); });
+        const fill = (id, set) => document.getElementById(id).innerHTML = `<option value="">ALL ${id.slice(1)}</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
         fill('fB', b); fill('fS', s); fill('fG', g);
     }
 
@@ -95,11 +96,11 @@
         const groups = {}; let tB = 0, uB = new Set();
 
         masterData.forEach(item => {
-            const name = (item["Item Description"] || "").trim(), brand = (item.Brand || "").trim(), varnt = (item.Variant || "").trim(), size = (item.Size || "").trim(), qty = parseFloat(item.Total || 0);
+            const name = (item["Item Description"] || "").trim(), brand = (item.Brand || "").trim(), varnt = (item.Variant || "").trim(), size = (item.Size || "").trim(), qty = parseFloat(item.Total || item["Net Qty"] || 0);
             if (name.toLowerCase().includes(nV) && (!bV || brand===bV) && (!sV || size===sV) && (!gV || varnt===gV)) {
                 const k = `${name}|${brand}|${size}|${varnt}`.toLowerCase();
                 if (!groups[k]) groups[k] = { name, brand, size, varnt, lots: [], total: 0 };
-                groups[k].lots.push({ lot: item["Lot No"], qty });
+                groups[k].lots.push({ lot: item["Lot No"] || item["Lot no."], qty });
                 groups[k].total += qty; tB += qty; uB.add(brand);
             }
         });
@@ -114,67 +115,66 @@
 
     function render(items) {
         document.getElementById('reportList').innerHTML = items.map(item => {
-            const img = designMap[item.name.toLowerCase().trim()] || 'https://via.placeholder.com/200?text=No+Design';
+            const img = designMap[item.name.toLowerCase().trim()] || 'https://via.placeholder.com/300?text=NO+IMAGE';
             return `
             <div class="stock-card">
-                <div class="card-img"><img src="${img}" crossorigin="anonymous" class="max-h-32 rounded"></div>
+                <div class="card-img"><img src="${img}" crossorigin="anonymous" class="max-h-32"></div>
                 <div class="card-info">
-                    <div class="flex gap-2 mb-1"><span class="badge badge-blue">${item.brand}</span><span class="badge bg-slate-100">${item.varnt}</span></div>
-                    <h3 class="text-lg font-extrabold text-slate-900 uppercase leading-tight">${item.name}</h3>
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-[9px] font-black bg-black text-white px-2 py-0.5">${item.brand}</span>
+                        <span class="text-[9px] font-bold text-blue-600 uppercase">${item.varnt}</span>
+                    </div>
+                    <h3 class="text-xl font-black uppercase leading-tight">${item.name}</h3>
                     <p class="text-[10px] font-bold text-slate-400 mb-3">${item.size}</p>
-                    <div class="grid grid-cols-2 gap-x-4 gap-y-1">
-                        ${item.lots.map(l => `<div class="flex justify-between border-b border-slate-50 text-[10px] py-1 font-semibold"><span>LOT: ${l.lot}</span><span class="text-blue-600">${l.qty} Bx</span></div>`).join('')}
+                    <div class="space-y-1">
+                        ${item.lots.map(l => `<div class="flex justify-between border-b border-dotted border-slate-300 text-[10px] font-bold"><span>LOT: ${l.lot}</span><span>${l.qty} Bx</span></div>`).join('')}
                     </div>
                 </div>
                 <div class="card-qty">
-                    <p class="text-2xl font-black text-black">${item.total}</p>
-                    <p class="text-[8px] font-extrabold text-slate-400 uppercase tracking-tighter">Total Boxes</p>
+                    <p class="text-3xl font-[900]">${item.total}</p>
+                    <p class="text-[8px] font-bold uppercase text-slate-400 tracking-tighter">Boxes</p>
                 </div>
             </div>`;
         }).join('');
     }
 
-    async function generatePremiumPDF() {
+    async function generateUltraPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('p', 'mm', 'a4');
-        const content = document.getElementById('reportList').children;
-        const headerTpl = document.getElementById('pdfHeader').outerHTML;
-        const statsTpl = document.getElementById('statsBox').outerHTML;
+        const list = document.getElementById('reportList').children;
+        const header = document.getElementById('pdfHeader').outerHTML;
+        const stats = document.getElementById('statsBox').outerHTML;
         
-        let yPos = 15;
-        const pageH = 285;
-
         const temp = document.createElement('div');
-        temp.style.width = '190mm'; temp.style.padding = '10px'; temp.style.background = 'white';
+        temp.className = 'pdf-page';
         document.body.appendChild(temp);
 
-        const addHeader = async (isFirst) => {
-            temp.innerHTML = headerTpl + (isFirst ? statsTpl : "");
-            const canvas = await html2canvas(temp, { scale: 2 });
-            const img = canvas.toDataURL('image/jpeg', 0.95);
-            const h = (canvas.height * 190) / canvas.width;
-            doc.addImage(img, 'JPEG', 10, 10, 190, h);
-            return h + 15;
+        const renderSection = async (html) => {
+            temp.innerHTML = html;
+            const canvas = await html2canvas(temp, { scale: 2, useCORS: true });
+            return { img: canvas.toDataURL('image/jpeg', 0.95), h: (canvas.height * 180) / canvas.width };
         };
 
-        yPos = await addHeader(true);
+        let y = 15;
+        const firstHeader = await renderSection(header + stats);
+        doc.addImage(firstHeader.img, 'JPEG', 15, y, 180, firstHeader.h);
+        y += firstHeader.h + 10;
 
-        for (let i = 0; i < content.length; i++) {
-            temp.innerHTML = content[i].outerHTML;
-            const canvas = await html2canvas(temp, { scale: 2, useCORS: true });
-            const img = canvas.toDataURL('image/jpeg', 0.95);
-            const h = (canvas.height * 190) / canvas.width;
-
-            if (yPos + h > pageH) {
+        for (let i = 0; i < list.length; i++) {
+            const card = await renderSection(list[i].outerHTML);
+            if (y + card.h > 275) {
                 doc.addPage();
-                yPos = await addHeader(false);
+                y = 15;
+                const head = await renderSection(header);
+                doc.addImage(head.img, 'JPEG', 15, y, 180, head.h);
+                y += head.h + 10;
             }
-            doc.addImage(img, 'JPEG', 10, yPos, 190, h);
-            yPos += h + 4;
+            doc.addImage(card.img, 'JPEG', 15, y, 180, card.h);
+            y += card.h + 5;
         }
 
         document.body.removeChild(temp);
-        doc.save("Emcer_Inventory_Premium.pdf");
+        doc.save("Emcer_Elite_Inventory.pdf");
     }
 
     init();
