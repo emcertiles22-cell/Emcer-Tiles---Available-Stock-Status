@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emcer Elite | Final Drive Fix</title>
+    <title>Emcer Elite | Drive Photo Fix</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
 
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #1e293b; }
-        .yashdeep-premium {
-            background: #1e293b; color: #fbbf24; border: 1.5px solid #fbbf24;
+        .yashdeep-tag {
+            background: #1e293b; color: #fbbf24; border: 1px solid #fbbf24;
             padding: 6px 20px; border-radius: 50px; font-weight: 800; font-size: 12px;
             box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
         }
         .tile-card {
             background: white; border-radius: 24px; overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.05); transition: 0.3s ease-in-out;
+            border: 1px solid rgba(0,0,0,0.05); transition: 0.3s ease;
         }
         .tile-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
     </style>
@@ -27,10 +27,10 @@
 <div class="max-w-7xl mx-auto">
     <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
         <div>
-            <h1 class="text-3xl font-black tracking-tighter text-slate-900 uppercase">EMCER TILES PRIVATE LIMITED</h1>
-            <p class="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest mt-1">Live Inventory Portal</p>
+            <h1 class="text-3xl font-black tracking-tighter text-slate-900">EMCER TILES PRIVATE LIMITED</h1>
+            <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1">Live Inventory & Drive Photos</p>
         </div>
-        <div class="yashdeep-premium">✨ YASHDEEP JIVANI ✨</div>
+        <div class="yashdeep-tag">✨ YASHDEEP JIVANI ✨</div>
     </header>
 
     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-10 flex flex-wrap gap-4 items-end">
@@ -38,11 +38,11 @@
             <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">Search Design</label>
             <input type="text" id="search" oninput="render()" placeholder="Type design name..." class="w-full mt-1 p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-blue-500 border-none font-bold">
         </div>
-        <select id="brandFilter" onchange="render()" class="p-4 bg-gray-50 rounded-2xl font-bold text-sm min-w-[150px]"></select>
+        <select id="brandFilter" onchange="render()" class="p-4 bg-gray-50 rounded-2xl font-bold text-sm min-w-[150px] shadow-sm cursor-pointer"></select>
     </div>
 
-    <div id="stockContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 pb-20">
-        <div class="col-span-full py-20 text-center opacity-30 font-black tracking-widest uppercase">Syncing Drive Photos...</div>
+    <div id="stockContainer" class="grid grid-cols-1 md:grid-cols-2 gap-8 pb-20">
+        <div class="col-span-full py-20 text-center opacity-30 font-black tracking-widest uppercase text-xl">Loading Live Stock...</div>
     </div>
 </div>
 
@@ -51,16 +51,26 @@
 
     let masterData = [];
 
-    // 🚀 FIXED: Drive Image Resolver
-    function getDriveImage(url, designName) {
+    // 🚀 MASTER FIX: Drive Link mathi ID kadhi ne Display Link banavva mate
+    function getDisplayImage(url, designName) {
         if (url && url.includes('drive.google.com')) {
             let fileId = "";
-            if (url.includes('/d/')) fileId = url.split('/d/')[1].split('/')[0];
-            else if (url.includes('id=')) fileId = url.split('id=')[1].split('&')[0];
+            // Case 1: /file/d/ID/view
+            if (url.includes('/d/')) {
+                fileId = url.split('/d/')[1].split('/')[0];
+            } 
+            // Case 2: ?id=ID
+            else if (url.includes('id=')) {
+                fileId = url.split('id=')[1].split('&')[0];
+            }
             
-            return fileId ? `https://drive.google.com/uc?export=view&id=${fileId}` : `https://via.placeholder.com/600x400?text=${designName}`;
+            if (fileId) {
+                // Direct high-quality preview link
+                return `https://drive.google.com/uc?export=view&id=${fileId}`;
+            }
         }
-        return `https://via.placeholder.com/600x400?text=${designName}`;
+        // Fallback: Jo photo na hoy to design name nu placeholder
+        return `https://via.placeholder.com/600x400?text=${encodeURIComponent(designName || 'IMAGE')}`;
     }
 
     async function init() {
@@ -69,7 +79,7 @@
             masterData = await res.json();
             setupFilters();
             render();
-        } catch (e) { console.error("Sync Error"); }
+        } catch (e) { console.error("Data Sync Error"); }
     }
 
     function setupFilters() {
@@ -95,18 +105,19 @@
             groups[nameKey].total += parseFloat(i.Total);
         });
 
-        document.getElementById('stockContainer').innerHTML = Object.values(groups).map(item => {
-            const img = getDriveImage(item.DesignURL, item["Item Description"]);
+        const html = Object.values(groups).map(item => {
+            // Priority image resolver
+            const img = getDisplayImage(item.DesignURL, item["Item Description"]);
 
             return `
             <div class="tile-card flex flex-col md:flex-row p-4 gap-6">
                 <div class="md:w-1/2 rounded-2xl overflow-hidden bg-gray-50 h-[240px]">
-                    <img src="${img}" class="h-full w-full object-cover" onerror="this.src='https://via.placeholder.com/600x400?text=LOAD+ERROR'">
+                    <img src="${img}" class="h-full w-full object-cover" loading="lazy" onerror="this.src='https://via.placeholder.com/600x400?text=DRIVE+ACCESS+DENIED'">
                 </div>
-                <div class="md:w-1/2 flex flex-col justify-between py-2">
+                <div class="md:w-1/2 flex flex-col justify-between py-1">
                     <div>
                         <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase">${item.Brand}</span>
+                            <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase tracking-tighter">${item.Brand}</span>
                             <span class="text-[10px] font-bold text-gray-400">${item.Size}</span>
                         </div>
                         <h2 class="text-xl font-black text-slate-800 uppercase leading-tight mb-4">${item["Item Description"]}</h2>
@@ -121,7 +132,7 @@
                     </div>
                     <div class="pt-4 border-t border-dashed flex justify-between items-end mt-4">
                         <div>
-                            <p class="text-[9px] font-black text-gray-300 uppercase">Available</p>
+                            <p class="text-[9px] font-black text-gray-300 uppercase">Total Available</p>
                             <p class="text-3xl font-black text-slate-900">${Math.round(item.total)}</p>
                         </div>
                         <span class="bg-slate-900 text-white px-3 py-1 rounded-lg text-[10px] font-black">${item.Variant || 'STD'}</span>
@@ -129,6 +140,8 @@
                 </div>
             </div>`;
         }).join('');
+
+        document.getElementById('stockContainer').innerHTML = html || '<p class="col-span-full text-center py-20 font-bold opacity-30">NO DESIGNS FOUND</p>';
     }
 
     window.onload = init;
