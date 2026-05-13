@@ -143,7 +143,24 @@
 
         document.getElementById('stockContainer').innerHTML = html || '<p class="col-span-full text-center py-20 font-bold opacity-30">NO DESIGNS FOUND</p>';
     }
+function resolveImage(item) {
+    // 1. Jo Drive mathi automatic ID malyo hoy
+    if (item.DriveID) {
+        return `https://drive.google.com/uc?export=view&id=${item.DriveID}`;
+    }
+    
+    // 2. Jo Sheet ma manual link muki hoy (Column H)
+    if (item.DesignURL && item.DesignURL.includes('id=')) {
+        const id = item.DesignURL.split('id=')[1]?.split('&')[0];
+        return `https://drive.google.com/uc?export=view&id=${id}`;
+    } else if (item.DesignURL && item.DesignURL.includes('/d/')) {
+        const id = item.DesignURL.split('/d/')[1]?.split('/')[0];
+        return `https://drive.google.com/uc?export=view&id=${id}`;
+    }
 
+    // Fallback: Jo photo na hoy to design name nu placeholder
+    return `https://via.placeholder.com/600x400?text=${encodeURIComponent(item["Item Description"])}`;
+}
     window.onload = init;
 </script>
 </body>
