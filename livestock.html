@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emcer Elite | Drive Connected ERP</title>
+    <title>Emcer Elite | Hybrid Stock ERP</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -13,12 +13,11 @@
 
     <style>
         :root { --gold: #b39359; --dark: #0f172a; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #1e293b; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
 
-        /* Developer Sparkle Effect */
         @keyframes sparkle {
-            0%, 100% { opacity: 1; transform: scale(1); text-shadow: 0 0 10px #fff, 0 0 20px var(--gold); }
-            50% { opacity: 0.7; transform: scale(1.02); text-shadow: none; }
+            0%, 100% { opacity: 1; transform: scale(1); text-shadow: 0 0 10px var(--gold); }
+            50% { opacity: 0.8; transform: scale(1.02); }
         }
         .yashdeep-tag {
             background: var(--dark); color: white; border: 1.5px solid var(--gold);
@@ -26,20 +25,16 @@
             animation: sparkle 2s infinite ease-in-out;
         }
 
-        /* Stat Cards je tame image ma moklya hata */
         .stat-card {
             background: white; border-radius: 20px; padding: 24px;
             border: 2px solid #000; box-shadow: 6px 6px 0px #000; transition: 0.3s;
         }
-        .stat-card:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0px var(--gold); }
 
-        /* Luxury Horizontal Tile Cards */
         .tile-card {
             background: white; border-radius: 24px; overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.05); transition: 0.4s ease;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.08); transition: 0.4s ease;
         }
-        .tile-card:hover { transform: translateY(-8px); box-shadow: 0 25px 50px rgba(0,0,0,0.1); }
+        .tile-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); border-color: var(--gold); }
     </style>
 </head>
 <body class="p-4 md:p-10">
@@ -47,64 +42,67 @@
 <div class="max-w-7xl mx-auto">
     <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
         <div>
-            <h1 style="font-family: 'Cinzel', serif;" class="text-4xl font-black text-slate-900 tracking-tight leading-none uppercase">Emcer Tiles Private Limited</h1>
-            <p class="text-[11px] font-bold text-blue-600 mt-2 uppercase tracking-[0.4em]" id="syncStatus">● LIVE DRIVE CONNECTED</p>
+            <h1 style="font-family: 'Cinzel', serif;" class="text-4xl font-black text-slate-900 tracking-tight">EMCER TILES PVT LTD</h1>
+            <p class="text-[11px] font-bold text-blue-600 mt-2 uppercase tracking-[0.4em]">Hybrid Image Engine (Web + Drive)</p>
         </div>
         <div class="text-center md:text-right">
-            <p class="text-[10px] font-black text-slate-400 uppercase mb-1">System Developer</p>
+            <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Architect & Developer</p>
             <div class="yashdeep-tag">✨ YASHDEEP JIVANI ✨</div>
         </div>
     </header>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-        <div class="stat-card"><p class="text-[10px] font-black text-gray-400 uppercase">Total Designs</p><h2 id="stat-total" class="text-3xl font-black">0</h2></div>
-        <div class="stat-card"><p class="text-[10px] font-black text-gray-400 uppercase">Live Boxes</p><h2 id="stat-boxes" class="text-3xl font-black">0</h2></div>
-        <div class="stat-card"><p class="text-[10px] font-black text-gray-400 uppercase">Brands</p><h2 id="stat-brands" class="text-3xl font-black">0</h2></div>
-        <div class="stat-card" style="border-color: #3b82f6;"><p class="text-[10px] font-black text-gray-400 uppercase">Filtered</p><h2 id="stat-filtered" class="text-3xl font-black text-blue-600">0</h2></div>
+        <div class="stat-card"><p class="text-[10px] font-bold text-gray-400 uppercase">Designs</p><h2 id="stat-total" class="text-2xl font-black">0</h2></div>
+        <div class="stat-card"><p class="text-[10px] font-bold text-gray-400 uppercase">Stock Boxes</p><h2 id="stat-boxes" class="text-2xl font-black">0</h2></div>
+        <div class="stat-card"><p class="text-[10px] font-bold text-gray-400 uppercase">Brands</p><h2 id="stat-brands" class="text-2xl font-black">0</h2></div>
+        <div class="stat-card" style="border-color: #3b82f6;"><p class="text-[10px] font-bold text-gray-400 uppercase">Filtered</p><h2 id="stat-filtered" class="text-2xl font-black text-blue-600">0</h2></div>
     </div>
 
-    <div class="bg-white p-6 rounded-[30px] shadow-sm border border-gray-100 mb-8 flex flex-wrap items-end gap-4">
+    <div class="bg-white p-6 rounded-[28px] shadow-sm border border-gray-100 mb-8 flex flex-wrap items-end gap-4">
         <div class="flex-grow min-w-[250px]">
-            <label class="text-[10px] font-black text-slate-400 ml-2 uppercase tracking-widest">Search Tile Name</label>
-            <input type="text" id="search" oninput="render()" placeholder="Enter design name..." class="w-full mt-1 p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-blue-500 border-none font-semibold">
+            <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">Search Name</label>
+            <input type="text" id="search" oninput="render()" placeholder="Enter tile name..." class="w-full mt-1 p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-blue-500 border-none font-semibold">
         </div>
-        <select id="brandFilter" onchange="render()" class="p-4 bg-gray-50 rounded-2xl outline-none font-bold text-sm min-w-[150px] shadow-sm border-none"></select>
-        <select id="sizeFilter" onchange="render()" class="p-4 bg-gray-50 rounded-2xl outline-none font-bold text-sm min-w-[130px] shadow-sm border-none"></select>
-        <select id="gradeFilter" onchange="render()" class="p-4 bg-gray-50 rounded-2xl outline-none font-bold text-sm min-w-[130px] shadow-sm border-none"></select>
+        <select id="brandFilter" onchange="render()" class="p-4 bg-gray-50 rounded-2xl outline-none font-bold text-sm min-w-[150px] shadow-sm"></select>
+        <select id="sizeFilter" onchange="render()" class="p-4 bg-gray-50 rounded-2xl outline-none font-bold text-sm min-w-[120px] shadow-sm"></select>
+        <select id="gradeFilter" onchange="render()" class="p-4 bg-gray-50 rounded-2xl outline-none font-bold text-sm min-w-[120px] shadow-sm"></select>
     </div>
 
     <div class="flex justify-end gap-3 mb-8">
-        <button onclick="generatePDF()" class="bg-red-600 text-white px-8 py-3 rounded-2xl font-bold hover:bg-black transition-all shadow-lg text-sm">📥 PDF REPORT</button>
-        <button onclick="downloadExcel()" class="bg-emerald-600 text-white px-8 py-3 rounded-2xl font-bold hover:bg-black transition-all shadow-lg text-sm">📊 EXCEL EXPORT</button>
-        <button onclick="location.reload()" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-200">🔄</button>
+        <button onclick="generatePDF()" class="bg-red-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg">📥 PDF</button>
+        <button onclick="downloadExcel()" class="bg-emerald-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg">📊 EXCEL</button>
     </div>
 
     <div id="stockContainer" class="grid grid-cols-1 md:grid-cols-2 gap-8 pb-20">
-        <div class="col-span-full py-20 text-center opacity-20 font-black tracking-[0.5em]">SYNCING WITH DRIVE...</div>
+        <div class="col-span-full py-20 text-center opacity-20 font-black tracking-widest uppercase">Initializing Hybrid Stock Engine...</div>
     </div>
 </div>
 
 <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnzgi_K-xT08WBT6_F2eeUSrdHfI18qcihJozbCUIBvWJ6RFSEZ0BtnRTKyd9hG-U53A/exec";
-    const FOLDER_ID = "18QBPsz0Rnp0qt-UxSQtURSbiXtpSh4HT";
+    const DESIGN_JSON_URL = "https://raw.githubusercontent.com/emcertiles22-cell/Emcer-Tiles---Available-Stock-Status/main/design.json";
 
-    let masterData = [], currentFilteredData = [];
+    let masterData = [], designMap = {}, currentFilteredData = [];
 
-    // Permanent Google Drive Logic
-    function getDriveImageUrl(fileName) {
-        // This assumes your image file name in Drive matches the Design Description exactly (e.g. "CALACATTA.jpg")
-        // Note: For real-time sync without fetching file IDs, it's best to have the direct link in Sheet.
-        // But we will use the Google Drive ID formatting for links if they are in the sheet.
-        return `https://lh3.googleusercontent.com/d/18QBPsz0Rnp0qt-UxSQtURSbiXtpSh4HT`; // Base folder preview
+    // Drive Image Converter Function
+    function convertToDirectLink(url) {
+        if (!url) return null;
+        if (url.includes('drive.google.com')) {
+            const fileId = url.split('/d/')[1]?.split('/')[0] || url.split('id=')[1];
+            return `https://lh3.googleusercontent.com/d/${fileId}=s1000?authuser=0`;
+        }
+        return url;
     }
 
     async function init() {
         try {
-            const response = await fetch(APPS_SCRIPT_URL);
-            masterData = await response.json();
+            const [dRes, sRes] = await Promise.all([fetch(DESIGN_JSON_URL), fetch(APPS_SCRIPT_URL)]);
+            const dData = await dRes.json();
+            dData.forEach(d => designMap[d.name?.toLowerCase().trim()] = d.url);
+            masterData = await sRes.json();
             setupFilters();
             render();
-        } catch (e) { alert("Data Fetch Error!"); }
+        } catch (e) { console.error("Sync Error"); }
     }
 
     function setupFilters() {
@@ -115,7 +113,7 @@
         };
         fill('brandFilter', 'Brand', 'Brands');
         fill('sizeFilter', 'Size', 'Sizes');
-        fill('gradeFilter', 'Variant', 'Grades'); // Mapping Variant to Grade
+        fill('gradeFilter', 'Variant', 'Grades');
     }
 
     function render() {
@@ -150,31 +148,31 @@
         document.getElementById('stat-filtered').innerText = currentFilteredData.length;
 
         document.getElementById('stockContainer').innerHTML = Object.values(groups).map(item => {
-            // Priority: Link from Google Sheet (item.DesignURL)
-            let img = item.DesignURL || `https://via.placeholder.com/600x400?text=${item["Item Description"]}`;
+            const key = item["Item Description"].toLowerCase().trim();
             
-            // Auto convert Google Drive Links
-            if (img.includes('drive.google.com')) {
-                const fileId = img.split('/d/')[1]?.split('/')[0] || img.split('id=')[1];
-                img = `https://lh3.googleusercontent.com/d/${fileId}`;
-            }
+            // PRIORITY LOGIC:
+            // 1. Check Sheet's Last Column (DesignURL)
+            // 2. Check design.json (Web)
+            // 3. Placeholder
+            let rawUrl = item.DesignURL || designMap[key];
+            let finalImg = convertToDirectLink(rawUrl) || 'https://via.placeholder.com/600x400?text=IMAGE+NOT+FOUND';
 
             return `
             <div class="tile-card flex flex-col md:flex-row p-4 gap-6">
-                <div class="md:w-1/2 rounded-2xl overflow-hidden bg-gray-100 border border-gray-100">
-                    <img src="${img}" class="h-full w-full object-cover min-h-[220px]" onerror="this.src='https://via.placeholder.com/600x400?text=IMAGE+ERROR'">
+                <div class="md:w-1/2 rounded-2xl overflow-hidden bg-gray-50 min-h-[220px]">
+                    <img src="${finalImg}" class="h-full w-full object-cover" loading="lazy">
                 </div>
                 <div class="md:w-1/2 flex flex-col justify-between py-1">
                     <div>
                         <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] font-black text-blue-600 uppercase bg-blue-50 px-2 py-0.5 rounded-md">${item.Brand}</span>
+                            <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md uppercase">${item.Brand}</span>
                             <span class="text-[10px] font-bold text-gray-400">${item.Size}</span>
                         </div>
                         <h2 class="text-xl font-black text-slate-800 uppercase mb-3 leading-tight">${item["Item Description"]}</h2>
                         <div class="space-y-1.5 mb-4">
                             ${item.lots.map(l => `
                                 <div class="flex justify-between items-center bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100">
-                                    <span class="text-[11px] font-bold text-gray-400">LOT NO: ${l.lot}</span>
+                                    <span class="text-[11px] font-bold text-gray-400 tracking-tighter">LOT: ${l.lot}</span>
                                     <span class="text-sm font-black text-slate-700">${l.qty} BX</span>
                                 </div>
                             `).join('')}
@@ -185,7 +183,7 @@
                             <p class="text-[9px] font-black text-gray-300 uppercase">Available</p>
                             <p class="text-3xl font-black text-slate-900">${Math.round(item.total)}</p>
                         </div>
-                        <span class="bg-slate-900 text-white px-3 py-1 rounded-lg text-[10px] font-black italic">${item.Variant || 'GRADE-A'}</span>
+                        <span class="bg-slate-900 text-white px-3 py-1 rounded-lg text-[10px] font-black">${item.Variant || 'STD'}</span>
                     </div>
                 </div>
             </div>`;
@@ -195,26 +193,17 @@
     function generatePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.setFontSize(20);
-        doc.text("EMCER TILES PRIVATE LIMITED", 14, 15);
-        doc.setFontSize(10);
-        doc.text(`Developer: Yashdeep Jivani | Total Results: ${currentFilteredData.length}`, 14, 22);
-
+        doc.text("EMCER TILES LIVE REPORT", 14, 15);
         const rows = currentFilteredData.map(i => [i.Brand, i["Item Description"], i.Size, i["Lot No"], i.Total, i.Variant]);
-        doc.autoTable({
-            startY: 28,
-            head: [['Brand', 'Design Name', 'Size', 'Lot', 'Boxes', 'Grade']],
-            body: rows,
-            headStyles: { fillColor: [15, 23, 42] }
-        });
-        doc.save("Emcer_Live_Stock.pdf");
+        doc.autoTable({ startY: 25, head: [['Brand', 'Design', 'Size', 'Lot', 'Boxes', 'Grade']], body: rows });
+        doc.save("Emcer_Report.pdf");
     }
 
     function downloadExcel() {
         const ws = XLSX.utils.json_to_sheet(currentFilteredData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Stock");
-        XLSX.writeFile(wb, "Emcer_Stock_Report.xlsx");
+        XLSX.writeFile(wb, "Emcer_Stock.xlsx");
     }
 
     window.onload = init;
