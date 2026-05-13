@@ -3,64 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emcer Elite | Local & Cloud Inventory</title>
+    <title>Emcer Elite | Combined Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
 
     <style>
         :root { --gold: #b39359; --dark: #0f172a; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f0f2f5; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f4f7f9; }
 
-        /* Developer Sparkle Name */
-        @keyframes shine { 0% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.03); text-shadow: 0 0 15px var(--gold); } 100% { opacity: 0.7; transform: scale(1); } }
-        .yashdeep-name {
+        @keyframes shine { 0% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 15px var(--gold); } 100% { opacity: 0.7; transform: scale(1); } }
+        .yashdeep-badge {
             background: var(--dark); color: white; border: 1px solid var(--gold);
-            padding: 4px 15px; border-radius: 50px; font-weight: 800; font-size: 11px;
+            padding: 6px 20px; border-radius: 50px; font-weight: 800; font-size: 12px;
             animation: shine 2s infinite ease-in-out;
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(12px); border-radius: 28px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            transition: all 0.4s ease;
+        .stat-card {
+            background: white; border-radius: 16px; padding: 20px;
+            box-shadow: 6px 6px 0px #000; border: 2px solid #000; transition: 0.3s;
         }
-        .local-upload-btn {
-            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
-            color: white; border-radius: 12px; font-weight: 700; padding: 10px 20px;
+        .stat-card:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0px var(--gold); }
+
+        .glass-ui {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px); border-radius: 24px; border: 1px solid white;
         }
+        .tile-card {
+            background: white; border-radius: 24px; overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05); transition: 0.4s ease;
+        }
+        .tile-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
     </style>
 </head>
 <body class="p-4 md:p-10">
 
 <div class="max-w-7xl mx-auto">
     <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
-        <div>
-            <h1 style="font-family: 'Cinzel', serif;" class="text-4xl font-bold tracking-tight text-slate-900">EMCER TILES</h1>
-            <div class="flex items-center gap-2 mt-1">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Local & Cloud Connected</p>
-            </div>
+        <div class="text-center md:text-left">
+            <h1 style="font-family: 'Cinzel', serif;" class="text-4xl font-black text-slate-900 tracking-tight">EMCER TILES</h1>
+            <p class="text-[10px] font-bold text-blue-600 uppercase tracking-[0.4em] mt-1">Live Inventory ERP System</p>
         </div>
         <div class="flex flex-col items-center md:items-end">
-            <p class="text-[9px] font-black text-slate-400 uppercase mb-1">System Admin</p>
-            <div class="yashdeep-name">✨ YASHDEEP JIVANI ✨</div>
+            <p class="text-[9px] font-black text-slate-400 uppercase mb-1">System Developed By</p>
+            <div class="yashdeep-badge">✨ YASHDEEP JIVANI ✨</div>
         </div>
     </header>
 
-    <div class="glass-card p-6 mb-8 flex flex-wrap items-center gap-4 shadow-sm">
-        <input type="text" id="search" oninput="render()" placeholder="🔍 Search Tile Name..." class="flex-grow p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-[#b39359] border-none font-medium">
-        
-        <div class="flex flex-col">
-            <label class="text-[9px] font-bold text-blue-600 mb-1">UPLOAD LOCAL DESIGN (JPG)</label>
-            <input type="file" id="localImgInput" accept="image/*" onchange="handleLocalImage(event)" class="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+        <div class="stat-card text-center">
+            <p class="text-[10px] font-bold text-gray-400 uppercase">Total Designs</p>
+            <h2 id="stat-total" class="text-2xl font-black">0</h2>
+        </div>
+        <div class="stat-card text-center">
+            <p class="text-[10px] font-bold text-gray-400 uppercase">Available Boxes</p>
+            <h2 id="stat-boxes" class="text-2xl font-black">0</h2>
+        </div>
+        <div class="stat-card text-center">
+            <p class="text-[10px] font-bold text-gray-400 uppercase">Active Brands</p>
+            <h2 id="stat-brands" class="text-2xl font-black">0</h2>
+        </div>
+        <div class="stat-card text-center">
+            <p class="text-[10px] font-bold text-gray-400 uppercase">Filtered Items</p>
+            <h2 id="stat-filtered" class="text-2xl font-black text-blue-600">0</h2>
         </div>
     </div>
 
+    <div class="glass-ui p-6 mb-8 shadow-sm flex flex-wrap items-end gap-4">
+        <div class="flex-grow min-w-[250px]">
+            <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">Search Name</label>
+            <input type="text" id="search" oninput="render()" placeholder="Search Design..." class="w-full mt-1 p-4 bg-white rounded-2xl outline-none focus:ring-2 ring-blue-500 border-none shadow-inner">
+        </div>
+        <select id="brandFilter" onchange="render()" class="p-4 bg-white rounded-2xl outline-none font-bold text-sm shadow-sm min-w-[150px]"></select>
+        <select id="sizeFilter" onchange="render()" class="p-4 bg-white rounded-2xl outline-none font-bold text-sm shadow-sm min-w-[120px]"></select>
+        <select id="gradeFilter" onchange="render()" class="p-4 bg-white rounded-2xl outline-none font-bold text-sm shadow-sm min-w-[120px]"></select>
+        
+        <div class="bg-blue-50 p-2 rounded-2xl border border-blue-100">
+            <label class="text-[9px] font-black text-blue-600 block px-2">LOCAL PC JPG</label>
+            <input type="file" id="localImgInput" accept="image/*" onchange="handleLocalImage(event)" class="text-[10px] cursor-pointer">
+        </div>
+    </div>
+
+    <div class="flex flex-wrap justify-end gap-3 mb-8">
+        <button onclick="generatePDF()" class="bg-red-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg hover:bg-black transition-all">📥 DOWNLOAD PDF</button>
+        <button onclick="downloadExcel()" class="bg-emerald-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg hover:bg-black transition-all">📊 EXCEL REPORT</button>
+        <button onclick="location.reload()" class="bg-white p-3 rounded-2xl shadow-sm border border-gray-200">🔄</button>
+    </div>
+
     <div id="stockContainer" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="col-span-full py-20 text-center opacity-30 font-black">SYNCING DATA...</div>
+        <div class="col-span-full py-20 text-center font-black tracking-widest opacity-20">FETCHING LIVE STOCK...</div>
     </div>
 </div>
 
@@ -68,7 +102,7 @@
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnzgi_K-xT08WBT6_F2eeUSrdHfI18qcihJozbCUIBvWJ6RFSEZ0BtnRTKyd9hG-U53A/exec";
     const DESIGN_JSON_URL = "https://raw.githubusercontent.com/emcertiles22-cell/Emcer-Tiles---Available-Stock-Status/main/design.json";
 
-    let masterData = [], designMap = {}, localDesignMap = {};
+    let masterData = [], designMap = {}, localDesignMap = {}, currentFilteredData = [];
 
     async function init() {
         try {
@@ -76,23 +110,30 @@
             const dData = await dRes.json();
             dData.forEach(d => designMap[d.name?.toLowerCase().trim()] = d.url);
             masterData = await sRes.json();
+            setupFilters();
             render();
-        } catch (e) { console.error("Sync Error"); }
+        } catch (e) { alert("Server Sync Error!"); }
     }
 
-    // Function to handle PC images
+    function setupFilters() {
+        const fill = (id, key, label) => {
+            const vals = [...new Set(masterData.map(i => i[key]))].filter(Boolean).sort();
+            document.getElementById(id).innerHTML = `<option value="">All ${label}</option>` + 
+                vals.map(v => `<option value="${v}">${v}</option>`).join('');
+        };
+        fill('brandFilter', 'Brand', 'Brands');
+        fill('sizeFilter', 'Size', 'Sizes');
+        fill('gradeFilter', 'Variant', 'Grades');
+    }
+
     function handleLocalImage(event) {
         const file = event.target.files[0];
         if (!file) return;
-
-        const designName = prompt("Aa image kai design maate chhe? (Write Full Name)");
-        if (!designName) return;
-
+        const dName = prompt("Enter exact Design Name for this image:");
+        if (!dName) return;
         const reader = new FileReader();
-        reader.onload = function(e) {
-            // Save local image in memory
-            localDesignMap[designName.toLowerCase().trim()] = e.target.result;
-            alert(`Design "${designName}" ni image local PC mathi set thai gai!`);
+        reader.onload = (e) => {
+            localDesignMap[dName.toLowerCase().trim()] = e.target.result;
             render();
         };
         reader.readAsDataURL(file);
@@ -100,55 +141,96 @@
 
     function render() {
         const s = document.getElementById('search').value.toLowerCase();
-        const container = document.getElementById('stockContainer');
-        const groups = {};
+        const b = document.getElementById('brandFilter').value;
+        const sz = document.getElementById('sizeFilter').value;
+        const g = document.getElementById('gradeFilter').value;
 
-        masterData.forEach(item => {
-            const name = String(item["Item Description"]).trim();
-            if (name.toLowerCase().includes(s)) {
-                const key = name.toLowerCase();
-                if (!groups[key]) groups[key] = { ...item, lots: [], total: 0 };
-                groups[key].lots.push({ lot: item["Lot No"], qty: item.Total });
-                groups[key].total += parseFloat(item.Total);
-            }
+        currentFilteredData = masterData.filter(i => 
+            String(i["Item Description"]).toLowerCase().includes(s) &&
+            (!b || i.Brand === b) &&
+            (!sz || i.Size === sz) &&
+            (!g || i.Variant === g)
+        );
+
+        const groups = {};
+        let totalBoxes = 0;
+        const brandsCount = new Set();
+
+        currentFilteredData.forEach(i => {
+            const nameKey = i["Item Description"].toLowerCase().trim();
+            if(!groups[nameKey]) groups[nameKey] = { ...i, lots: [], total: 0 };
+            groups[nameKey].lots.push({ lot: i["Lot No"], qty: i.Total });
+            groups[nameKey].total += parseFloat(i.Total);
+            totalBoxes += parseFloat(i.Total);
+            brandsCount.add(i.Brand);
         });
 
-        container.innerHTML = Object.values(groups).map(item => {
-            const nameKey = item["Item Description"].toLowerCase().trim();
-            
-            // Priority: 1. Local Image, 2. Web Image, 3. Placeholder
-            const img = localDesignMap[nameKey] || designMap[nameKey] || 'https://via.placeholder.com/600x400?text=NO+IMAGE+FOUND';
-            
-            const isLocal = localDesignMap[nameKey] ? '<span class="bg-blue-600 text-white text-[8px] px-2 py-0.5 rounded-full ml-2">LOCAL PC</span>' : '';
+        document.getElementById('stat-total').innerText = Object.keys(groups).length;
+        document.getElementById('stat-boxes').innerText = Math.round(totalBoxes).toLocaleString();
+        document.getElementById('stat-brands').innerText = brandsCount.size;
+        document.getElementById('stat-filtered').innerText = currentFilteredData.length;
+
+        document.getElementById('stockContainer').innerHTML = Object.values(groups).map(item => {
+            const key = item["Item Description"].toLowerCase().trim();
+            const img = localDesignMap[key] || designMap[key] || 'https://via.placeholder.com/600x400?text=IMAGE+NOT+FOUND';
+            const localBadge = localDesignMap[key] ? '<span class="bg-indigo-600 text-white text-[8px] px-2 py-0.5 rounded-full ml-2">LOCAL PC</span>' : '';
 
             return `
-            <div class="glass-card p-4 flex flex-col md:flex-row gap-6">
-                <div class="md:w-1/2 overflow-hidden rounded-2xl shadow-inner bg-gray-100">
-                    <img src="${img}" class="h-full w-full object-cover min-h-[200px]">
+            <div class="tile-card flex flex-col md:flex-row p-4 gap-6">
+                <div class="md:w-1/2 rounded-2xl overflow-hidden bg-gray-100">
+                    <img src="${img}" class="h-full w-full object-cover min-h-[220px]">
                 </div>
-                <div class="md:w-1/2 flex flex-col justify-between py-2">
+                <div class="md:w-1/2 flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] font-black text-[#b39359] uppercase">${item.Brand} ${isLocal}</span>
+                            <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest">${item.Brand} ${localBadge}</span>
                             <span class="text-[10px] font-bold text-gray-400">${item.Size}</span>
                         </div>
-                        <h3 class="text-xl font-extrabold uppercase mb-4 text-slate-800 leading-tight">${item["Item Description"]}</h3>
-                        <div class="space-y-1.5">
+                        <h2 class="text-xl font-black text-slate-800 uppercase mb-4 leading-tight">${item["Item Description"]}</h2>
+                        <div class="space-y-1.5 mb-4">
                             ${item.lots.map(l => `
-                                <div class="flex justify-between text-[11px] border-b border-gray-50 pb-1">
-                                    <span class="text-gray-400 font-bold">LOT ${l.lot}</span>
-                                    <span class="font-black">${l.qty} BX</span>
+                                <div class="flex justify-between items-center bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100">
+                                    <span class="text-[11px] font-bold text-gray-400">LOT: ${l.lot}</span>
+                                    <span class="text-sm font-black text-slate-700">${l.qty} BX</span>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
-                    <div class="mt-4 pt-4 border-t border-dashed border-gray-200">
-                        <p class="text-[9px] font-bold text-gray-300 uppercase">Available Stock</p>
-                        <p class="text-3xl font-black text-slate-900">${Math.round(item.total)}</p>
+                    <div class="pt-4 border-t border-dashed border-gray-200 flex justify-between items-end">
+                        <div>
+                            <p class="text-[9px] font-bold text-gray-300 uppercase">Available</p>
+                            <p class="text-3xl font-black text-slate-900">${Math.round(item.total)}</p>
+                        </div>
+                        <span class="bg-slate-900 text-white px-3 py-1 rounded-lg text-[9px] font-bold italic">${item.Variant || 'GRADE-A'}</span>
                     </div>
                 </div>
             </div>`;
         }).join('');
+    }
+
+    function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(20);
+        doc.text("EMCER TILES ERP REPORT", 14, 15);
+        doc.setFontSize(10);
+        doc.text(`Developed By: Yashdeep Jivani | Date: ${new Date().toLocaleString()}`, 14, 22);
+
+        const rows = currentFilteredData.map(i => [i.Brand, i["Item Description"], i.Size, i["Lot No"], i.Total, i.Variant]);
+        doc.autoTable({
+            startY: 28,
+            head: [['Brand', 'Design Name', 'Size', 'Lot', 'Boxes', 'Variant']],
+            body: rows,
+            headStyles: { fillColor: [15, 23, 42] }
+        });
+        doc.save("Emcer_Live_Stock.pdf");
+    }
+
+    function downloadExcel() {
+        const ws = XLSX.utils.json_to_sheet(currentFilteredData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Stock");
+        XLSX.writeFile(wb, "Emcer_Stock_Report.xlsx");
     }
 
     window.onload = init;
