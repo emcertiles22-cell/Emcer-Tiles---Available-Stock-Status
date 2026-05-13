@@ -3,101 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emcer Elite | Permanent Auto-Sync</title>
+    <title>Emcer Elite | Final Drive Fix</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f4f7fa; color: #1e293b; }
-        .yashdeep-tag {
-            background: #0f172a; color: #fbbf24; border: 1.2px solid #fbbf24;
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #1e293b; }
+        .yashdeep-premium {
+            background: #1e293b; color: #fbbf24; border: 1.5px solid #fbbf24;
             padding: 6px 20px; border-radius: 50px; font-weight: 800; font-size: 12px;
-            box-shadow: 0 0 15px rgba(251, 191, 36, 0.2); animation: glow 2s infinite ease-in-out;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
         }
-        @keyframes glow { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-        .stat-card { background: white; border-radius: 20px; padding: 24px; border: 2px solid #000; box-shadow: 6px 6px 0px #000; }
-        .tile-card { background: white; border-radius: 28px; border: 1px solid rgba(0,0,0,0.05); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .tile-card:hover { transform: translateY(-10px); box-shadow: 0 25px 50px rgba(0,0,0,0.1); }
+        .tile-card {
+            background: white; border-radius: 24px; overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05); transition: 0.3s ease-in-out;
+        }
+        .tile-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="p-6 md:p-10">
 
 <div class="max-w-7xl mx-auto">
-    <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+    <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
         <div>
-            <h1 class="text-4xl font-black text-slate-900 tracking-tighter">EMCER TILES</h1>
-            <p class="text-[10px] font-bold text-blue-600 uppercase tracking-[0.5em] mt-1">Automatic Image Sync Engine</p>
+            <h1 class="text-3xl font-black tracking-tighter text-slate-900 uppercase">EMCER TILES PRIVATE LIMITED</h1>
+            <p class="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest mt-1">Live Inventory Portal</p>
         </div>
-        <div class="text-center">
-            <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Developer</p>
-            <div class="yashdeep-tag">✨ YASHDEEP JIVANI ✨</div>
-        </div>
+        <div class="yashdeep-premium">✨ YASHDEEP JIVANI ✨</div>
     </header>
 
-    <div class="bg-white/80 backdrop-blur-md p-6 rounded-[32px] border border-gray-100 shadow-sm mb-10 flex flex-wrap gap-4 items-end">
-        <div class="flex-grow min-w-[280px]">
-            <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">Design Search</label>
-            <input type="text" id="search" oninput="render()" placeholder="Enter name..." class="w-full mt-1 p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-blue-500 border-none font-bold">
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-10 flex flex-wrap gap-4 items-end">
+        <div class="flex-grow min-w-[250px]">
+            <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">Search Design</label>
+            <input type="text" id="search" oninput="render()" placeholder="Type design name..." class="w-full mt-1 p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-blue-500 border-none font-bold">
         </div>
-        <select id="brandFilter" onchange="render()" class="p-4 bg-gray-50 rounded-2xl font-bold text-sm min-w-[150px] cursor-pointer"></select>
-        <div class="flex gap-2">
-            <button onclick="generatePDF()" class="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-xs">PDF</button>
-            <button onclick="downloadExcel()" class="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black text-xs">EXCEL</button>
-        </div>
+        <select id="brandFilter" onchange="render()" class="p-4 bg-gray-50 rounded-2xl font-bold text-sm min-w-[150px]"></select>
     </div>
 
-    <div id="stockContainer" class="grid grid-cols-1 md:grid-cols-2 gap-10 pb-20">
-        <div class="col-span-full py-20 text-center opacity-20 font-black tracking-widest uppercase">Connecting to Cloud Assets...</div>
+    <div id="stockContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 pb-20">
+        <div class="col-span-full py-20 text-center opacity-30 font-black tracking-widest uppercase">Syncing Drive Photos...</div>
     </div>
 </div>
 
 <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnzgi_K-xT08WBT6_F2eeUSrdHfI18qcihJozbCUIBvWJ6RFSEZ0BtnRTKyd9hG-U53A/exec";
-    const DESIGN_JSON_URL = "https://raw.githubusercontent.com/emcertiles22-cell/Emcer-Tiles---Available-Stock-Status/main/design.json";
-    const FOLDER_ID = "18QBPsz0Rnp0qt-UxSQtURSbiXtpSh4HT"; // Tamaru Folder
 
-    let masterData = [], designMap = {};
+    let masterData = [];
 
-    // 🚀 NEW: Auto Image Resolver
-    function resolveImage(designName, sheetUrl) {
-        const cleanName = designName?.toLowerCase().trim();
-        
-        // 1. First priority: Manual URL from Sheet
-        if (sheetUrl && sheetUrl.includes('drive.google.com')) {
-            const id = sheetUrl.split('/d/')[1]?.split('/')[0] || sheetUrl.split('id=')[1]?.split('&')[0];
-            return `https://drive.google.com/uc?export=view&id=${id}`;
+    // 🚀 FIXED: Drive Image Resolver
+    function getDriveImage(url, designName) {
+        if (url && url.includes('drive.google.com')) {
+            let fileId = "";
+            if (url.includes('/d/')) fileId = url.split('/d/')[1].split('/')[0];
+            else if (url.includes('id=')) fileId = url.split('id=')[1].split('&')[0];
+            
+            return fileId ? `https://drive.google.com/uc?export=view&id=${fileId}` : `https://via.placeholder.com/600x400?text=${designName}`;
         }
-
-        // 2. Second priority: GitHub design.json
-        if (designMap[cleanName]) return designMap[cleanName];
-
-        // 3. Final Fallback: Attempting to match name directly in your Drive
-        // Note: For this to work perfectly, images in Drive must be Public.
         return `https://via.placeholder.com/600x400?text=${designName}`;
     }
 
     async function init() {
         try {
-            const [dRes, sRes] = await Promise.all([fetch(DESIGN_JSON_URL), fetch(APPS_SCRIPT_URL)]);
-            const dData = await dRes.json();
-            dData.forEach(d => designMap[d.name?.toLowerCase().trim()] = d.url);
-            masterData = await sRes.json();
+            const res = await fetch(APPS_SCRIPT_URL);
+            masterData = await res.json();
             setupFilters();
             render();
-        } catch (e) { console.error("Init Error"); }
+        } catch (e) { console.error("Sync Error"); }
     }
 
     function setupFilters() {
-        const fill = (id, key, label) => {
-            const vals = [...new Set(masterData.map(i => i[key]))].filter(Boolean).sort();
-            document.getElementById(id).innerHTML = `<option value="">All ${label}</option>` + 
-                vals.map(v => `<option value="${v}">${v}</option>`).join('');
-        };
-        fill('brandFilter', 'Brand', 'Brands');
+        const brands = [...new Set(masterData.map(i => i.Brand))].filter(Boolean).sort();
+        document.getElementById('brandFilter').innerHTML = `<option value="">All Brands</option>` + 
+            brands.map(v => `<option value="${v}">${v}</option>`).join('');
     }
 
     function render() {
@@ -118,40 +96,40 @@
         });
 
         document.getElementById('stockContainer').innerHTML = Object.values(groups).map(item => {
-            const img = resolveImage(item["Item Description"], item.DesignURL);
+            const img = getDriveImage(item.DesignURL, item["Item Description"]);
 
             return `
-            <div class="tile-card flex flex-col md:flex-row p-5 gap-8">
-                <div class="md:w-1/2 rounded-3xl overflow-hidden bg-gray-50 h-[260px]">
-                    <img src="${img}" class="h-full w-full object-cover" onerror="this.src='https://via.placeholder.com/600x400?text=IMAGE+PENDING'">
+            <div class="tile-card flex flex-col md:flex-row p-4 gap-6">
+                <div class="md:w-1/2 rounded-2xl overflow-hidden bg-gray-50 h-[240px]">
+                    <img src="${img}" class="h-full w-full object-cover" onerror="this.src='https://via.placeholder.com/600x400?text=LOAD+ERROR'">
                 </div>
                 <div class="md:w-1/2 flex flex-col justify-between py-2">
                     <div>
                         <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">${item.Brand}</span>
-                            <span class="text-[11px] font-bold text-gray-400 uppercase">${item.Size}</span>
+                            <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase">${item.Brand}</span>
+                            <span class="text-[10px] font-bold text-gray-400">${item.Size}</span>
                         </div>
-                        <h2 class="text-2xl font-black text-slate-800 uppercase leading-tight mb-5">${item["Item Description"]}</h2>
-                        <div class="space-y-2">
+                        <h2 class="text-xl font-black text-slate-800 uppercase leading-tight mb-4">${item["Item Description"]}</h2>
+                        <div class="space-y-1.5">
                             ${item.lots.map(l => `
-                                <div class="flex justify-between items-center bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100">
-                                    <span class="text-[11px] font-bold text-gray-400 uppercase tracking-tighter">Lot: ${l.lot}</span>
-                                    <span class="text-md font-black text-slate-700">${l.qty} BX</span>
+                                <div class="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-xl border border-gray-100">
+                                    <span class="text-[11px] font-bold text-gray-400">LOT: ${l.lot}</span>
+                                    <span class="text-sm font-black text-slate-700">${l.qty} BX</span>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
-                    <div class="pt-5 border-t border-dashed flex justify-between items-end mt-4">
-                        <div><p class="text-[10px] font-black text-gray-300 uppercase">Available</p><p class="text-4xl font-black text-slate-900">${Math.round(item.total)}</p></div>
-                        <span class="bg-slate-900 text-white px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest">${item.Variant || 'STD'}</span>
+                    <div class="pt-4 border-t border-dashed flex justify-between items-end mt-4">
+                        <div>
+                            <p class="text-[9px] font-black text-gray-300 uppercase">Available</p>
+                            <p class="text-3xl font-black text-slate-900">${Math.round(item.total)}</p>
+                        </div>
+                        <span class="bg-slate-900 text-white px-3 py-1 rounded-lg text-[10px] font-black">${item.Variant || 'STD'}</span>
                     </div>
                 </div>
             </div>`;
         }).join('');
     }
-
-    function generatePDF() { /* same as before */ }
-    function downloadExcel() { /* same as before */ }
 
     window.onload = init;
 </script>
