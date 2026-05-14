@@ -9,102 +9,39 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #2563eb;
-            --accent: #fbbf24;
-            --glass: rgba(255, 255, 255, 0.85);
-        }
-
+        :root { --primary: #2563eb; --glass: rgba(255, 255, 255, 0.88); }
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            /* ટાઈલ્સ બેકગ્રાઉન્ડ ઈમેજ */
-            background: linear-gradient(rgba(241, 245, 249, 0.9), rgba(241, 245, 249, 0.9)), 
+            background: linear-gradient(rgba(241, 245, 249, 0.92), rgba(241, 245, 249, 0.92)), 
                         url('https://www.transparenttextures.com/patterns/pavement.png');
             background-attachment: fixed;
             color: #1e293b; 
         }
-
         .main-container { max-width: 1300px; margin: auto; padding: 30px; }
-        
-        /* Premium Header Animation */
-        @keyframes blink-glow { 
-            0%, 100% { opacity: 1; text-shadow: 0 0 15px rgba(37, 99, 235, 0.6); transform: scale(1); } 
-            50% { opacity: 0.7; text-shadow: none; transform: scale(0.98); } 
-        }
-        .dev-tag { 
-            font-weight: 800; color: white; background: var(--primary);
-            animation: blink-glow 2s infinite; text-transform: uppercase; 
-            letter-spacing: 1px; padding: 4px 12px; border-radius: 50px; font-size: 10px;
-        }
-
-        /* Glassmorphism Stat Cards */
-        .stat-card { 
-            background: var(--glass); backdrop-filter: blur(10px);
-            border-radius: 20px; padding: 20px; text-align: center; 
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-        }
-        .stat-card:hover { transform: translateY(-8px); box-shadow: 0 20px 30px -10px rgba(37, 99, 235, 0.2); border-color: var(--primary); }
-        .stat-val { font-size: 36px; font-weight: 800; color: #0f172a; line-height: 1; margin-bottom: 8px; }
-        .stat-label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; }
-
-        /* Premium Stock Card */
-        .stock-card { 
-            background: var(--glass); backdrop-filter: blur(12px);
-            border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.5);
-            display: flex; margin-top: 25px; min-height: 240px; transition: 0.3s; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden; 
-        }
-        .stock-card:hover { transform: scale(1.01); box-shadow: 0 15px 40px rgba(0,0,0,0.08); border-color: var(--primary); }
-        
-        .card-img { width: 25%; padding: 15px; cursor: zoom-in; display: flex; align-items: center; justify-content: center; background: white; }
-        .card-img img { border-radius: 12px; transition: 0.5s; object-fit: contain; }
-        .card-img:hover img { transform: scale(1.1); }
-
-        .card-info { width: 50%; padding: 25px; display: flex; flex-direction: column; }
-        .card-total { 
-            width: 25%; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border-left: 1px solid rgba(0,0,0,0.05);
-        }
-
-        /* Modern Modal */
+        .dev-tag { font-weight: 800; color: white; background: var(--primary); padding: 4px 12px; border-radius: 50px; font-size: 10px; }
+        .stat-card { background: var(--glass); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .stock-card { background: var(--glass); backdrop-filter: blur(12px); border-radius: 24px; border: 1px solid white; display: flex; margin-top: 25px; transition: 0.3s; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .card-img { width: 25%; padding: 15px; background: white; display: flex; align-items: center; justify-content: center; }
+        .card-info { width: 50%; padding: 25px; }
+        .card-total { width: 25%; background: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; border-left: 1px solid #e2e8f0; }
         #bookingModal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); justify-content:center; align-items:center; }
-        .modal-box { background: white; padding: 35px; border-radius: 30px; width: 90%; max-width: 450px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-
-        /* Inputs & Buttons */
-        label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 6px; padding-left: 4px; }
-        input, select { 
-            border-radius: 14px; border: 2px solid #e2e8f0; padding: 12px 16px; 
-            font-weight: 600; width: 100%; transition: 0.3s; background: white;
-        }
-        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); outline: none; }
-
-        .btn-premium {
-            background: var(--primary); color: white; padding: 12px 24px; 
-            border-radius: 14px; font-weight: 800; text-transform: uppercase;
-            transition: 0.3s; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
-        }
-        .btn-premium:hover { transform: translateY(-2px); box-shadow: 0 15px 20px -3px rgba(37, 99, 235, 0.4); }
-
-        @media (max-width: 768px) {
-            .stock-card { flex-direction: column; }
-            .card-img, .card-info, .card-total { width: 100%; padding: 20px; }
-        }
+        .modal-box { background: white; padding: 35px; border-radius: 30px; width: 95%; max-width: 450px; }
+        input, select { border-radius: 12px; border: 2px solid #e2e8f0; padding: 12px; width: 100%; font-weight: 600; }
+        .admin-only { display: none; } /* Default hide */
     </style>
 </head>
 <body>
 
 <div id="bookingModal">
     <div class="modal-box">
-        <h2 class="text-3xl font-extrabold mb-2 text-slate-800">Book Order</h2>
-        <p id="bookItemName" class="text-blue-600 font-bold text-sm mb-8"></p>
+        <h2 class="text-3xl font-extrabold mb-2">Admin Booking</h2>
+        <p id="bookItemName" class="text-blue-600 font-bold mb-8"></p>
         <div class="space-y-5">
-            <div><label>Party Name / Salesman</label><input type="text" id="partyName" placeholder="Enter Name"></div>
-            <div><label>Quantity (Boxes)</label><input type="number" id="bookQty" placeholder="0"></div>
+            <div><label class="text-xs font-bold text-slate-500 uppercase">Party Name</label><input type="text" id="partyName" placeholder="Enter Name"></div>
+            <div><label class="text-xs font-bold text-slate-500 uppercase">Quantity (Boxes)</label><input type="number" id="bookQty" placeholder="0"></div>
             <div class="flex gap-4 pt-4">
-                <button onclick="confirmBooking()" class="btn-premium flex-1">Confirm Booking</button>
-                <button onclick="document.getElementById('bookingModal').style.display='none'" class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold uppercase hover:bg-slate-200 transition">Cancel</button>
+                <button onclick="confirmBooking()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold uppercase shadow-lg">Confirm</button>
+                <button onclick="document.getElementById('bookingModal').style.display='none'" class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold uppercase">Cancel</button>
             </div>
         </div>
     </div>
@@ -113,77 +50,58 @@
 <div class="main-container">
     <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
         <div>
-            <h1 class="text-5xl font-extrabold tracking-tight text-slate-900 leading-none">Emcer Tiles  <span class="text-blue-600">Private Limited</span></h1>
-            <div class="flex items-center gap-3 mt-3">
-                <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <p id="updateTime" class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Syncing Live...</p>
-            </div>
+            <h1 class="text-5xl font-extrabold tracking-tight text-slate-900">EMCER <span class="text-blue-600">TILES</span></h1>
+            <p id="updateTime" class="text-[11px] font-bold text-slate-500 mt-2 uppercase tracking-widest">Live Syncing...</p>
         </div>
-        <div class="flex flex-col items-center md:items-end gap-3">
+        <div class="flex flex-col items-end gap-3">
             <div class="flex gap-3">
-                <button onclick="downloadPDF()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-2xl font-bold text-xs uppercase shadow-lg transition-all flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                    Download PDF
-                </button>
-                <button onclick="location.reload()" class="bg-slate-900 text-white px-5 py-3 rounded-2xl font-bold text-xs uppercase hover:bg-black transition-all">Refresh</button>
+                <button onclick="downloadPDF()" class="bg-red-500 text-white px-6 py-3 rounded-2xl font-bold text-xs uppercase shadow-md">PDF Report</button>
+                <button onclick="location.reload()" class="bg-slate-900 text-white px-5 py-3 rounded-2xl font-bold text-xs uppercase">Refresh</button>
             </div>
-            <div class="text-[10px] font-bold text-slate-400 flex items-center gap-2">
-                Designed & Developed By: <span class="dev-tag">Yashdeep Jivani</span>
-            </div>
+            <div class="text-[10px] font-bold text-slate-400">DEVELOPER: <span class="dev-tag">Yashdeep Jivani</span></div>
         </div>
     </header>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-        <div class="stat-card"><div class="stat-label">Designs</div><div id="stat-designs" class="stat-val">0</div></div>
-        <div class="stat-card"><div class="stat-label">Total Stock</div><div id="stat-boxes" class="stat-val">0</div></div>
-        <div class="stat-card"><div class="stat-label">Brands</div><div id="stat-brands" class="stat-val">0</div></div>
-        <div class="stat-card"><div class="stat-label">Filtered</div><div id="stat-results" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="text-xs font-bold text-slate-400 uppercase">Designs</div><div id="stat-designs" class="text-3xl font-extrabold">0</div></div>
+        <div class="stat-card"><div class="text-xs font-bold text-slate-400 uppercase">Stock</div><div id="stat-boxes" class="text-3xl font-extrabold">0</div></div>
+        <div class="stat-card"><div class="text-xs font-bold text-slate-400 uppercase">Brands</div><div id="stat-brands" class="text-3xl font-extrabold">0</div></div>
+        <div class="stat-card"><div class="text-xs font-bold text-slate-400 uppercase">Filtered</div><div id="stat-results" class="text-3xl font-extrabold">0</div></div>
     </div>
 
-    <div class="glass-card p-8 grid grid-cols-1 md:grid-cols-5 gap-6 mb-10 shadow-xl">
-        <div><label>Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Search..."></div>
-        <div><label>Grade</label><select id="filterBrand" onchange="applyFilters()"><option value="">All Grades</option></select></div>
-        <div><label>Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"><option value="">All Sizes</option></select></div>
-        <div><label>Series</label><select id="filterSeries" onchange="applyFilters()"><option value="">All Series</option></select></div>
-        <div><label>Brand</label><select id="filterGrade" onchange="applyFilters()"><option value="">All Brands</option></select></div>
+    <div class="stat-card p-8 grid grid-cols-1 md:grid-cols-5 gap-6 mb-10 shadow-xl">
+        <div><label class="text-[10px] font-bold uppercase text-slate-500">Search</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Search..."></div>
+        <div><label class="text-[10px] font-bold uppercase text-slate-500">Brand</label><select id="filterBrand" onchange="applyFilters()"><option value="">All Brands</option></select></div>
+        <div><label class="text-[10px] font-bold uppercase text-slate-500">Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"><option value="">All Sizes</option></select></div>
+        <div><label class="text-[10px] font-bold uppercase text-slate-500">Series</label><select id="filterSeries" onchange="applyFilters()"><option value="">All Series</option></select></div>
+        <div><label class="text-[10px] font-bold uppercase text-slate-500">Grade</label><select id="filterGrade" onchange="applyFilters()"><option value="">All Grades</option></select></div>
     </div>
 
-    <div id="reportList" class="space-y-8 pb-20">
-        <div class="py-32 text-center">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mb-4"></div>
-            <p class="font-bold text-slate-400 uppercase tracking-widest">Accessing Warehouse...</p>
-        </div>
-    </div>
+    <div id="reportList" class="space-y-8 pb-20"></div>
 </div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqrGsL98Dbg432wq-eD9ZALoYNamd9wzyJL8tNTG-FvH4EfBQ3jkWa9tZzCpxrkgG5iw/exec';
-    
-    let masterData = [];
-    let designMap = {};
-    let selectedItem = null;
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwnzgi_K-xT08WBT6_F2eeUSrdHfI18qcihJozbCUIBvWJ6RFSEZ0BtnRTKyd9hG-U53A/exec';
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdmin = urlParams.get('mode') === 'admin123'; // સિક્રેટ કી
+
+    let masterData = [], designMap = {}, selectedItem = null;
 
     async function init() {
-        try {
-            const resImg = await fetch('design.json?v=' + Date.now());
-            if (resImg.ok) {
-                const designs = await resImg.json();
-                designs.forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
-            }
-            fetchLiveStock();
-        } catch (e) { console.error("Init error:", e); }
+        const resImg = await fetch('design.json?v=' + Date.now()).catch(() => ({ok: false}));
+        if (resImg.ok) {
+            const designs = await resImg.json();
+            designs.forEach(d => { if(d.name) designMap[d.name.toLowerCase().replace(/[^a-z0-9]/g, '')] = d.url; });
+        }
+        fetchLiveStock();
     }
 
     async function fetchLiveStock() {
-        try {
-            const response = await fetch(SCRIPT_URL);
-            masterData = await response.json();
-            document.getElementById('updateTime').innerText = "LIVE: " + new Date().toLocaleTimeString();
-            setupFilters();
-            applyFilters();
-        } catch (err) { 
-            document.getElementById('updateTime').innerText = "OFFLINE - RECONNECTING...";
-        }
+        const response = await fetch(SCRIPT_URL);
+        masterData = await response.json();
+        document.getElementById('updateTime').innerText = "LIVE: " + new Date().toLocaleTimeString();
+        setupFilters();
+        applyFilters();
     }
 
     function setupFilters() {
@@ -193,94 +111,66 @@
             if (item["Size"]) sizes.add(item["Size"].toString().trim());
             if (item["Variant"]) grades.add(item["Variant"].toString().trim());
         });
-        
-        const bSel = document.getElementById('filterBrand'), sSel = document.getElementById('filterSize'), gSel = document.getElementById('filterGrade');
-        const oldB = bSel.value, oldS = sSel.value, oldG = gSel.value;
-
-        bSel.innerHTML = '<option value="">All Brands</option>';
-        [...brands].sort().forEach(b => bSel.innerHTML += `<option value="${b}">${b}</option>`);
-        sSel.innerHTML = '<option value="">All Sizes</option>';
-        [...sizes].sort().forEach(s => sSel.innerHTML += `<option value="${s}">${s}</option>`);
-        gSel.innerHTML = '<option value="">All Grades</option>';
-        [...grades].sort().forEach(g => gSel.innerHTML += `<option value="${g}">${g}</option>`);
-
-        bSel.value = oldB; sSel.value = oldS; gSel.value = oldG;
+        const fill = (id, set, label) => {
+            const el = document.getElementById(id);
+            const val = el.value;
+            el.innerHTML = `<option value="">${label}</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
+            el.value = val;
+        };
+        fill('filterBrand', brands, 'All Brands');
+        fill('filterSize', sizes, 'All Sizes');
+        fill('filterGrade', grades, 'All Grades');
         updateSeriesOptions();
     }
 
     function updateSeriesOptions() {
-        const selectedSize = document.getElementById('filterSize').value;
+        const sSize = document.getElementById('filterSize').value;
         const seriesSet = new Set();
         masterData.forEach(item => {
-            if (selectedSize === "" || item["Size"].toString().trim() === selectedSize) {
+            if (sSize === "" || item["Size"].toString().trim() === sSize) {
                 if (item["Series"]) seriesSet.add(item["Series"].toString().trim());
             }
         });
-        const srSel = document.getElementById('filterSeries');
-        const oldSr = srSel.value;
-        srSel.innerHTML = '<option value="">All Series</option>';
-        [...seriesSet].sort().forEach(sr => srSel.innerHTML += `<option value="${sr}">${sr}</option>`);
-        srSel.value = oldSr;
+        const el = document.getElementById('filterSeries');
+        const val = el.value;
+        el.innerHTML = '<option value="">All Series</option>' + [...seriesSet].sort().map(v => `<option value="${v}">${v}</option>`).join('');
+        el.value = val;
     }
 
     function applyFilters() {
-        const nameVal = document.getElementById('searchName').value.toLowerCase();
-        const brandVal = document.getElementById('filterBrand').value;
-        const sizeVal = document.getElementById('filterSize').value;
-        const seriesVal = document.getElementById('filterSeries').value;
-        const gradeVal = document.getElementById('filterGrade').value;
-        
+        const nV = document.getElementById('searchName').value.toLowerCase();
+        const bV = document.getElementById('filterBrand').value, sV = document.getElementById('filterSize').value, srV = document.getElementById('filterSeries').value, gV = document.getElementById('filterGrade').value;
         const groups = {};
-        let totalBoxes = 0;
-        const uniqueBrands = new Set(), uniqueDesigns = new Set();
+        let totalBoxes = 0; const uB = new Set(), uD = new Set();
 
-        masterData.forEach(item => {
-            const name = (item["Item Description"] || "N/A").toString().trim();
-            const brand = (item["Brand"] || "N/A").toString().trim();
-            const series = (item["Series"] || "N/A").toString().trim();
-            const size = (item["Size"] || "N/A").toString().trim();
-            const grade = (item["Variant"] || "N/A").toString().trim();
-            const qty = parseFloat(item["Total"] || 0);
-            const lot = (item["Lot No"] || "N/A").toString().trim();
-
-            if (name.toLowerCase().includes(nameVal) &&
-                (brandVal === "" || brand === brandVal) &&
-                (sizeVal === "" || size === sizeVal) &&
-                (seriesVal === "" || series === seriesVal) &&
-                (gradeVal === "" || grade === gradeVal)) {
-                
-                const key = `${name}|${series}|${size}|${grade}|${brand}`.toLowerCase();
-                if (!groups[key]) groups[key] = { name, series, size, grade, brand, lots: [], total: 0 };
-                groups[key].lots.push({ lot, qty });
-                groups[key].total += qty;
-                totalBoxes += qty;
-                uniqueBrands.add(brand);
-                uniqueDesigns.add(name);
+        masterData.forEach(i => {
+            const name = String(i["Item Description"] || ""), brand = String(i["Brand"] || ""), series = String(i["Series"] || ""), size = String(i["Size"] || ""), grade = String(i["Variant"] || ""), qty = parseFloat(i["Total"] || 0), lot = String(i["Lot No"] || "");
+            if (name.toLowerCase().includes(nV) && (!bV || brand === bV) && (!sV || size === sV) && (!srV || series === srV) && (!gV || grade === gV)) {
+                const k = `${name}|${series}|${size}|${grade}|${brand}`.toLowerCase();
+                if (!groups[k]) groups[k] = { name, series, size, grade, brand, lots: [], total: 0 };
+                groups[k].lots.push({ lot, qty }); groups[k].total += qty;
+                totalBoxes += qty; uB.add(brand); uD.add(name);
             }
         });
-
-        document.getElementById('stat-designs').innerText = uniqueDesigns.size;
+        document.getElementById('stat-designs').innerText = uD.size;
         document.getElementById('stat-boxes').innerText = totalBoxes.toLocaleString();
-        document.getElementById('stat-brands').innerText = uniqueBrands.size;
+        document.getElementById('stat-brands').innerText = uB.size;
         document.getElementById('stat-results').innerText = Object.keys(groups).length;
-
         render(Object.values(groups));
     }
 
     function render(items) {
         const area = document.getElementById('reportList');
-        if (items.length === 0) { 
-            area.innerHTML = `<div class='py-32 text-center text-slate-400 font-bold'>NO MATCHING DESIGNS</div>`; 
-            return; 
-        }
+        if (!items.length) { area.innerHTML = `<div class='py-20 text-center font-bold text-slate-400'>NO DESIGNS FOUND</div>`; return; }
         area.innerHTML = items.map(item => {
-            const imgUrl = designMap[item.name.toLowerCase().trim()] || 'https://via.placeholder.com/400x600?text=No+Photo';
+            const clean = item.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const imgUrl = designMap[clean] || 'https://via.placeholder.com/400x600?text=No+Photo';
             return `
             <div class="stock-card shadow-lg">
                 <div class="card-img" onclick="window.open('${imgUrl}')"><img src="${imgUrl}" class="max-h-48"></div>
                 <div class="card-info">
                     <div class="flex justify-between items-start mb-2">
-                        <span class="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-1 rounded-md">${item.brand} • ${item.series}</span>
+                        <span class="text-[10px] font-extrabold text-blue-600 bg-blue-50 px-2 py-1 rounded-md uppercase tracking-widest">${item.brand} • ${item.series}</span>
                         <span class="bg-slate-900 text-white px-3 py-1 rounded-full text-[9px] font-extrabold uppercase">${item.grade}</span>
                     </div>
                     <div class="text-3xl font-extrabold uppercase tracking-tight text-slate-800 mb-1">${item.name}</div>
@@ -291,15 +181,15 @@
                                 <span class="font-bold text-xs text-slate-500">LOT: ${l.lot}</span>
                                 <div class="flex items-center gap-4">
                                     <span class="font-extrabold text-slate-800 text-base">${l.qty} BX</span>
-                                    <button onclick="openBooking('${item.name}', '${l.lot}')" class="text-[10px] bg-blue-600 text-white px-4 py-1.5 rounded-lg font-bold uppercase shadow-md hover:bg-blue-700 transition">Book</button>
+                                    ${isAdmin ? `<button onclick="openBooking('${item.name}', '${l.lot}')" class="text-[10px] bg-blue-600 text-white px-4 py-1.5 rounded-lg font-bold uppercase shadow-md hover:bg-blue-700 transition">Book</button>` : ''}
                                 </div>
                             </div>`).join('')}
                     </div>
                 </div>
                 <div class="card-total">
-                    <div class="stat-label">Available</div>
+                    <div class="text-[10px] font-bold text-slate-400 uppercase">Available</div>
                     <div class="text-5xl font-extrabold text-slate-900 my-1">${item.total}</div>
-                    <div class="stat-label">Boxes</div>
+                    <div class="text-[10px] font-bold text-slate-400 uppercase">Boxes</div>
                 </div>
             </div>`;
         }).join('');
@@ -312,46 +202,31 @@
     }
 
     async function confirmBooking() {
-        const party = document.getElementById('partyName').value;
-        const qty = document.getElementById('bookQty').value;
-        if(!party || !qty) { alert("Enter Details"); return; }
-        
-        const btn = document.querySelector('#bookingModal .btn-premium');
-        const originalText = btn.innerText;
-        btn.innerText = "Processing...";
-        btn.disabled = true;
-        
+        const p = document.getElementById('partyName').value, q = document.getElementById('bookQty').value;
+        if(!p || !q) return alert("Enter Details");
+        const btn = document.querySelector('#bookingModal button'); btn.innerText = "Booking..."; btn.disabled = true;
         try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ itemName: selectedItem.name, lotNo: selectedItem.lot, orderQty: qty, partyName: party })
-            });
-            alert(`Booked: ${qty} Boxes of ${selectedItem.name}`);
+            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ itemName: selectedItem.name, lotNo: selectedItem.lot, orderQty: q, partyName: p }) });
+            alert(`Booked: ${q} Boxes for ${p}`);
             document.getElementById('bookingModal').style.display = 'none';
             fetchLiveStock();
         } catch (e) { alert("Booking Error"); }
-        btn.innerText = originalText;
-        btn.disabled = false;
+        btn.innerText = "Confirm"; btn.disabled = false;
     }
 
     async function downloadPDF() {
-        const { jsPDF } = window.jspdf;
-        const element = document.getElementById('reportList');
+        const { jsPDF } = window.jspdf; const element = document.getElementById('reportList');
         const canvas = await html2canvas(element, { scale: 2, useCORS: true });
         const imgData = canvas.toDataURL('image/jpeg', 0.8);
         const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgProps = pdf.getImageProperties(imgData);
         const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        
-        pdf.setFontSize(16);
-        pdf.text("NexTile - LIVE STOCK REPORT", 15, 15);
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        pdf.setFontSize(16); pdf.text("NexTile - LIVE STOCK REPORT", 15, 15);
         pdf.addImage(imgData, 'JPEG', 0, 20, pdfWidth, pdfHeight);
         pdf.save(`NexTile_Report.pdf`);
     }
 
-    setInterval(fetchLiveStock, 60000);
-    init();
+    init(); setInterval(fetchLiveStock, 60000);
 </script>
 </body>
 </html>
