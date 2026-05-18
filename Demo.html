@@ -3,258 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Inventory System | EMCER</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>EMCER | Ultra-Pro Inventory Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --brand: #2563eb;
-            --bg-light: #f1f5f9;
-            --surface: #ffffff;
-            --text-dark: #0f172a;
-            --text-muted: #64748b;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --sidebar-width: 320px;
+            --brand: #0f172a;
+            --accent: #3b82f6;
+            --bg: #f1f5f9;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Outfit', sans-serif; background: var(--bg-light); color: var(--text-dark); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); display: flex; height: 100vh; overflow: hidden; }
 
-        .dashboard { max-width: 1400px; margin: auto; padding: 20px; }
-
-        /* Stats Bar */
-        .stats-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px; margin-bottom: 30px;
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width); background: white; border-right: 1px solid #e2e8f0;
+            padding: 25px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto;
         }
-        .stat-card {
-            background: var(--surface); padding: 20px; border-radius: 16px;
-            box-shadow: var(--shadow); border-left: 5px solid var(--brand);
-        }
-        .stat-card small { color: var(--text-muted); font-size: 14px; font-weight: 500; }
-        .stat-card h2 { font-size: 28px; margin-top: 5px; }
-
-        /* Multi-Filter Sidebar & Header */
-        .controls-wrapper {
-            background: var(--surface); padding: 25px; border-radius: 20px;
-            box-shadow: var(--shadow); margin-bottom: 30px;
-            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 15px;
-            position: sticky; top: 15px; z-index: 100;
+        .sidebar h2 { font-size: 20px; font-weight: 800; color: var(--brand); margin-bottom: 10px; }
+        
+        .filter-group { display: flex; flex-direction: column; gap: 8px; }
+        .filter-group label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; }
+        .filter-group select, .filter-group input {
+            padding: 12px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px;
         }
 
-        .input-group label { display: block; font-size: 12px; font-weight: 700; color: var(--brand); margin-bottom: 5px; text-transform: uppercase; }
-        .input-group input, .input-group select {
-            width: 100%; padding: 12px; border: 1.5px solid #e2e8f0; border-radius: 10px;
-            outline: none; transition: 0.3s; font-family: inherit;
-        }
-        .input-group input:focus { border-color: var(--brand); }
+        .qty-range { display: flex; gap: 10px; }
+        .qty-range input { width: 50%; }
 
-        /* Products Grid */
+        /* Main Content */
+        .main-content { flex: 1; overflow-y: auto; padding: 30px; }
+        .top-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .stat-card span { font-size: 12px; color: #64748b; font-weight: 600; }
+        .stat-card div { font-size: 24px; font-weight: 800; margin-top: 5px; }
+
+        /* Card Layout */
         .inventory-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 25px;
         }
-
-        /* Luxury Card Design */
-        .tile-card {
-            background: var(--surface); border-radius: 24px; overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position: relative;
+        .p-card {
+            background: white; border-radius: 20px; overflow: hidden; border: 1px solid #e2e8f0;
+            transition: 0.3s; position: relative;
         }
-        .tile-card:hover { transform: translateY(-10px); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15); }
-
-        .image-wrapper { position: relative; padding-top: 110%; overflow: hidden; cursor: zoom-in; }
-        .image-wrapper img { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; transition: 0.6s; }
-        .tile-card:hover .image-wrapper img { scale: 1.1; transform: rotate(1deg); }
-
-        .floating-lot {
-            position: absolute; bottom: 15px; left: 15px;
-            background: rgba(15, 23, 42, 0.8); color: white;
-            padding: 5px 12px; border-radius: 10px; font-size: 12px; backdrop-filter: blur(5px);
-        }
-
-        .card-content { padding: 20px; }
-        .tag { font-size: 10px; background: #eff6ff; color: var(--brand); padding: 4px 10px; border-radius: 50px; font-weight: 700; }
+        .p-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .img-wrap { width: 100%; padding-top: 100%; position: relative; cursor: zoom-in; }
+        .img-wrap img { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; }
         
-        .product-title { font-size: 18px; font-weight: 700; margin: 10px 0 5px 0; letter-spacing: -0.5px; }
-        .product-meta { color: var(--text-muted); font-size: 13px; margin-bottom: 15px; }
+        .p-details { padding: 20px; }
+        .p-series { font-size: 10px; font-weight: 800; color: var(--accent); }
+        .p-name { font-size: 16px; font-weight: 700; margin: 5px 0; }
+        .p-stock { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .p-qty { font-size: 20px; font-weight: 800; color: #059669; }
 
-        .stock-info {
-            display: flex; justify-content: space-between; align-items: flex-end;
-            background: #f8fafc; padding: 15px; border-radius: 15px;
+        /* Modal Viewer */
+        #modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 9999; justify-content: center; align-items: center;
         }
-        .qty-box span { display: block; font-size: 11px; color: var(--text-muted); font-weight: 600; }
-        .qty-box b { font-size: 22px; color: var(--text-dark); }
-        
-        .book-btn {
-            background: var(--brand); color: white; border: none; padding: 12px 20px;
-            border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s;
-        }
-        .book-btn:hover { background: #1e40af; transform: scale(1.05); }
+        #modal img { max-width: 90%; max-height: 85vh; border-radius: 10px; }
 
-        /* Full Screen Viewer */
-        .viewer {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            z-index: 1000; justify-content: center; align-items: center; padding: 40px;
-        }
-        .viewer img { max-width: 100%; max-height: 90vh; border-radius: 10px; }
-        .close-viewer { position: absolute; top: 30px; right: 30px; color: white; font-size: 40px; cursor: pointer; }
-
-        @media (max-width: 900px) {
-            .controls-wrapper { grid-template-columns: 1fr 1fr; }
-            .stats-grid { grid-template-columns: 1fr 1fr; }
-        }
+        @media print { .sidebar { display: none; } .main-content { padding: 0; } }
     </style>
 </head>
 <body>
 
-<div class="dashboard">
-    <div class="stats-grid">
-        <div class="stat-card">
-            <small>Total Designs</small>
-            <h2 id="count-designs">0</h2>
-        </div>
-        <div class="stat-card" style="border-color: #10b981;">
-            <small>Total Stock (SQM)</small>
-            <h2 id="count-stock">0</h2>
-        </div>
-        <div class="stat-card" style="border-color: #f59e0b;">
-            <small>Series Active</small>
-            <h2 id="count-series">0</h2>
-        </div>
-        <div class="stat-card" style="border-color: #ef4444;">
-            <small>Low Stock Items</small>
-            <h2 id="count-low">0</h2>
+<div class="sidebar">
+    <h2>Filters</h2>
+    
+    <div class="filter-group">
+        <label>Search Design</label>
+        <input type="text" id="search" placeholder="Enter Name..." oninput="runFilters()">
+    </div>
+
+    <div class="filter-group">
+        <label>Size (Master)</label>
+        <select id="sizeSelect" onchange="updateSeriesOptions(); runFilters();">
+            <option value="">All Sizes</option>
+        </select>
+    </div>
+
+    <div class="filter-group">
+        <label>Series (Dependent)</label>
+        <select id="seriesSelect" onchange="runFilters()">
+            <option value="">Select Size First</option>
+        </select>
+    </div>
+
+    <div class="filter-group">
+        <label>Quantity Range</label>
+        <div class="qty-range">
+            <input type="number" id="minQty" placeholder="Min" oninput="runFilters()">
+            <input type="number" id="maxQty" placeholder="Max" oninput="runFilters()">
         </div>
     </div>
 
-    <div class="controls-wrapper">
-        <div class="input-group">
-            <label>Search Inventory</label>
-            <input type="text" id="searchInp" placeholder="Type design or lot number..." onkeyup="applyFilters()">
-        </div>
-        <div class="input-group">
-            <label>Series</label>
-            <select id="seriesFilt" onchange="applyFilters()">
-                <option value="">All Series</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label>Size</label>
-            <select id="sizeFilt" onchange="applyFilters()">
-                <option value="">All Sizes</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label>Availability</label>
-            <select id="stockFilt" onchange="applyFilters()">
-                <option value="all">All Items</option>
-                <option value="high">High Stock (>100)</option>
-                <option value="low">Low Stock (<50)</option>
-            </select>
-        </div>
+    <div class="filter-group">
+        <label>Sort Order</label>
+        <select id="sortOrder" onchange="runFilters()">
+            <option value="az">A to Z</option>
+            <option value="za">Z to A</option>
+            <option value="low">Qty: Low to High</option>
+            <option value="high" selected>Qty: High to Low</option>
+        </select>
     </div>
 
-    <div class="inventory-grid" id="gridBody">
+    <button onclick="window.print()" style="padding:15px; background:var(--brand); color:white; border:none; border-radius:10px; cursor:pointer; font-weight:700; margin-top:20px;">Download HD Report</button>
+</div>
+
+<div class="main-content">
+    <div class="top-stats">
+        <div class="stat-card"><span>Available Designs</span><div id="stat1">0</div></div>
+        <div class="stat-card"><span>Total SQM</span><div id="stat2">0</div></div>
+        <div class="stat-card"><span>High Stock</span><div id="stat3" style="color:#059669">0</div></div>
+        <div class="stat-card"><span>Critical Stock</span><div id="stat4" style="color:#dc2626">0</div></div>
+    </div>
+
+    <div class="inventory-grid" id="grid">
         </div>
 </div>
 
-<div class="viewer" id="imgViewer">
-    <span class="close-viewer" onclick="this.parentElement.style.display='none'">&times;</span>
-    <img id="viewImg" src="">
+<div id="modal" onclick="this.style.display='none'">
+    <img id="modalImg" src="">
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/library/d/1up863PvANTBi5mitMIWSXAfGTOXFgWS2DIzzyWzGBXDyndkLSQL3Q_ei/2"; 
-    let masterData = [];
+    const SHEET_API = "https://script.google.com/macros/library/d/1up863PvANTBi5mitMIWSXAfGTOXFgWS2DIzzyWzGBXDyndkLSQL3Q_ei/2";
+    let db = [];
 
-    async function init() {
-        const response = await fetch(API_URL);
-        masterData = await response.json();
+    async function load() {
+        const res = await fetch(SHEET_API);
+        db = await res.json();
         
-        populateFilters();
-        updateStats(masterData);
-        renderCards(masterData);
+        // Initial setup
+        const sizes = [...new Set(db.map(x => x.Size).filter(Boolean))];
+        const sSel = document.getElementById('sizeSelect');
+        sizes.forEach(sz => sSel.innerHTML += `<option value="${sz}">${sz}</option>`);
+
+        runFilters();
     }
 
-    function populateFilters() {
-        const series = [...new Set(masterData.map(d => d.Series).filter(Boolean))];
-        const sizes = [...new Set(masterData.map(d => d.Size).filter(Boolean))];
+    function updateSeriesOptions() {
+        const selSize = document.getElementById('sizeSelect').value;
+        const seriesSel = document.getElementById('seriesSelect');
+        seriesSel.innerHTML = '<option value="">All Series</option>';
         
-        const serEl = document.getElementById('seriesFilt');
-        const sizEl = document.getElementById('sizeFilt');
-        
-        series.forEach(s => serEl.innerHTML += `<option value="${s}">${s}</option>`);
-        sizes.forEach(sz => sizEl.innerHTML += `<option value="${sz}">${sz}</option>`);
+        const filteredSeries = [...new Set(db.filter(x => !selSize || x.Size === selSize).map(x => x.Series).filter(Boolean))];
+        filteredSeries.forEach(s => seriesSel.innerHTML += `<option value="${s}">${s}</option>`);
     }
 
-    function updateStats(data) {
-        document.getElementById('count-designs').innerText = data.length;
-        document.getElementById('count-stock').innerText = Math.round(data.reduce((acc, curr) => acc + (parseFloat(curr.Total) || 0), 0));
-        document.getElementById('count-series').innerText = new Set(data.map(d => d.Series)).size;
-        document.getElementById('count-low').innerText = data.filter(d => d.Total < 50).length;
+    function runFilters() {
+        let data = [...db];
+
+        // 1. Inputs
+        const search = document.getElementById('search').value.toLowerCase();
+        const size = document.getElementById('sizeSelect').value;
+        const series = document.getElementById('seriesSelect').value;
+        const min = parseFloat(document.getElementById('minQty').value) || 0;
+        const max = parseFloat(document.getElementById('maxQty').value) || Infinity;
+        const sort = document.getElementById('sortOrder').value;
+
+        // 2. Filter Logic
+        data = data.filter(i => {
+            const matchesSearch = i['Item Description'].toLowerCase().includes(search) || i['Lot No'].toString().includes(search);
+            const matchesSize = !size || i.Size === size;
+            const matchesSeries = !series || i.Series === series;
+            const matchesQty = i.Total >= min && i.Total <= max;
+            return matchesSearch && matchesSize && matchesSeries && matchesQty;
+        });
+
+        // 3. Sort Logic
+        if(sort === 'az') data.sort((a,b) => a['Item Description'].localeCompare(b['Item Description']));
+        if(sort === 'za') data.sort((a,b) => b['Item Description'].localeCompare(a['Item Description']));
+        if(sort === 'high') data.sort((a,b) => b.Total - a.Total);
+        if(sort === 'low') data.sort((a,b) => a.Total - b.Total);
+
+        render(data);
+        updateCounters(data);
     }
 
-    function renderCards(data) {
-        const grid = document.getElementById('gridBody');
-        grid.innerHTML = "";
-
-        data.forEach(item => {
-            const card = `
-                <div class="tile-card" data-name="${item['Item Description']}" data-series="${item.Series}" data-size="${item.Size}" data-qty="${item.Total}">
-                    <div class="image-wrapper" onclick="openViewer('${item.ImgUrl}')">
-                        <img src="${item.ImgUrl}" loading="lazy">
-                        <div class="floating-lot">LOT: ${item['Lot No']}</div>
-                    </div>
-                    <div class="card-content">
-                        <span class="tag">${item.Series || 'COLLECTION'}</span>
-                        <h3 class="product-title">${item['Item Description']}</h3>
-                        <div class="product-meta">Size: ${item.Size} | Variant: ${item.Variant || 'PRE'}</div>
-                        <div class="stock-info">
-                            <div class="qty-box">
-                                <span>NET AVAILABLE</span>
-                                <b>${item.Total}</b>
-                            </div>
-                            <button class="book-btn" onclick="requestBooking('${item['Item Description']}')">Book</button>
-                        </div>
+    function render(data) {
+        const grid = document.getElementById('grid');
+        grid.innerHTML = data.map(i => `
+            <div class="p-card">
+                <div class="img-wrap" onclick="viewHD('${i.ImgUrl}')">
+                    <img src="${i.ImgUrl}" loading="lazy">
+                </div>
+                <div class="p-details">
+                    <div class="p-series">${i.Series} | LOT: ${i['Lot No']}</div>
+                    <div class="p-name">${i['Item Description']}</div>
+                    <div style="font-size:12px; color:#64748b">Size: ${i.Size}</div>
+                    <div class="p-stock">
+                        <div class="p-qty">${i.Total} <small style="font-size:10px">SQM</small></div>
+                        <button onclick="alert('Booking ${i['Item Description']}')" style="padding:8px 12px; border-radius:8px; border:none; background:#eff6ff; color:var(--accent); font-weight:700; cursor:pointer;">Book</button>
                     </div>
                 </div>
-            `;
-            grid.insertAdjacentHTML('beforeend', card);
-        });
+            </div>
+        `).join('');
     }
 
-    function applyFilters() {
-        const search = document.getElementById('searchInp').value.toLowerCase();
-        const series = document.getElementById('seriesFilt').value;
-        const size = document.getElementById('sizeFilt').value;
-        const stock = document.getElementById('stockFilt').value;
-
-        const cards = document.querySelectorAll('.tile-card');
-        
-        cards.forEach(card => {
-            const q = parseFloat(card.dataset.qty);
-            const matchSearch = card.dataset.name.toLowerCase().includes(search);
-            const matchSeries = !series || card.dataset.series === series;
-            const matchSize = !size || card.dataset.size === size;
-            let matchStock = true;
-            if(stock === 'high') matchStock = q > 100;
-            if(stock === 'low') matchStock = q < 50;
-
-            card.style.display = (matchSearch && matchSeries && matchSize && matchStock) ? "block" : "none";
-        });
+    function updateCounters(data) {
+        document.getElementById('stat1').innerText = data.length;
+        document.getElementById('stat2').innerText = Math.round(data.reduce((a,b) => a + (parseFloat(b.Total) || 0), 0));
+        document.getElementById('stat3').innerText = data.filter(x => x.Total > 200).length;
+        document.getElementById('stat4').innerText = data.filter(x => x.Total < 50).length;
     }
 
-    function openViewer(url) {
-        document.getElementById('imgViewer').style.display = 'flex';
-        document.getElementById('viewImg').src = url;
+    function viewHD(url) {
+        document.getElementById('modal').style.display = 'flex';
+        document.getElementById('modalImg').src = url;
     }
 
-    function requestBooking(name) {
-        alert("Redirecting to booking for: " + name);
-        // Add your doPost call here
-    }
-
-    init();
+    load();
 </script>
-
 </body>
 </html>
