@@ -25,7 +25,7 @@
         
         .brand-header { margin-bottom: 10px; text-align: center; }
         .brand-header h1 { font-family: 'Playfair Display', serif; font-size: 34px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; }
-        .brand-header p { font-size: 10px; letter-spacing: 4px; color: #94a3b8; margin-top: -5px; }
+        .brand-header p { font-size: 10px; letter-spacing: 2px; color: #94a3b8; margin-top: -5px; font-weight: 600; }
 
         .filter-label { font-size: 11px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; }
         
@@ -38,7 +38,7 @@
         .qty-row { display: flex; gap: 10px; }
 
         /* Main Section */
-        .main-content { flex: 1; overflow-y: auto; padding: 40px; }
+        .main-content { flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; }
         
         /* Stats Row */
         .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
@@ -46,8 +46,8 @@
         .stat-box small { font-size: 11px; color: #94a3b8; text-transform: uppercase; }
         .stat-box h2 { font-size: 24px; font-weight: 800; color: white; margin-top: 5px; }
 
-        /* Luxury Cards */
-        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 30px; }
+        /* Inventory Grid */
+        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 30px; padding-bottom: 100px; }
         .luxury-card { background: var(--card-bg); border-radius: 25px; border: 1px solid var(--glass-border); overflow: hidden; transition: 0.4s; position: relative; }
         .luxury-card:hover { transform: translateY(-10px); border-color: var(--gold); }
 
@@ -60,23 +60,29 @@
         .card-series { font-size: 10px; font-weight: 700; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; }
         .card-title { font-family: 'Playfair Display', serif; font-size: 20px; color: white; margin: 5px 0; }
         
-        /* BOX CALCULATION STYLE */
-        .box-summary { background: rgba(212, 175, 55, 0.1); padding: 10px 15px; border-radius: 12px; margin-bottom: 15px; border-left: 3px solid var(--gold); }
-        .box-text { font-size: 18px; font-weight: 800; color: var(--gold); }
-        .sqm-text { font-size: 12px; color: #10b981; font-weight: 600; }
+        /* QUANTITY STYLE - Fixed as per user request */
+        .qty-container { background: rgba(255, 255, 255, 0.05); padding: 12px 15px; border-radius: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border-right: 3px solid var(--gold); }
+        .qty-val { font-size: 22px; font-weight: 800; color: var(--gold); }
+        .qty-label { font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
 
         .footer-flex { display: flex; justify-content: space-between; align-items: center; }
         .btn-luxury { padding: 10px 20px; background: var(--gold); color: black; border: none; border-radius: 12px; font-weight: 800; font-size: 12px; cursor: pointer; }
+
+        /* BRANDING FOOTER */
+        .main-footer { margin-top: auto; padding: 20px 0; border-top: 1px solid var(--glass-border); text-align: center; color: #64748b; font-size: 13px; }
+        .main-footer b { color: var(--gold); }
 
         /* PDF / PRINT */
         @media print {
             body { background: white !important; color: black !important; display: block; }
             .sidebar, .stats-row, .btn-luxury, #loader { display: none !important; }
-            .inventory-grid { display: block !important; }
-            .luxury-card { display: flex !important; flex-direction: row !important; height: 200px !important; margin-bottom: 15px !important; border: 1px solid #ddd !important; page-break-inside: avoid; }
+            .inventory-grid { display: block !important; padding: 0 !important; }
+            .luxury-card { display: flex !important; flex-direction: row !important; height: 200px !important; margin-bottom: 15px !important; border: 1px solid #ddd !important; page-break-inside: avoid; background: white !important;}
             .image-container { width: 200px !important; height: 200px !important; }
             .card-body { flex: 1; padding: 20px !important; }
-            .dev-tag { display: block !important; position: fixed; bottom: 5px; right: 10px; font-weight: bold; }
+            .qty-container { background: #f1f5f9 !important; border-color: black !important; }
+            .qty-val { color: black !important; }
+            .dev-tag { display: block !important; position: fixed; bottom: 10px; width: 100%; text-align: center; color: black; font-weight: bold; }
         }
         .dev-tag { display: none; }
         #loader { position: fixed; inset: 0; background: var(--dark-bg); z-index: 9999; display: flex; justify-content: center; align-items: center; color: var(--gold); font-weight: 800; letter-spacing: 5px; }
@@ -112,7 +118,7 @@
     </div>
 
     <div class="filter-group">
-        <label class="filter-label">Qty Range (SQM)</label>
+        <label class="filter-label">Quantity Range</label>
         <div class="qty-row">
             <input type="number" id="minQ" class="custom-input" placeholder="Min" oninput="refresh()">
             <input type="number" id="maxQ" class="custom-input" placeholder="Max" oninput="refresh()">
@@ -120,7 +126,7 @@
     </div>
 
     <div class="filter-group">
-        <label class="filter-label">Sort Order</label>
+        <label class="filter-label">Sort By</label>
         <select id="sortF" class="custom-input" onchange="refresh()">
             <option value="lot">Lot: Newest First</option>
             <option value="qty-high">Qty: High to Low</option>
@@ -136,17 +142,23 @@
 <div class="main-content">
     <div class="stats-row">
         <div class="stat-box"><small>Total Items</small><h2 id="st1">0</h2></div>
-        <div class="stat-box"><small>Total SQM</small><h2 id="st2">0</h2></div>
+        <div class="stat-box"><small>Total Inventory</small><h2 id="st2">0</h2></div>
         <div class="stat-box"><small>Collections</small><h2 id="st3">0</h2></div>
         <div class="stat-box"><small>Low Stock</small><h2 id="st4" style="color: #f87171;">0</h2></div>
     </div>
     <div class="inventory-grid" id="container"></div>
+    
+    <div class="main-footer">
+        Emcer Tiles Private Limited <br>
+        Designed & Developed by - <b>Yashdeep Jivani</b>
+    </div>
 </div>
 
-<div class="dev-tag">Developer: Yashdeep Jivani</div>
+<div class="dev-tag">
+    Emcer Tiles Private Limited | Designed & Developed by - Yashdeep Jivani
+</div>
 
 <script>
-    // Note: Aa code tamara doGet() na JSON data sathe sync thase.
     const API_URL = "https://script.google.com/macros/s/AKfycbzqrGsL98Dbg432wq-eD9ZALoYNamd9wzyJL8tNTG-FvH4EfBQ3jkWa9tZzCpxrkgG5iw/exec"; // Replace with your URL
     let master = [];
 
@@ -155,7 +167,6 @@
             const res = await fetch(API_URL);
             master = await res.json();
             
-            // Sizes filter
             const sizes = [...new Set(master.map(d => d.Size).filter(Boolean))];
             const sizeEl = document.getElementById('sizeF');
             sizes.forEach(sz => sizeEl.innerHTML += `<option value="${sz}">${sz}</option>`);
@@ -201,37 +212,28 @@
 
     function render(data) {
         const cont = document.getElementById('container');
-        cont.innerHTML = data.map(d => {
-            // Box Calculation Logic: Suppose 1 box = 1.44 SQM (Tamare sheet mujab badli sako)
-            // Jo sheet ma Pcs per box hoy to: Math.floor(d.Total / d.PcsPerBox)
-            // Ahi default 2 Pcs per box calculate karyu che
-            const totalQty = d.Total || 0;
-            const boxes = Math.floor(totalQty / 2); // 2 Pcs per box calculation
-            const loose = totalQty % 2;
-
-            return `
-                <div class="luxury-card">
-                    <div class="image-container">
-                        <div class="floating-badge">LOT: ${d['Lot No']}</div>
-                        <img src="${d.ImgUrl}" crossorigin="anonymous" loading="eager">
+        cont.innerHTML = data.map(d => `
+            <div class="luxury-card">
+                <div class="image-container">
+                    <div class="floating-badge">LOT: ${d['Lot No']}</div>
+                    <img src="${d.ImgUrl}" crossorigin="anonymous" loading="eager">
+                </div>
+                <div class="card-body">
+                    <div class="card-series">${d.Series} | ${d.Size}</div>
+                    <div class="card-title">${d['Item Description']}</div>
+                    
+                    <div class="qty-container">
+                        <div class="qty-label">Available Qty</div>
+                        <div class="qty-val">${d.Total}</div>
                     </div>
-                    <div class="card-body">
-                        <div class="card-series">${d.Series} | ${d.Size}</div>
-                        <div class="card-title">${d['Item Description']}</div>
-                        
-                        <div class="box-summary">
-                            <div class="box-text">${boxes} <span style="font-size:12px; font-weight:400">Boxes</span> ${loose > 0 ? '+ ' + loose + ' Pcs' : ''}</div>
-                            <div class="sqm-text">Net Qty: ${totalQty} SQM</div>
-                        </div>
 
-                        <div class="footer-flex">
-                            <button class="btn-luxury" onclick="alert('Booking ${d['Item Description']}')">BOOK STOCK</button>
-                            <div style="font-size:10px; color:#64748b">ID: ${d['Common Item No'] || 'N/A'}</div>
-                        </div>
+                    <div class="footer-flex">
+                        <button class="btn-luxury" onclick="alert('Booking ${d['Item Description']}')">BOOK STOCK</button>
+                        <div style="font-size:10px; color:#64748b">ID: ${d['Common Item No'] || 'N/A'}</div>
                     </div>
                 </div>
-            `;
-        }).join('');
+            </div>
+        `).join('');
     }
 
     function updateStats(data) {
