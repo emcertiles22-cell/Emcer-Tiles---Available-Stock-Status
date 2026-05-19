@@ -14,7 +14,7 @@
             margin: 0;
             padding: 0;
         }
-        .main-container { max-width: 1100px; margin: auto; padding: 20px; }
+        .main-container { max-width: 1200px; margin: auto; padding: 20px; }
         .header-line { height: 4px; background: #d4af37; margin: 15px 0; }
         
         .stat-card { 
@@ -106,7 +106,8 @@
     </style>
 </head>
 <body>
-<div id="imageModal" onclick="this.style.display='none'"><img id="modalImg" class="max-w-full max-h-[90vh] border-4 border-white" src=""></div>
+
+<div id="imageModal" onclick="this.style.display='none'"><img id="modalImg" class="max-w-full max-h-[90vh] border-4 border-[#d4af37] rounded-lg shadow-2xl" src=""></div>
 
 <div class="main-container" id="printableArea">
     <div class="flex justify-between items-end pt-6">
@@ -136,7 +137,7 @@
         <div class="filter-group"><label>Brand</label><select id="filterBrand" onchange="applyFilters()"></select></div>
         <div class="filter-group"><label>Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"></select></div>
         <div class="filter-group"><label>Series</label><select id="filterSeries" onchange="applyFilters()"></select></div>
-        <div class="filter-group"><label>Variant</label><select id="filterVariant" onchange="applyFilters()"></select></div>
+        <div class="filter-group"><label>Grade</label><select id="filterGrade" onchange="applyFilters()"></select></div>
     </div>
 
     <div id="reportList"></div>
@@ -147,33 +148,35 @@
 </div>
 
 <script>
-    // AHEI TAMARI GOOGLE SCRIPT WEB APP URL APY DEVA NI CHHE
+    // TAMARI DEPLOYED GOOGLE WEB APP URL AHEI COPI-PASTE KARO
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzqrGsL98Dbg432wq-eD9ZALoYNamd9wzyJL8tNTG-FvH4EfBQ3jkWa9tZzCpxrkgG5iw/exec";
 
-    let masterData = [], designMap = {};
+    let masterData = [];
 
     async function initPortal() {
         try {
-            const resImg = await fetch('design.json?v=' + Date.now());
-            if (resImg.ok) {
-                (await resImg.json()).forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
-            }
-            
-            // HAVE DATA DIRECT GOOGLE WEB APP MATHI LIVE FETCH THASE
+            // CODE.GS MATHI LIVE DATA LOAD THASE
             const resStock = await fetch(WEB_APP_URL);
             if (resStock.ok) {
                 masterData = await resStock.json();
                 document.getElementById('lastUpdated').innerText = "Updated: " + new Date().toLocaleString();
-                setupFilters(); applyFilters();
+                setupFilters(); 
+                applyFilters();
             }
         } catch (e) { console.error(e); }
     }
 
     function setupFilters() {
-        const brands = new Set(), sizes = new Set(), variants = new Set();
-        masterData.forEach(i => { if(i.Brand) brands.add(i.Brand); if(i.Size) sizes.add(i.Size); if(i.Variant) variants.add(i.Variant); });
+        const brands = new Set(), sizes = new Set(), grades = new Set();
+        masterData.forEach(i => { 
+            if(i.Brand) brands.add(i.Brand); 
+            if(i.Size) sizes.add(i.Size); 
+            if(i.Grade) grades.add(i.Grade); 
+        });
         const fill = (id, set) => document.getElementById(id).innerHTML = `<option value="">All</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
-        fill('filterBrand', brands); fill('filterSize', sizes); fill('filterVariant', variants);
+        fill('filterBrand', brands); 
+        fill('filterSize', sizes); 
+        fill('filterGrade', grades);
         updateSeriesOptions();
     }
 
@@ -184,18 +187,44 @@
     }
 
     function applyFilters() {
-        const f = { n: document.getElementById('searchName').value.toLowerCase(), b: document.getElementById('filterBrand').value, sz: document.getElementById('filterSize').value, s: document.getElementById('filterSeries').value, v: document.getElementById('filterVariant').value };
+        const f = { 
+            n: document.getElementById('searchName').value.toLowerCase(), 
+            b: document.getElementById('filterBrand').value, 
+            sz: document.getElementById('filterSize').value, 
+            s: document.getElementById('filterSeries').value, 
+            g: document.getElementById('filterGrade').value 
+        };
+        
         const groups = {}; let total = 0, brands = new Set();
+        
         masterData.forEach(item => {
-            const desc = (item["Item Description"]||"").trim(), brand = (item.Brand||"").trim(), series = (item.Series||"").trim(), size = (item.Size||"").trim(), variant = (item.Variant||"").trim(), qty = Number(item["Net Qty"]||0);
-            const lotNo = (item["Lot no."]||"").toString().toLowerCase();
-            if ((desc.toLowerCase().includes(f.n) || lotNo.includes(f.n)) && (!f.b || brand===f.b) && (!f.sz || size===f.sz) && (!f.s || series===f.s) && (!f.v || variant===f.v)) {
-                const k = `${desc}|${brand}|${series}|${size}|${variant}`.toLowerCase();
-                if (!groups[k]) groups[k] = { desc, brand, series, size, variant, lots: [], total: 0 };
-                groups[k].lots.push({ lot: item["Lot no."], qty });
-                groups[k].total += qty; total += qty; brands.add(brand);
+            // CODE.GS NI KEY PARATHI EXACT MATCHING
+            const desc = (item["Item Description"] || "").trim();
+            const brand = (item.Brand || "").trim();
+            const series = (item.Series || "").trim();
+            const size = (item.Size || "").trim();
+            const grade = (item.Grade || "").trim();
+            const lotNo = (item["Lot No"] || "").toString().toLowerCase();
+            const qty = Number(item["Total"] || 0);
+            const imgUrl = item["ImgUrl"] || 'https://placehold.co/600x400/1e293b/64748b?text=No+Image';
+
+            if ((desc.toLowerCase().includes(f.n) || lotNo.includes(f.n)) && 
+                (!f.b || brand===f.b) && 
+                (!f.sz || size===f.sz) && 
+                (!f.s || series===f.s) && 
+                (!f.g || grade===f.g)) {
+                
+                // DESIGN GROUPING KEY
+                const k = `${desc}|${brand}|${series}|${size}|${grade}`.toLowerCase();
+                if (!groups[k]) groups[k] = { desc, brand, series, size, grade, imgUrl, lots: [], total: 0 };
+                
+                groups[k].lots.push({ lot: item["Lot No"], qty });
+                groups[k].total += qty; 
+                total += qty; 
+                brands.add(brand);
             }
         });
+        
         const items = Object.values(groups);
         document.getElementById('statDesigns').innerText = items.length;
         document.getElementById('statBoxes').innerText = total;
@@ -206,13 +235,14 @@
 
     function render(items) {
         document.getElementById('reportList').innerHTML = items.map(item => {
-            const rawUrl = designMap[item.desc.toLowerCase().trim()] || 'https://via.placeholder.com/400';
-            const imgUrl = rawUrl.includes('placeholder') ? rawUrl : "https://images.weserv.nl/?url=" + encodeURIComponent(rawUrl.replace('https://', ''));
+            // PROXY LINK BYPASS FOR CORRS PDF IMAGE ISSUES
+            const cleanImgUrl = item.imgUrl.includes('placehold') ? item.imgUrl : "https://images.weserv.nl/?url=" + encodeURIComponent(item.imgUrl.replace('https://', ''));
+            
             return `
             <div class="stock-card">
-                <div class="variant-badge">${item.variant}</div>
-                <div class="card-img" onclick="document.getElementById('modalImg').src='${rawUrl}'; document.getElementById('imageModal').style.display='flex'">
-                    <img src="${imgUrl}" crossorigin="anonymous">
+                <div class="variant-badge">${item.grade}</div>
+                <div class="card-img" onclick="openFullView('${item.imgUrl}')">
+                    <img src="${cleanImgUrl}" crossorigin="anonymous">
                 </div>
                 <div class="card-info">
                     <div>
@@ -221,7 +251,7 @@
                     <div class="design-name">${item.desc}</div>
                     <div class="design-meta">${item.series} | ${item.size}</div>
                     <div class="lot-container">
-                        ${item.lots.map(l => `<div class="lot-row"><span>LOT: ${l.lot}</span><span class="text-yellow-500">${l.qty} Bx</span></div>`).join('')}
+                        ${item.lots.map(l => `<div class="lot-row"><span>LOT: ${l.lot || 'N/A'}</span><span class="text-yellow-500">${l.qty} Bx</span></div>`).join('')}
                     </div>
                 </div>
                 <div class="card-total">
@@ -230,6 +260,12 @@
                 </div>
             </div>`;
         }).join('');
+    }
+
+    // FULL VIEW POPUP FUNCTION
+    function openFullView(url) {
+        document.getElementById('modalImg').src = url;
+        document.getElementById('imageModal').style.display = 'flex';
     }
 
     async function downloadPDF(btn) {
