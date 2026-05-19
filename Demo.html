@@ -2,21 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NexTile - Emcer Live Stock (Elite Edition)</title>
+    <title>NexTile - Emcer Live Stock</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;700;900&family=Playfair+Display:wght=700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* Premium Black Theme Styling */
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #0f172a; /* Dark Navy Black */
+            background-color: #0f172a; 
             color: #f1f5f9; 
+            margin: 0;
+            padding: 0;
         }
         .main-container { max-width: 1100px; margin: auto; padding: 20px; }
-        .header-line { height: 4px; background: #d4af37; margin: 15px 0; } /* Gold Line */
+        .header-line { height: 4px; background: #d4af37; margin: 15px 0; }
         
-        /* Stat Cards */
         .stat-card { 
             background: #1e293b; 
             border: 1px solid #334155; 
@@ -25,9 +25,8 @@
             border-radius: 12px;
         }
         .stat-val { font-size: 24px; font-weight: 900; color: #d4af37; }
-        .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #94a3b8; }
+        .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; }
         
-        /* Filters */
         .filter-box { 
             background: #1e293b; 
             border: 1px solid #334155; 
@@ -37,7 +36,10 @@
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
             gap: 15px; 
+            align-items: end;
         }
+        .filter-group { display: flex; flex-direction: column; }
+        label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px; letter-spacing: 0.05em; }
         select, input { 
             background: #0f172a;
             border: 1px solid #334155; 
@@ -48,13 +50,14 @@
             text-transform: uppercase; 
             outline: none; 
             border-radius: 8px;
+            width: 100%;
         }
 
-        /* Stock Cards - Elite Look */
         .stock-card { 
             background: #1e293b; 
             border: 1px solid #334155; 
             display: flex; 
+            flex-direction: row;
             margin-bottom: 25px; 
             min-height: 220px; 
             position: relative; 
@@ -63,27 +66,39 @@
             page-break-inside: avoid; 
         }
         .variant-badge { 
-            position: absolute; top: 0; right: 0; 
-            background: #d4af37; color: #000; 
-            padding: 5px 20px; font-size: 11px; font-weight: 900; 
-            text-transform: uppercase; z-index: 10; 
-            border-bottom-left-radius: 12px;
+            position: absolute; 
+            top: 0; 
+            right: 20%; 
+            background: #d4af37; 
+            color: #000; 
+            padding: 5px 15px; 
+            font-size: 11px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            z-index: 10; 
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
         }
-        .brand-tag { font-size: 10px; background: rgba(212, 175, 55, 0.1); color: #d4af37; padding: 2px 8px; border-radius: 4px; font-weight: 800; display: inline-block; margin-bottom: 5px; }
-        .card-img { width: 30%; background: #fff; padding: 15px; display: flex; align-items: center; justify-content: center; }
-        .card-img img { max-height: 180px; width: auto; max-width: 100%; object-fit: contain; }
-        .card-info { width: 50%; padding: 25px; display: flex; flex-direction: column; }
-        .design-name { font-size: 26px; font-weight: 900; color: #fff; text-transform: uppercase; line-height: 1; margin-bottom: 4px; font-family: 'Playfair Display', serif; }
+        .brand-tag { font-size: 10px; background: rgba(212, 175, 55, 0.15); color: #d4af37; padding: 3px 10px; border-radius: 4px; font-weight: 800; display: inline-block; margin-bottom: 8px; text-transform: uppercase; }
+        
+        .card-img { width: 30%; background: #ffffff; padding: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-right: 1px solid #334155; }
+        .card-img img { max-height: 180px; width: auto; max-width: 100%; object-fit: contain; display: block; }
+        
+        .card-info { width: 50%; padding: 25px; display: flex; flex-direction: column; justify-content: center; }
+        .design-name { font-size: 26px; font-weight: 900; color: #ffffff; text-transform: uppercase; line-height: 1.1; margin-bottom: 4px; font-family: 'Playfair Display', serif; }
         .design-meta { color: #94a3b8; font-size: 13px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; }
-        .lot-row { display: flex; justify-content: space-between; border-bottom: 1px solid #334155; padding: 6px 0; font-size: 14px; font-weight: 700; }
-        .card-total { width: 20%; border-left: 1px solid #334155; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); }
-        .total-val { font-size: 50px; font-weight: 900; line-height: 1; color: #d4af37; }
+        
+        .lot-container { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+        .lot-row { display: flex; justify-content: space-between; border-bottom: 1px dotted #334155; padding: 6px 0; font-size: 14px; font-weight: 700; }
+        
+        .card-total { width: 20%; border-left: 1px solid #334155; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.02); }
+        .total-val { font-size: 45px; font-weight: 900; line-height: 1; color: #d4af37; }
 
-        /* Print Settings to Keep Colors in PDF */
         @media print { 
             body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background-color: #0f172a !important; }
             .no-print { display: none !important; } 
-            .stock-card { border: 1px solid #334155 !important; background-color: #1e293b !important; }
+            .main-container { padding: 0 !important; width: 100% !important; max-width: 100% !important; }
+            .stock-card { border: 1px solid #334155 !important; background-color: #1e293b !important; page-break-inside: avoid !important; }
             .total-val, .design-name { color: #d4af37 !important; }
         }
 
@@ -93,17 +108,17 @@
 <body>
 <div id="imageModal" onclick="this.style.display='none'"><img id="modalImg" class="max-w-full max-h-[90vh] border-4 border-white" src=""></div>
 
-<div class="main-container">
+<div class="main-container" id="printableArea">
     <div class="flex justify-between items-end pt-6">
         <div>
             <h1 class="text-4xl font-black text-white leading-none uppercase tracking-tighter" style="font-family: 'Playfair Display', serif;">EMCER TILES PRIVATE LIMITED</h1>
-            <p class="text-sm text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Elite Live Inventory Portal</p>
+            <p class="text-sm text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Live Inventory Portal</p>
             <p id="lastUpdated" class="text-[10px] text-yellow-500 font-bold uppercase mt-1">Updating...</p>
         </div>
         <div class="text-right no-print">
-            <button onclick="downloadPDF(this)" class="bg-yellow-600 text-black px-5 py-2 text-[11px] font-black uppercase rounded-full transition hover:bg-yellow-500 mr-2">📄 Download Colorful PDF</button>
+            <button onclick="downloadPDF(this)" class="bg-yellow-600 text-black px-5 py-2 text-[11px] font-black uppercase rounded-full transition hover:bg-yellow-500 mr-2 shadow-lg">📄 Download Colorful PDF</button>
             <button onclick="location.reload()" class="bg-slate-700 text-white px-5 py-2 text-[11px] font-black uppercase rounded-full transition hover:bg-slate-600">🔄 Refresh</button>
-            <div class="text-[10px] font-bold text-slate-500 mt-2 uppercase tracking-widest">Dev: Yashdeep Jivani</div>
+            <div class="text-[10px] font-bold text-slate-500 mt-2 uppercase tracking-widest">Designed & Developed By: Yashdeep Jivani</div>
         </div>
     </div>
     
@@ -117,7 +132,7 @@
     </div>
 
     <div class="filter-box no-print">
-        <div class="filter-group"><label>Search Design/Lot</label><input type="text" id="searchName" placeholder="Type here..." oninput="applyFilters()"></div>
+        <div class="filter-group"><label>Search Design/Lot</label><input type="text" id="searchName" placeholder="TYPE HERE..." oninput="applyFilters()"></div>
         <div class="filter-group"><label>Brand</label><select id="filterBrand" onchange="applyFilters()"></select></div>
         <div class="filter-group"><label>Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"></select></div>
         <div class="filter-group"><label>Series</label><select id="filterSeries" onchange="applyFilters()"></select></div>
@@ -132,6 +147,9 @@
 </div>
 
 <script>
+    // AHEI TAMARI GOOGLE SCRIPT WEB APP URL APY DEVA NI CHHE
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzqrGsL98Dbg432wq-eD9ZALoYNamd9wzyJL8tNTG-FvH4EfBQ3jkWa9tZzCpxrkgG5iw/exec";
+
     let masterData = [], designMap = {};
 
     async function initPortal() {
@@ -140,7 +158,9 @@
             if (resImg.ok) {
                 (await resImg.json()).forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
             }
-            const resStock = await fetch('stock.json?v=' + Date.now());
+            
+            // HAVE DATA DIRECT GOOGLE WEB APP MATHI LIVE FETCH THASE
+            const resStock = await fetch(WEB_APP_URL);
             if (resStock.ok) {
                 masterData = await resStock.json();
                 document.getElementById('lastUpdated').innerText = "Updated: " + new Date().toLocaleString();
@@ -195,37 +215,52 @@
                     <img src="${imgUrl}" crossorigin="anonymous">
                 </div>
                 <div class="card-info">
-                    <span class="brand-tag">${item.brand}</span>
+                    <div>
+                        <span class="brand-tag">${item.brand}</span>
+                    </div>
                     <div class="design-name">${item.desc}</div>
                     <div class="design-meta">${item.series} | ${item.size}</div>
-                    <div class="flex-grow">${item.lots.map(l => `<div class="lot-row"><span>LOT: ${l.lot}</span><span class="text-yellow-500">${l.qty} Bx</span></div>`).join('')}</div>
+                    <div class="lot-container">
+                        ${item.lots.map(l => `<div class="lot-row"><span>LOT: ${l.lot}</span><span class="text-yellow-500">${l.qty} Bx</span></div>`).join('')}
+                    </div>
                 </div>
                 <div class="card-total">
                     <div class="total-val">${item.total}</div>
-                    <div class="text-[10px] font-bold text-slate-400 uppercase">Total Boxes</div>
+                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">Total Boxes</div>
                 </div>
             </div>`;
         }).join('');
     }
 
     async function downloadPDF(btn) {
-        const element = document.getElementById('reportList');
+        const element = document.getElementById('printableArea');
         const originalText = btn.innerText;
         btn.innerText = "Generating PDF..."; btn.disabled = true;
 
         const opt = {
-            margin: 5,
-            filename: 'Emcer_Elite_Stock.pdf',
+            margin: [10, 10, 10, 10],
+            filename: 'Emcer_Live_Stock_Report.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0f172a' },
+            html2canvas: { 
+                scale: 2, 
+                useCORS: true, 
+                backgroundColor: '#0f172a',
+                logging: false,
+                letterRendering: true
+            },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: ['avoid-all'] }
+            pagebreak: { mode: ['avoid-all', 'css'] }
         };
 
         try {
             await html2pdf().set(opt).from(element).save();
-        } catch (e) { alert("PDF Error"); }
-        finally { btn.innerText = originalText; btn.disabled = false; }
+        } catch (e) { 
+            console.error(e);
+            alert("PDF Generation Error"); 
+        } finally { 
+            btn.innerText = originalText; 
+            btn.disabled = false; 
+        }
     }
 
     initPortal();
