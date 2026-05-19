@@ -2,139 +2,233 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EMCER | Elite Inventory</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <title>NexTile - Emcer Live Stock (Elite Edition)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        :root { --gold: #d4af37; --dark-bg: #0a0c10; --card-bg: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.1); }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--dark-bg); color: #e2e8f0; font-family: 'Outfit', sans-serif; display: flex; height: 100vh; overflow: hidden; }
-
-        /* UI Elements */
-        .sidebar { width: 320px; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(30px); border-right: 1px solid var(--glass-border); padding: 30px 20px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; transition: 0.4s; }
-        .sidebar.collapsed { margin-left: -320px; }
-        .main-content { flex: 1; overflow-y: auto; padding: 40px; transition: 0.4s; position: relative; }
-
+        /* Premium Black Theme Styling */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0f172a; /* Dark Navy Black */
+            color: #f1f5f9; 
+        }
+        .main-container { max-width: 1100px; margin: auto; padding: 20px; }
+        .header-line { height: 4px; background: #d4af37; margin: 15px 0; } /* Gold Line */
+        
+        /* Stat Cards */
+        .stat-card { 
+            background: #1e293b; 
+            border: 1px solid #334155; 
+            padding: 15px; 
+            text-align: center; 
+            border-radius: 12px;
+        }
+        .stat-val { font-size: 24px; font-weight: 900; color: #d4af37; }
+        .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #94a3b8; }
+        
         /* Filters */
-        .filter-label { font-size: 11px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 5px; display: block; }
-        .custom-input { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); border-radius: 10px; padding: 12px; color: white; font-size: 14px; }
-
-        /* Inventory Cards */
-        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 30px; }
-        .luxury-card { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--glass-border); overflow: hidden; page-break-inside: avoid; }
-        .image-container { width: 100%; height: 250px; background: #1a1a1a; }
-        .image-container img { width: 100%; height: 100%; object-fit: cover; }
-        .card-body { padding: 20px; }
-        .card-title { font-family: 'Playfair Display', serif; font-size: 22px; color: white; margin-bottom: 12px; }
-
-        /* Table Logic */
-        .lot-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 13px; }
-        .lot-table th { text-align: left; color: #64748b; padding: 8px; border-bottom: 1px solid var(--glass-border); }
-        .lot-table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.02); }
-        .lot-total-row { background: rgba(212, 175, 55, 0.1); font-weight: 800; color: var(--gold); }
-
-        /* PDF & PRINT SETUP FIX */
-        @media print {
-            @page { size: A4; margin: 15mm 10mm; }
-            body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: #000 !important; }
-            .sidebar, .toggle-btn, .btn-book, .stats-row, #loader { display: none !important; }
-            .main-content { padding: 0 !important; overflow: visible !important; width: 100% !important; }
-            
-            .pdf-header { display: block !important; text-align: center; color: var(--gold); font-family: 'Playfair Display'; font-size: 32px; margin-bottom: 40px; }
-            
-            .inventory-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 20px !important; overflow: visible !important; }
-            .luxury-card { border: 1px solid #333 !important; background: #000 !important; margin-bottom: 10px; }
-            .card-title { color: var(--gold) !important; }
-            
-            .main-footer { display: block !important; position: fixed; bottom: 10mm; width: 100%; text-align: center; color: #888 !important; font-size: 12px; border-top: 1px solid #333; padding-top: 10px; }
+        .filter-box { 
+            background: #1e293b; 
+            border: 1px solid #334155; 
+            padding: 20px; 
+            margin-bottom: 25px; 
+            border-radius: 12px;
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 15px; 
+        }
+        select, input { 
+            background: #0f172a;
+            border: 1px solid #334155; 
+            padding: 10px; 
+            font-weight: 700; 
+            font-size: 13px; 
+            color: white;
+            text-transform: uppercase; 
+            outline: none; 
+            border-radius: 8px;
         }
 
-        .pdf-header, .main-footer { display: none; }
-        #loader { position: fixed; inset: 0; background: var(--dark-bg); z-index: 9999; display: flex; justify-content: center; align-items: center; color: var(--gold); }
+        /* Stock Cards - Elite Look */
+        .stock-card { 
+            background: #1e293b; 
+            border: 1px solid #334155; 
+            display: flex; 
+            margin-bottom: 25px; 
+            min-height: 220px; 
+            position: relative; 
+            border-radius: 16px;
+            overflow: hidden;
+            page-break-inside: avoid; 
+        }
+        .variant-badge { 
+            position: absolute; top: 0; right: 0; 
+            background: #d4af37; color: #000; 
+            padding: 5px 20px; font-size: 11px; font-weight: 900; 
+            text-transform: uppercase; z-index: 10; 
+            border-bottom-left-radius: 12px;
+        }
+        .brand-tag { font-size: 10px; background: rgba(212, 175, 55, 0.1); color: #d4af37; padding: 2px 8px; border-radius: 4px; font-weight: 800; display: inline-block; margin-bottom: 5px; }
+        .card-img { width: 30%; background: #fff; padding: 15px; display: flex; align-items: center; justify-content: center; }
+        .card-img img { max-height: 180px; width: auto; max-width: 100%; object-fit: contain; }
+        .card-info { width: 50%; padding: 25px; display: flex; flex-direction: column; }
+        .design-name { font-size: 26px; font-weight: 900; color: #fff; text-transform: uppercase; line-height: 1; margin-bottom: 4px; font-family: 'Playfair Display', serif; }
+        .design-meta { color: #94a3b8; font-size: 13px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; }
+        .lot-row { display: flex; justify-content: space-between; border-bottom: 1px solid #334155; padding: 6px 0; font-size: 14px; font-weight: 700; }
+        .card-total { width: 20%; border-left: 1px solid #334155; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); }
+        .total-val { font-size: 50px; font-weight: 900; line-height: 1; color: #d4af37; }
+
+        /* Print Settings to Keep Colors in PDF */
+        @media print { 
+            body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background-color: #0f172a !important; }
+            .no-print { display: none !important; } 
+            .stock-card { border: 1px solid #334155 !important; background-color: #1e293b !important; }
+            .total-val, .design-name { color: #d4af37 !important; }
+        }
+
+        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
     </style>
 </head>
 <body>
+<div id="imageModal" onclick="this.style.display='none'"><img id="modalImg" class="max-w-full max-h-[90vh] border-4 border-white" src=""></div>
 
-<div id="loader">LOADING EMCER...</div>
+<div class="main-container">
+    <div class="flex justify-between items-end pt-6">
+        <div>
+            <h1 class="text-4xl font-black text-white leading-none uppercase tracking-tighter" style="font-family: 'Playfair Display', serif;">EMCER TILES PRIVATE LIMITED</h1>
+            <p class="text-sm text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Elite Live Inventory Portal</p>
+            <p id="lastUpdated" class="text-[10px] text-yellow-500 font-bold uppercase mt-1">Updating...</p>
+        </div>
+        <div class="text-right no-print">
+            <button onclick="downloadPDF(this)" class="bg-yellow-600 text-black px-5 py-2 text-[11px] font-black uppercase rounded-full transition hover:bg-yellow-500 mr-2">📄 Download Colorful PDF</button>
+            <button onclick="location.reload()" class="bg-slate-700 text-white px-5 py-2 text-[11px] font-black uppercase rounded-full transition hover:bg-slate-600">🔄 Refresh</button>
+            <div class="text-[10px] font-bold text-slate-500 mt-2 uppercase tracking-widest">Dev: Yashdeep Jivani</div>
+        </div>
+    </div>
+    
+    <div class="header-line"></div>
 
-<div class="sidebar" id="sidebar">
-    <h1 style="color: var(--gold); text-align: center; font-family: 'Playfair Display';">EMCER</h1>
-    <div class="filter-group"><label class="filter-label">Search</label><input type="text" id="srch" class="custom-input" oninput="refresh()"></div>
-    <div class="filter-group"><label class="filter-label">Size</label><select id="sizeF" class="custom-input" onchange="updateSubFilters(); refresh();"><option value="">All Sizes</option></select></div>
-    <div class="filter-group"><label class="filter-label">Surface</label><select id="surfaceF" class="custom-input" onchange="refresh()"><option value="">All</option></select></div>
-    <button onclick="window.print()" style="margin-top:20px; padding:15px; background:var(--gold); border:none; border-radius:10px; font-weight:800; cursor:pointer;">PRINT PDF REPORT</button>
-</div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 no-print">
+        <div class="stat-card"><div class="stat-label">Designs</div><div id="statDesigns" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="stat-label">Boxes</div><div id="statBoxes" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="stat-label">Brands</div><div id="statBrands" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="stat-label">Results</div><div id="statFiltered" class="stat-val">0</div></div>
+    </div>
 
-<div class="main-content">
-    <div class="pdf-header">EMCER TILES PRIVATE LIMITED</div>
-    <div class="inventory-grid" id="container"></div>
-    <div class="main-footer">
-        Emcer Tiles Private Limited | Designed & Developed by - <b>Yashdeep Jivani</b>
+    <div class="filter-box no-print">
+        <div class="filter-group"><label>Search Design/Lot</label><input type="text" id="searchName" placeholder="Type here..." oninput="applyFilters()"></div>
+        <div class="filter-group"><label>Brand</label><select id="filterBrand" onchange="applyFilters()"></select></div>
+        <div class="filter-group"><label>Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"></select></div>
+        <div class="filter-group"><label>Series</label><select id="filterSeries" onchange="applyFilters()"></select></div>
+        <div class="filter-group"><label>Variant</label><select id="filterVariant" onchange="applyFilters()"></select></div>
+    </div>
+
+    <div id="reportList"></div>
+
+    <div class="text-center py-10 opacity-30 text-[10px] font-bold uppercase tracking-[0.5em] no-print">
+        Emcer Tiles Private Limited © 2026
     </div>
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzqrGsL98Dbg432wq-eD9ZALoYNamd9wzyJL8tNTG-FvH4EfBQ3jkWa9tZzCpxrkgG5iw/exec"; 
-    let masterData = [];
+    let masterData = [], designMap = {};
 
-    async function init() {
+    async function initPortal() {
         try {
-            const res = await fetch(API_URL);
-            masterData = await res.json();
-            const sizes = [...new Set(masterData.map(d => d.Size).filter(Boolean))];
-            sizes.forEach(s => document.getElementById('sizeF').innerHTML += `<option value="${s}">${s}</option>`);
-            document.getElementById('loader').style.display = 'none';
-            refresh();
+            const resImg = await fetch('design.json?v=' + Date.now());
+            if (resImg.ok) {
+                (await resImg.json()).forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
+            }
+            const resStock = await fetch('stock.json?v=' + Date.now());
+            if (resStock.ok) {
+                masterData = await resStock.json();
+                document.getElementById('lastUpdated').innerText = "Updated: " + new Date().toLocaleString();
+                setupFilters(); applyFilters();
+            }
         } catch (e) { console.error(e); }
     }
 
-    function refresh() {
-        const s = document.getElementById('srch').value.toLowerCase();
-        const sz = document.getElementById('sizeF').value;
-        const surf = document.getElementById('surfaceF').value;
-
-        let filtered = masterData.filter(d => {
-            // Batch/Lot mapping check
-            const lot = (d['Lot no.'] || d['Lot no'] || d['Batch No'] || d['LOT'] || "").toString().toLowerCase();
-            return d['Item Description'].toLowerCase().includes(s) || lot.includes(s) && (!sz || d.Size === sz) && (!surf || d.Series === surf);
-        });
-
-        const groups = {};
-        filtered.forEach(d => {
-            const key = `${d['Item Description']}-${d.Size}`;
-            if (!groups[key]) groups[key] = { ...d, lots: [] };
-            
-            // Critical Fix: Ensuring lot number is captured from any possible header name
-            const lotNo = d['Lot no.'] || d['Lot no'] || d['Batch No'] || d['LOT'] || 'N/A';
-            groups[key].lots.push({ no: lotNo, qty: d['Net Qty'] || d.Total || 0 });
-        });
-
-        render(Object.values(groups));
+    function setupFilters() {
+        const brands = new Set(), sizes = new Set(), variants = new Set();
+        masterData.forEach(i => { if(i.Brand) brands.add(i.Brand); if(i.Size) sizes.add(i.Size); if(i.Variant) variants.add(i.Variant); });
+        const fill = (id, set) => document.getElementById(id).innerHTML = `<option value="">All</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
+        fill('filterBrand', brands); fill('filterSize', sizes); fill('filterVariant', variants);
+        updateSeriesOptions();
     }
 
-    function render(data) {
-        const cont = document.getElementById('container');
-        cont.innerHTML = data.map(d => {
-            const totalStock = d.lots.reduce((acc, l) => acc + parseFloat(l.qty || 0), 0);
+    function updateSeriesOptions() {
+        const sz = document.getElementById('filterSize').value, srs = new Set();
+        masterData.forEach(i => { if(sz==="" || i.Size===sz) if(i.Series) srs.add(i.Series); });
+        document.getElementById('filterSeries').innerHTML = '<option value="">All</option>' + [...srs].sort().map(s => `<option value="${s}">${s}</option>`).join('');
+    }
+
+    function applyFilters() {
+        const f = { n: document.getElementById('searchName').value.toLowerCase(), b: document.getElementById('filterBrand').value, sz: document.getElementById('filterSize').value, s: document.getElementById('filterSeries').value, v: document.getElementById('filterVariant').value };
+        const groups = {}; let total = 0, brands = new Set();
+        masterData.forEach(item => {
+            const desc = (item["Item Description"]||"").trim(), brand = (item.Brand||"").trim(), series = (item.Series||"").trim(), size = (item.Size||"").trim(), variant = (item.Variant||"").trim(), qty = Number(item["Net Qty"]||0);
+            const lotNo = (item["Lot no."]||"").toString().toLowerCase();
+            if ((desc.toLowerCase().includes(f.n) || lotNo.includes(f.n)) && (!f.b || brand===f.b) && (!f.sz || size===f.sz) && (!f.s || series===f.s) && (!f.v || variant===f.v)) {
+                const k = `${desc}|${brand}|${series}|${size}|${variant}`.toLowerCase();
+                if (!groups[k]) groups[k] = { desc, brand, series, size, variant, lots: [], total: 0 };
+                groups[k].lots.push({ lot: item["Lot no."], qty });
+                groups[k].total += qty; total += qty; brands.add(brand);
+            }
+        });
+        const items = Object.values(groups);
+        document.getElementById('statDesigns').innerText = items.length;
+        document.getElementById('statBoxes').innerText = total;
+        document.getElementById('statBrands').innerText = brands.size;
+        document.getElementById('statFiltered').innerText = items.length;
+        render(items);
+    }
+
+    function render(items) {
+        document.getElementById('reportList').innerHTML = items.map(item => {
+            const rawUrl = designMap[item.desc.toLowerCase().trim()] || 'https://via.placeholder.com/400';
+            const imgUrl = rawUrl.includes('placeholder') ? rawUrl : "https://images.weserv.nl/?url=" + encodeURIComponent(rawUrl.replace('https://', ''));
             return `
-            <div class="luxury-card">
-                <div class="image-container"><img src="${d.ImgUrl || ''}"></div>
-                <div class="card-body">
-                    <div style="font-size:10px; color:var(--gold);">${d.Series} | ${d.Size}</div>
-                    <div class="card-title">${d['Item Description']}</div>
-                    <table class="lot-table">
-                        <thead><tr><th>Batch / Lot No.</th><th style="text-align:right">Qty</th></tr></thead>
-                        <tbody>
-                            ${d.lots.map(l => `<tr><td>${l.no}</td><td style="text-align:right">${l.qty}</td></tr>`).join('')}
-                            <tr class="lot-total-row"><td>TOTAL STOCK</td><td style="text-align:right">${totalStock}</td></tr>
-                        </tbody>
-                    </table>
+            <div class="stock-card">
+                <div class="variant-badge">${item.variant}</div>
+                <div class="card-img" onclick="document.getElementById('modalImg').src='${rawUrl}'; document.getElementById('imageModal').style.display='flex'">
+                    <img src="${imgUrl}" crossorigin="anonymous">
+                </div>
+                <div class="card-info">
+                    <span class="brand-tag">${item.brand}</span>
+                    <div class="design-name">${item.desc}</div>
+                    <div class="design-meta">${item.series} | ${item.size}</div>
+                    <div class="flex-grow">${item.lots.map(l => `<div class="lot-row"><span>LOT: ${l.lot}</span><span class="text-yellow-500">${l.qty} Bx</span></div>`).join('')}</div>
+                </div>
+                <div class="card-total">
+                    <div class="total-val">${item.total}</div>
+                    <div class="text-[10px] font-bold text-slate-400 uppercase">Total Boxes</div>
                 </div>
             </div>`;
         }).join('');
     }
 
-    init();
+    async function downloadPDF(btn) {
+        const element = document.getElementById('reportList');
+        const originalText = btn.innerText;
+        btn.innerText = "Generating PDF..."; btn.disabled = true;
+
+        const opt = {
+            margin: 5,
+            filename: 'Emcer_Elite_Stock.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0f172a' },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all'] }
+        };
+
+        try {
+            await html2pdf().set(opt).from(element).save();
+        } catch (e) { alert("PDF Error"); }
+        finally { btn.innerText = originalText; btn.disabled = false; }
+    }
+
+    initPortal();
 </script>
 </body>
 </html>
