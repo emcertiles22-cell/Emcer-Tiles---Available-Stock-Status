@@ -4,29 +4,37 @@
     <meta charset="UTF-8">
     <title>NexTile - Emcer Live Stock</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #000; }
+        /* ELITE BLACK & GOLD PREMIUM THEME */
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
         .main-container { max-width: 1100px; margin: auto; padding: 20px; }
-        .header-line { height: 5px; background: #000; margin: 15px 0; }
-        .stat-card { background: #fff; border: 2px solid #000; padding: 15px; text-align: center; box-shadow: 4px 4px 0px #000; }
-        .stat-val { font-size: 24px; font-weight: 900; }
-        .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; }
-        .filter-box { background: white; border: 2px solid #000; padding: 20px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
-        .filter-group { display: flex; flex-direction: column; }
-        label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #64748b; margin-bottom: 6px; }
-        select, input { border: 1px solid #e2e8f0; padding: 10px; font-weight: 700; font-size: 13px; text-transform: uppercase; outline: none; }
-        .stock-card { background: white; border: 2px solid #000; display: flex; margin-bottom: 25px; min-height: 220px; position: relative; page-break-inside: avoid; }
+        .header-line { height: 4px; background: linear-gradient(90deg, #d4af37, #f3e5ab, #d4af37); margin: 20px 0; border-radius: 2px; }
         
-        /* VARIANT BADGE FIX: Fixed width, padding, and text visibility */
+        /* STAT CARDS - GLASSMORPHISM DARK LOOK */
+        .stat-card { background: #1e293b; border: 1px solid #334155; border-left: 4px solid #d4af37; padding: 15px; text-align: center; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5); }
+        .stat-val { font-size: 24px; font-weight: 900; color: #d4af37; }
+        .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.1em; }
+        
+        /* FILTER BOX */
+        .filter-box { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        .filter-group { display: flex; flex-direction: column; }
+        label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #d4af37; margin-bottom: 6px; letter-spacing: 0.05em; }
+        select, input { background: #0f172a; border: 1px solid #475569; color: #fff; padding: 10px; font-weight: 700; font-size: 13px; text-transform: uppercase; outline: none; border-radius: 6px; }
+        select:focus, input:focus { border-color: #d4af37; }
+
+        /* STOCK CARD - PREMIUM DARK */
+        .stock-card { background: #1e293b; border: 1px solid #334155; display: flex; margin-bottom: 25px; min-height: 220px; position: relative; page-break-inside: avoid; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); }
+        
+        /* VARIANT BADGE - PERFECT ROUND CAPSULE WITHOUT CUTTING */
         .variant-badge { 
             position: absolute; 
-            top: 12px; 
-            right: calc(20% + 15px); 
+            top: 15px; 
+            right: calc(20% + 20px); 
             background: #d4af37; 
             color: #000; 
-            padding: 4px 14px; 
+            padding: 4px 16px; 
             font-size: 11px; 
             font-weight: 900; 
             text-transform: uppercase; 
@@ -35,70 +43,115 @@
             display: inline-block !important;
             white-space: nowrap;
             text-align: center;
-            min-width: 55px;
+            min-width: 60px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         
-        .brand-tag { font-size: 10px; background: #eff6ff; color: #1e40af; padding: 2px 8px; border-radius: 4px; font-weight: 800; display: inline-block; margin-bottom: 5px; }
-        .card-img { width: 30%; border-right: 2px solid #000; padding: 15px; display: flex; align-items: center; justify-content: center; }
-        .card-img img { max-height: 200px; width: auto; max-width: 100%; object-fit: contain; display: block; }
+        .brand-tag { font-size: 10px; background: rgba(212, 175, 55, 0.15); color: #e2b62d; padding: 2px 10px; border-radius: 4px; font-weight: 800; display: inline-block; margin-bottom: 8px; border: 1px solid rgba(212, 175, 55, 0.3); text-transform: uppercase; }
+        .card-img { width: 30%; border-right: 1px solid #334155; padding: 15px; display: flex; align-items: center; justify-content: center; background: #fff; }
+        .card-img img { max-height: 190px; width: auto; max-width: 100%; object-fit: contain; display: block; border-radius: 4px; }
         .card-info { width: 50%; padding: 25px; display: flex; flex-direction: column; }
-        .design-name { font-size: 26px; font-weight: 900; text-transform: uppercase; line-height: 1; margin-bottom: 4px; }
-        .design-meta { color: #2563eb; font-size: 13px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; }
-        .lot-row { display: flex; justify-content: space-between; border-bottom: 1px dotted #cbd5e1; padding: 6px 0; font-size: 14px; font-weight: 700; }
-        .card-total { width: 20%; border-left: 2px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; }
-        .total-val { font-size: 50px; font-weight: 900; line-height: 1; }
-        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .design-name { font-size: 26px; font-weight: 900; text-transform: uppercase; line-height: 1.1; margin-bottom: 6px; color: #fff; }
+        .design-meta { color: #94a3b8; font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
+        .lot-row { display: flex; justify-content: space-between; border-bottom: 1px dashed #475569; padding: 8px 0; font-size: 14px; font-weight: 700; color: #cbd5e1; }
+        
+        /* CARD TOTAL SECTION */
+        .card-total { width: 20%; border-left: 1px solid #334155; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #131c2e; position: relative; }
+        .total-val { font-size: 48px; font-weight: 900; line-height: 1; color: #d4af37; }
+        
+        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        
+        /* DECORATIVE COLORFUL PDF STYLING */
+        .pdf-template { background: #ffffff !important; color: #000000 !important; padding: 30px !important; }
+        .pdf-template .stock-card { background: #ffffff !important; border: 2px solid #d4af37 !important; color: #000000 !important; box-shadow: none !important; margin-bottom: 20px !important; border-radius: 8px !important; }
+        .pdf-template .card-info { padding: 15px !important; }
+        .pdf-template .design-name { color: #1e293b !important; }
+        .pdf-template .card-total { background: #f8fafc !important; border-left: 2px solid #d4af37 !important; }
+        .pdf-template .lot-row { border-bottom: 1px dotted #cbd5e1 !important; color: #334155 !important; }
+        .pdf-template .variant-badge { right: calc(20% + 15px) !important; background: #000000 !important; color: #ffffff !important; }
+
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body>
 <div id="imageModal" onclick="this.style.display='none'"><img id="modalImg" class="max-w-full max-h-[90vh] border-4 border-white" src=""></div>
 <div class="main-container">
+    
     <div class="flex justify-between items-end pt-6">
         <div>
-            <h1 class="text-4xl font-black text-slate-900 leading-none">EMCER TILES PRIVATE LIMITED</h1>
+            <h1 class="text-4xl font-black text-white leading-none tracking-tight">EMCER TILES PRIVATE LIMITED</h1>
             <p class="text-sm text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Live Inventory Portal</p>
-            <p id="lastUpdated" class="text-[10px] text-blue-500 font-bold uppercase mt-1">Updating...</p>
+            <p id="lastUpdated" class="text-[10px] text-yellow-500 font-bold uppercase mt-1">Fetching live data from sheet...</p>
         </div>
         <div class="text-right no-print">
-            <button onclick="downloadPDF(this)" class="bg-red-600 text-white px-4 py-2 text-[11px] font-black uppercase mr-2">📄 Download PDF</button>
-            <button onclick="location.reload()" class="bg-black text-white px-4 py-2 text-[11px] font-black uppercase">🔄 Refresh</button>
-            <div class="text-[11px] font-black text-blue-600 mt-2 uppercase">Designed & Developed By: Yashdeep Jivani</div>
+            <button onclick="downloadPDF(this)" class="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-black px-5 py-2.5 text-[11px] font-black uppercase mr-2 border border-yellow-400 rounded shadow-lg transition-all">📄 Download Colorful PDF</button>
+            <button onclick="fetchLiveData()" class="bg-slate-800 text-white px-4 py-2.5 text-[11px] font-black uppercase rounded border border-slate-700 transition-all hover:bg-slate-700">🔄 Refresh Data</button>
+            <div class="text-[11px] font-black text-amber-500 mt-2 uppercase tracking-wider">Designed & Developed By: Yashdeep Jivani</div>
         </div>
     </div>
+    
     <div class="header-line"></div>
+    
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 no-print">
         <div class="stat-card"><div class="stat-label">Designs</div><div id="statDesigns" class="stat-val">0</div></div>
-        <div class="stat-card"><div class="stat-label">Boxes</div><div id="statBoxes" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="stat-label">Total Boxes</div><div id="statBoxes" class="stat-val">0</div></div>
         <div class="stat-card"><div class="stat-label">Brands</div><div id="statBrands" class="stat-val">0</div></div>
-        <div class="stat-card"><div class="stat-label">Results</div><div id="statFiltered" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="stat-label">Results Found</div><div id="statFiltered" class="stat-val">0</div></div>
     </div>
+    
     <div class="filter-box no-print">
-        <div class="filter-group"><label>Search</label><input type="text" id="searchName" oninput="applyFilters()"></div>
+        <div class="filter-group"><label>Search Design / Lot</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Type here..."></div>
         <div class="filter-group"><label>Brand</label><select id="filterBrand" onchange="applyFilters()"></select></div>
         <div class="filter-group"><label>Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"></select></div>
         <div class="filter-group"><label>Series</label><select id="filterSeries" onchange="applyFilters()"></select></div>
-        <div class="filter-group"><label>Variant</label><select id="filterVariant" onchange="applyFilters()"></select></div>
+        <div class="filter-group"><label>Variant / Grade</label><select id="filterVariant" onchange="applyFilters()"></select></div>
     </div>
-    <div id="reportList"></div>
+    
+    <div id="reportContainer">
+        <div id="reportList"></div>
+    </div>
 </div>
 
 <script>
+    // URL CONFIGURATION - PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqrGsL98Dbg432wq-eD9ZALoYNamd9wzyJL8tNTG-FvH4EfBQ3jkWa9tZzCpxrkgG5iw/exec"; // <-- TAMARI URL AHIYA REPLACE KARO
+
     let masterData = [], designMap = {};
 
     async function initPortal() {
+        // First fetch design images mapping if available
         try {
             const resImg = await fetch('design.json?v=' + Date.now());
             if (resImg.ok) {
                 (await resImg.json()).forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
             }
-            const resStock = await fetch('stock.json?v=' + Date.now());
+        } catch (e) { console.log("Design images json not found, fallback to placeholder"); }
+        
+        fetchLiveData();
+    }
+
+    // FETCH LIVE DATA FROM GOOGLE SHEET VIA APPS SCRIPT
+    async function fetchLiveData() {
+        document.getElementById('lastUpdated').innerText = "Fetching live data from sheet...";
+        document.getElementById('lastUpdated').style.color = "#eab308";
+        
+        try {
+            const resStock = await fetch(SCRIPT_URL + '?v=' + Date.now());
             if (resStock.ok) {
                 masterData = await resStock.json();
-                document.getElementById('lastUpdated').innerText = "Updated: " + new Date().toLocaleString();
-                setupFilters(); applyFilters();
+                document.getElementById('lastUpdated').innerText = "Live Updated: " + new Date().toLocaleString();
+                document.getElementById('lastUpdated').style.color = "#22c55e";
+                setupFilters(); 
+                applyFilters();
+            } else {
+                document.getElementById('lastUpdated').innerText = "Failed to connect to Apps Script URL.";
+                document.getElementById('lastUpdated').style.color = "#ef4444";
             }
-        } catch (e) { console.error(e); }
+        } catch (e) { 
+            console.error(e); 
+            document.getElementById('lastUpdated').innerText = "Error fetching data. Check Script URL permissions.";
+            document.getElementById('lastUpdated').style.color = "#ef4444";
+        }
     }
 
     function setupFilters() {
@@ -106,8 +159,7 @@
         masterData.forEach(i => { 
             if(i.Brand) brands.add(i.Brand); 
             if(i.Size) sizes.add(i.Size); 
-            // Supporting both Variant and Grade keys from stock.json
-            const vVal = i.Variant || i.Grade;
+            const vVal = i.Variant || i.Grade || i["Grade"];
             if(vVal) variants.add(vVal); 
         });
         const fill = (id, set) => document.getElementById(id).innerHTML = `<option value="">All</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
@@ -126,13 +178,12 @@
         const groups = {}; let total = 0, brands = new Set();
         
         masterData.forEach(item => {
-            const desc = (item["Item Description"]||"").trim();
-            const brand = (item.Brand||"").trim();
-            const series = (item.Series||"").trim();
-            const size = (item.Size||"").trim();
-            // Normalizing Variant and Grade keys
+            const desc = (item["Item Description"] || item["Description"] || "").trim();
+            const brand = (item.Brand || "").trim();
+            const series = (item.Series || "").trim();
+            const size = (item.Size || "").trim();
             const variant = (item.Variant || item.Grade || "STD").trim();
-            const qty = Number(item["Net Qty"] || item["Total"] || 0);
+            const qty = Number(item["Net Qty"] || item["Total"] || item["Qty"] || 0);
             const lotNo = item["Lot no."] || item["Lot No"] || "N/A";
 
             if ((desc.toLowerCase().includes(f.n) || lotNo.toString().toLowerCase().includes(f.n)) && 
@@ -156,6 +207,10 @@
     }
 
     function render(items) {
+        if(items.length === 0) {
+            document.getElementById('reportList').innerHTML = `<div class="text-center py-10 font-bold text-slate-500 uppercase tracking-widest">No Inventory Data Found</div>`;
+            return;
+        }
         document.getElementById('reportList').innerHTML = items.map(item => {
             const rawUrl = designMap[item.desc.toLowerCase().trim()] || 'https://via.placeholder.com/400';
             const imgUrl = rawUrl.includes('placeholder') ? rawUrl : "https://images.weserv.nl/?url=" + encodeURIComponent(rawUrl.replace('https://', ''));
@@ -169,29 +224,40 @@
                     <div class="design-meta">${item.series} | ${item.size}</div>
                     <div class="flex-grow">${item.lots.map(l => `<div class="lot-row"><span>LOT: ${l.lot}</span><span>${l.qty} Bx</span></div>`).join('')}</div>
                 </div>
-                <div class="card-total"><div class="total-val">${item.total}</div><div class="text-[10px] font-bold text-slate-400 uppercase">Boxes</div></div>
+                <div class="card-total"><div class="total-val">${item.total}</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Boxes</div></div>
             </div>`;
         }).join('');
     }
 
+    // DOWNLOAD COLORFUL DECORATIVE BRIGHT PDF FOR OFFICE/PRINT USE
     async function downloadPDF(btn) {
-        const element = document.getElementById('reportList');
+        const element = document.getElementById('reportContainer');
         const originalText = btn.innerText;
-        btn.innerText = "Please Wait..."; btn.disabled = true;
+        btn.innerText = "Generating PDF..."; btn.disabled = true;
+
+        // Apply decorative bright styles specifically for PDF generation
+        element.classList.add('pdf-template');
 
         const opt = {
-            margin: 10,
-            filename: 'Emcer_Stock.pdf',
+            margin: 12,
+            filename: 'Emcer_Live_Stock_Report.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, allowTaint: false },
+            html2canvas: { scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff' },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
             pagebreak: { mode: ['avoid-all'] }
         };
 
         try {
             await html2pdf().set(opt).from(element).save();
-        } catch (e) { alert("PDF Error"); }
-        finally { btn.innerText = originalText; btn.disabled = false; }
+        } catch (e) { 
+            alert("PDF Generation Error"); 
+            console.error(e);
+        } finally { 
+            // Revert back to premium black screen style after PDF is created
+            element.classList.remove('pdf-template');
+            btn.innerText = originalText; 
+            btn.disabled = false; 
+        }
     }
 
     initPortal();
