@@ -7,136 +7,80 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2563eb; --glass: rgba(255, 255, 255, 0.9); }
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: linear-gradient(rgba(241, 245, 249, 0.94), rgba(241, 245, 249, 0.94)), 
-                        url('https://www.transparenttextures.com/patterns/pavement.png');
-            background-attachment: fixed;
-            color: #1e293b; 
-        }
-        .main-container { max-width: 1300px; margin: auto; padding: 25px; }
-        .dev-tag { font-weight: 800; color: white; background: var(--primary); padding: 4px 12px; border-radius: 50px; font-size: 10px; }
-        .glass-card { background: var(--glass); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid white; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .stock-card { background: var(--glass); backdrop-filter: blur(12px); border-radius: 24px; border: 1px solid white; display: flex; margin-top: 25px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03); transition: 0.3s; }
-        .stock-card:hover { transform: scale(1.01); border-color: var(--primary); }
-        .card-img { width: 25%; padding: 15px; background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .card-info { width: 50%; padding: 25px; }
-        .card-total { width: 25%; background: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; border-left: 1px solid #e2e8f0; }
-        #bookingModal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); justify-content:center; align-items:center; }
-        .modal-box { background: white; padding: 35px; border-radius: 30px; width: 95%; max-width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
-        input, select { border-radius: 12px; border: 2px solid #e2e8f0; padding: 12px; width: 100%; font-weight: 600; outline: none; }
-        input:focus { border-color: var(--primary); }
+        .stock-card { transition: all 0.3s ease; border: 1px solid #e2e8f0; }
+        .stock-card:hover { transform: scale(1.01); border-color: #2563eb; }
+        .sticky-header { position: sticky; top: 0; z-index: 999; background: white; padding: 15px 0; border-bottom: 1px solid #e2e8f0; }
+        .low-stock-badge { background: #fee2e2; color: #b91c1c; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; }
     </style>
 </head>
-<body>
+<body class="bg-slate-50">
 
-<div id="bookingModal">
-    <div class="modal-box">
-        <h2 class="text-3xl font-extrabold mb-1">Confirm Booking</h2>
-        <p id="bookItemName" class="text-blue-600 font-bold mb-8 text-sm uppercase"></p>
-        <div class="space-y-5">
-            <div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Party Name / Salesman</label><input type="text" id="partyName" placeholder="Enter details"></div>
-            <div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Order Quantity (Boxes)</label><input type="number" id="bookQty" placeholder="0"></div>
-            <div class="flex gap-4 pt-4">
-                <button onclick="confirmBooking()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold uppercase shadow-lg hover:bg-blue-700 transition">Confirm</button>
-                <button onclick="document.getElementById('bookingModal').style.display='none'" class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold uppercase">Cancel</button>
+<div id="printableArea" class="max-w-6xl mx-auto p-4">
+    <div class="sticky-header shadow-sm mb-6">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-extrabold text-slate-900">NexTile <span class="text-blue-600">Stock</span></h1>
+            <div class="flex gap-2">
+                <button onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase">PDF Report</button>
+                <button onclick="shareWhatsApp()" class="bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase">WhatsApp</button>
             </div>
         </div>
     </div>
-</div>
 
-<div class="main-container">
-    <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
-        <div>
-            <h1 class="text-5xl font-extrabold tracking-tight text-slate-900">Emcer Tiles <span class="text-blue-600">Private Limited</span></h1>
-            <p id="updateTime" class="text-[11px] font-bold text-slate-500 mt-2 uppercase tracking-widest">Synchronizing Live Warehouse...</p>
-        </div>
-        <div class="flex flex-col items-end gap-3">
-            <div class="flex gap-3">
-                <button onclick="downloadPDF()" class="bg-red-500 text-white px-6 py-3 rounded-2xl font-bold text-xs uppercase shadow-md hover:bg-red-600 transition">PDF Report</button>
-                <button onclick="location.reload()" class="bg-slate-900 text-white px-5 py-3 rounded-2xl font-bold text-xs uppercase">Refresh</button>
-            </div>
-            <div class="text-[10px] font-bold text-slate-400">Designed & Developed By: <span class="dev-tag">Yashdeep Jivani</span></div>
-        </div>
-    </header>
-
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-        <div class="glass-card p-5 text-center"><div class="text-xs font-bold text-slate-400 uppercase mb-1">Designs</div><div id="stat-designs" class="text-3xl font-extrabold">0</div></div>
-        <div class="glass-card p-5 text-center"><div class="text-xs font-bold text-slate-400 uppercase mb-1">Stock</div><div id="stat-boxes" class="text-3xl font-extrabold">0</div></div>
-        <div class="glass-card p-5 text-center"><div class="text-xs font-bold text-slate-400 uppercase mb-1">Brands</div><div id="stat-brands" class="text-3xl font-extrabold">0</div></div>
-        <div class="glass-card p-5 text-center"><div class="text-xs font-bold text-slate-400 uppercase mb-1">Filtered</div><div id="stat-results" class="text-3xl font-extrabold">0</div></div>
-    </div>
-
-    <div class="glass-card p-8 grid grid-cols-1 md:grid-cols-5 gap-6 mb-10 shadow-xl">
-        <div><label class="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Type here..."></div>
-        <div><label class="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Brand</label><select id="filterBrand" onchange="applyFilters()"><option value="">All Brands</option></select></div>
-        <div><label class="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"><option value="">All Sizes</option></select></div>
-        <div><label class="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Series</label><select id="filterSeries" onchange="applyFilters()"><option value="">All Series</option></select></div>
-        <div><label class="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Grade</label><select id="filterGrade" onchange="applyFilters()"><option value="">All Grades</option></select></div>
-    </div>
-
-    <div id="reportList" class="space-y-8 pb-20">
-        <div class="py-20 text-center font-bold text-slate-400 animate-pulse uppercase tracking-widest">Accessing Real-time Stock...</div>
-    </div>
-</div>
-
-
-    <div id="reportList" class="p-6"></div>
+    <div id="reportList" class="space-y-4"></div>
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJKfexL72pvC3h_1cnlvLN1uw01Gos8wyvvtXjXmkHxkHzJmmduzxGk7BfjeDvxoU/exec"; // અહીં તમારી લિંક મૂકો
-    let masterData = [];
+    // તમારી Google Apps Script URL અહીં મૂકો
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJKfexL72pvC3h_1cnlvLN1uw01Gos8wyvvtXjXmkHxkHzJmmduzxGk7BfjeDvxoU/exec';
 
     async function fetchData() {
-        const res = await fetch(SCRIPT_URL);
-        masterData = await res.json();
-        render(masterData);
-    }
-
-    function filterData() {
-        // અહીં તમારી ફિલ્ટરિંગ લોજિક છે
-        // Multi-select માટે .selectedOptions વાપર્યું છે
+        const response = await fetch(SCRIPT_URL);
+        const data = await response.json();
+        render(data);
     }
 
     function render(items) {
-        document.getElementById('reportList').innerHTML = items.map(i => `
-            <div class="stock-card">
-                <div class="card-img-box"><img src="${i.ImgUrl}" crossorigin="anonymous"></div>
-                <div class="p-6 flex-1 flex flex-col justify-center">
-                    <div class="flex gap-2 mb-2">
-                        <span class="variant-badge">${i.Grade}</span>
-                        ${i.Total < 50 ? '<span class="low-stock">LOW STOCK (< 50)</span>' : ''}
-                    </div>
-                    <h2 class="text-2xl font-black uppercase text-white">${i.Design}</h2>
-                    <p class="text-slate-400 text-xs font-bold">${i.Brand} | ${i.Series} | ${i.Size}</p>
+        const area = document.getElementById('reportList');
+        area.innerHTML = items.map(item => `
+            <div class="stock-card p-4 bg-white rounded-2xl flex gap-6 items-center">
+                <div class="w-32 h-24 overflow-hidden rounded-lg bg-slate-100">
+                    <img src="${item.ImgUrl || 'https://via.placeholder.com/150'}" class="w-full h-full object-cover hover:scale-110 transition-transform">
                 </div>
-                <div class="px-10 flex flex-col justify-center items-center border-l border-slate-700 bg-slate-800/30">
-                    <div class="text-4xl font-black text-amber-500">${i.Total}</div>
-                    <div class="text-[10px] text-slate-400 font-bold uppercase">Total Boxes</div>
+                <div class="flex-grow">
+                    ${item.Total < 50 ? '<span class="low-stock-badge uppercase mb-1 inline-block">Low Stock (< 50)</span>' : ''}
+                    <div class="text-lg font-bold uppercase">${item["Item Description"]}</div>
+                    <div class="text-[10px] text-slate-400 font-bold uppercase">${item.Brand} | ${item.Size} | ${item.Variant}</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-3xl font-black text-blue-600">${item.Total}</div>
+                    <div class="text-[10px] font-bold text-slate-400 uppercase">Boxes</div>
                 </div>
             </div>
         `).join('');
     }
 
+    // PDF with Page Numbering
     async function downloadPDF() {
-        const date = new Date().toLocaleDateString().replace(/\//g, '-');
-        const opt = {
-            margin: 10,
-            filename: `Emcer_Stock_${date}.pdf`,
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: 'avoid-all', after: '.stock-card' }
-        };
-        // અહીં Page Number માટેનું લોજિક ઉમેરવું
-        await html2pdf().set(opt).from(document.getElementById('printableArea')).save();
+        const { jsPDF } = window.jspdf;
+        const element = document.getElementById('printableArea');
+        const canvas = await html2canvas(element, { scale: 2 });
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        
+        const pageCount = pdf.internal.getNumberOfPages();
+        for(let i = 1; i <= pageCount; i++) {
+            pdf.setPage(i);
+            pdf.text('Page ' + i + ' of ' + pageCount, 180, 285);
+        }
+        pdf.save('Stock_Report.pdf');
     }
 
     function shareWhatsApp() {
-        window.open("https://wa.me/?text=Check out our live inventory: [YOUR_LIVE_LINK]");
+        window.open(`https://wa.me/?text=NexTile Stock Report: ${window.location.href}`);
     }
 
     fetchData();
