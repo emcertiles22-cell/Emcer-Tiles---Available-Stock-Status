@@ -8,39 +8,47 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
         
-        /* Sticky Header */
-        .sticky-nav { position: sticky; top: 0; z-index: 100; background: #0f172a; padding: 15px; border-bottom: 2px solid #334155; }
+        /* Sticky Header & Filters */
+        .sticky-header { position: sticky; top: 0; z-index: 100; background: #0f172a; padding: 15px; border-bottom: 2px solid #334155; }
         
-        /* Card UI */
-        .stock-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; display: flex; margin-bottom: 15px; overflow: hidden; page-break-inside: avoid; }
-        .card-img { width: 180px; height: 140px; background: #0f172a; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        /* Card Styling */
+        .stock-card { 
+            background: #1e293b; border: 1px solid #334155; border-radius: 12px; 
+            display: flex; margin-bottom: 15px; overflow: hidden; page-break-inside: avoid; 
+            transition: transform 0.3s;
+        }
+        .stock-card:hover { transform: scale(1.01); border-color: #d4af37; }
+        
+        /* Image Zoom */
+        .card-img { width: 180px; height: 140px; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .card-img img { max-width: 100%; height: 100%; object-fit: contain; transition: transform 0.4s; }
-        .card-img:hover img { transform: scale(1.3); }
+        .card-img:hover img { transform: scale(1.4); }
         
         /* Low Stock Badge */
-        .low-stock-alert { background: #991b1b; color: #fca5a5; padding: 2px 8px; font-size: 9px; font-weight: 900; border-radius: 4px; }
+        .low-stock-alert { background: #991b1b; color: #fca5a5; padding: 2px 8px; font-size: 9px; font-weight: 900; border-radius: 4px; display: inline-block; }
         
         /* Hide scrollbars on selects */
-        select { appearance: none; -webkit-appearance: none; }
+        select { appearance: none; }
     </style>
 </head>
 <body>
 
 <div id="printableArea" class="max-w-6xl mx-auto">
-    <div class="sticky-nav">
+    <div class="sticky-header">
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-black text-amber-500 uppercase">EMCER TILES PRIVATE LIMITED</h1>
             <div class="flex gap-2">
                 <button onclick="downloadPDF()" class="bg-amber-600 text-black px-4 py-2 font-black text-[10px] rounded">📄 DOWNLOAD PDF</button>
+                <button onclick="shareWhatsApp()" class="bg-green-600 text-white px-4 py-2 font-black text-[10px] rounded">💬 WHATSAPP</button>
             </div>
         </div>
 
         <div class="grid grid-cols-5 gap-2">
-            <input type="text" id="search" placeholder="SEARCH DESIGN..." oninput="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded">
-            <select id="brand" onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
-            <select id="size" onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
-            <select id="series" onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
-            <select id="grade" onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
+            <input type="text" id="search" placeholder="SEARCH..." oninput="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded">
+            <select id="brand" multiple onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
+            <select id="size" multiple onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
+            <select id="series" multiple onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
+            <select id="grade" multiple onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
         </div>
     </div>
 
@@ -48,7 +56,7 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJKfexL72pvC3h_1cnlvLN1uw01Gos8wyvvtXjXmkHxkHzJmmduzxGk7BfjeDvxoU/exec"; // અહીં તમારી URL મૂકો
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJKfexL72pvC3h_1cnlvLN1uw01Gos8wyvvtXjXmkHxkHzJmmduzxGk7BfjeDvxoU/exec"; 
     let data = [];
 
     async function fetchData() {
@@ -60,29 +68,23 @@
 
     function setupFilters() {
         const unique = (key) => [...new Set(data.map(i => i[key]))].sort();
-        const fill = (id, arr) => document.getElementById(id).innerHTML = `<option value="">ALL ${id.toUpperCase()}</option>` + arr.map(v => `<option value="${v}">${v}</option>`).join('');
-        
-        fill('brand', unique('Brand'));
-        fill('size', unique('Size'));
-        fill('series', unique('Series'));
-        fill('grade', unique('Grade'));
+        const fill = (id, arr) => document.getElementById(id).innerHTML = arr.map(v => `<option value="${v}">${v}</option>`).join('');
+        fill('brand', unique('Brand')); fill('size', unique('Size'));
+        fill('series', unique('Series')); fill('grade', unique('Grade'));
     }
 
     function filterData() {
         const s = document.getElementById('search').value.toLowerCase();
-        const b = document.getElementById('brand').value;
-        const sz = document.getElementById('size').value;
-        const sr = document.getElementById('series').value;
-        const gr = document.getElementById('grade').value;
-
+        const b = Array.from(document.getElementById('brand').selectedOptions).map(o => o.value);
+        const sz = Array.from(document.getElementById('size').selectedOptions).map(o => o.value);
+        const sr = Array.from(document.getElementById('series').selectedOptions).map(o => o.value);
+        
         const filtered = data.filter(i => 
             i["Item Description"].toLowerCase().includes(s) &&
-            (b === "" || i.Brand === b) &&
-            (sz === "" || i.Size === sz) &&
-            (sr === "" || i.Series === sr) &&
-            (gr === "" || i.Grade === gr)
+            (b.length === 0 || b.includes(i.Brand)) &&
+            (sz.length === 0 || sz.includes(i.Size)) &&
+            (sr.length === 0 || sr.includes(i.Series))
         );
-
         render(filtered);
     }
 
@@ -92,27 +94,38 @@
                 <div class="card-img"><img src="${i.ImgUrl}" crossorigin="anonymous"></div>
                 <div class="p-4 flex-1">
                     ${i.Total < 50 ? '<span class="low-stock-alert">LOW STOCK (< 50)</span>' : ''}
-                    <h2 class="text-xl font-black text-white uppercase mt-1">${i["Item Description"]}</h2>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase">${i.Brand} | ${i.Series} | ${i.Size} | ${i.Grade}</p>
+                    <h2 class="text-xl font-black text-white uppercase">${i["Item Description"]}</h2>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">${i.Brand} | ${i.Size}</p>
                 </div>
                 <div class="px-6 flex flex-col justify-center items-center bg-slate-800/50">
                     <span class="text-2xl font-black text-amber-500">${i.Total}</span>
-                    <span class="text-[9px] font-bold text-slate-400 uppercase">Total Boxes</span>
                 </div>
             </div>
         `).join('');
     }
 
+    // Dynamic PDF with Page Numbering
     async function downloadPDF() {
         const date = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+        const element = document.getElementById('printableArea');
         const opt = {
-            margin: 5,
+            margin: 10,
             filename: `Emcer_Stock_${date}.pdf`,
             html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
             pagebreak: { mode: 'avoid-all', after: '.stock-card' }
         };
-        await html2pdf().set(opt).from(document.getElementById('printableArea')).save();
+        const pdf = await html2pdf().set(opt).from(element).toPdf().get('pdf');
+        const totalPages = pdf.internal.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            pdf.text('Page ' + i + ' of ' + totalPages, 10, 290);
+        }
+        pdf.save();
+    }
+
+    function shareWhatsApp() {
+        alert("PDF લિંક તૈયાર થઈ રહી છે... (તમારે PDF ને ઓનલાઇન સ્ટોરેજમાં અપલોડ કરીને તેની લિંક WhatsApp પર શેર કરવી પડશે)");
     }
 
     fetchData();
