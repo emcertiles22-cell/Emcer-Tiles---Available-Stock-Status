@@ -4,124 +4,325 @@
     <meta charset="UTF-8">
     <title>NexTile - Emcer Live Stock</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
-        .main-container { max-width: 1100px; margin: auto; padding: 20px; }
+        /* TAMARI REQUIREMENT MUJAB PREMIUM BLACK & GOLD THEME */
+        body { 
+            font-family: 'Unbounded', sans-serif; 
+            background-color: #0d1117; 
+            color: #d4af37; /* Golden Fonts Default */
+            margin: 0;
+            padding: 0;
+        }
         
-        /* 1. STICKY FILTER BOX */
+        .main-container { max-width: 1200px; margin: auto; padding: 25px; }
+        
+        /* HEADER & STATS - Glassmorphism Gold Look */
+        .header-bg { background-color: #161b22; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(212, 175, 55, 0.1); }
+        .stat-card { 
+            background: #1c2128; 
+            border: 2px solid #30363d; 
+            padding: 15px; 
+            text-align: center; 
+            border-radius: 10px; 
+            box-shadow: 4px 4px 0px rgba(212, 175, 55, 0.2); /* Gold Shadow */
+            transition: all 0.3s;
+        }
+        .stat-card:hover { box-shadow: 0px 0px 20px rgba(212, 175, 55, 0.4); }
+        .stat-val { font-size: 26px; font-weight: 900; color: #f3e5ab; /* Brighter Gold */ }
+        .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.1em; }
+        
+        /* STICKY FILTER BOX */
         .filter-box { 
             position: sticky; top: 0; z-index: 100; 
-            background: #1e293b; border: 1px solid #334155; padding: 20px; 
-            margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;
-            border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+            background: #1c2128; 
+            border: 2px solid #30363d; 
+            padding: 20px; 
+            margin-bottom: 30px; 
+            border-radius: 12px;
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 15px; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
         }
+        .filter-group { display: flex; flex-direction: column; }
+        label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #d4af37; margin-bottom: 6px; }
+        select, input { 
+            background: #0d1117; 
+            border: 1px solid #30363d; 
+            color: #d4af37; /* Gold Font */
+            padding: 10px; 
+            font-weight: 700; 
+            font-size: 13px; 
+            text-transform: uppercase; 
+            outline: none; 
+            border-radius: 6px; 
+        }
+        select:focus, input:focus { border-color: #d4af37; }
 
-        /* 2. STOCK CARD WITH LOW STOCK & HOVER ZOOM */
-        .stock-card { background: #1e293b; border: 1px solid #334155; display: flex; margin-bottom: 25px; position: relative; border-radius: 12px; overflow: hidden; transition: 0.3s; }
-        .low-stock { border: 2px solid #ef4444 !important; }
-        .low-stock-badge { position: absolute; bottom: 0; left: 0; background: #ef4444; color: white; padding: 2px 10px; font-size: 10px; font-weight: 900; z-index: 5; }
+        /* STOCK CARD - Neo-Brutalist Gold Look Je tamara image ma chhe */
+        .stock-card { 
+            background: #1c2128; 
+            border: 2px solid #30363d; 
+            display: flex; 
+            margin-bottom: 30px; 
+            min-height: 240px; 
+            position: relative; 
+            border-radius: 14px;
+            overflow: hidden; 
+            page-break-inside: avoid; 
+            box-shadow: 6px 6px 0px rgba(212, 175, 55, 0.15); /* Neo-Brutalist gold shadow */
+        }
         
-        .variant-badge { position: absolute; top: 15px; right: 20px; background: #d4af37; color: #000; padding: 4px 16px; font-size: 11px; font-weight: 900; border-radius: 9999px; }
+        /* VARIANT BADGE - Top Right Capsule */
+        .variant-badge { 
+            position: absolute; 
+            top: 15px; 
+            right: 15px; 
+            background: #d4af37; /* Full Gold Background */
+            color: #000; /* Black Font */
+            padding: 4px 16px; 
+            font-size: 11px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            z-index: 10; 
+            border-radius: 9999px;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
         
-        .card-img { width: 30%; border-right: 1px solid #334155; padding: 15px; display: flex; align-items: center; justify-content: center; background: #fff; overflow: hidden; }
-        .card-img img { max-height: 150px; transition: transform 0.3s; cursor: zoom-in; }
-        .card-img img:hover { transform: scale(1.2); }
+        .brand-tag { font-size: 10px; background: rgba(212, 175, 55, 0.1); color: #f3e5ab; padding: 2px 10px; border-radius: 4px; font-weight: 800; display: inline-block; margin-bottom: 10px; text-transform: uppercase; }
+        .card-img { width: 30%; border-right: 1px solid #30363d; padding: 15px; display: flex; align-items: center; justify-content: center; background: #fff; /* Design needs white bg */ }
+        .card-img img { max-height: 200px; width: auto; max-width: 100%; object-fit: contain; display: block; border-radius: 4px; transition: transform 0.3s; cursor: zoom-in; }
+        .card-img img:hover { transform: scale(1.1); }
         
-        .card-total { width: 20%; border-left: 1px solid #334155; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #131c2e; }
+        .card-info { width: 50%; padding: 25px; display: flex; flex-direction: column; }
+        .design-name { font-size: 28px; font-weight: 900; text-transform: uppercase; line-height: 1; margin-bottom: 6px; color: #fff; /* Design Name in White */ }
+        .design-meta { color: #94a3b8; font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
+        .lot-row { display: flex; justify-content: space-between; border-bottom: 1px dashed #30363d; padding: 8px 0; font-size: 14px; font-weight: 700; color: #d4af37; }
         
-        /* PDF CLEANING */
-        .pdf-template { background: #ffffff !important; color: #000 !important; }
-        .pdf-template .no-print { display: none !important; }
+        /* TOTAL VALUE BOX - Right Side */
+        .card-total { 
+            width: 20%; 
+            border-left: 2px solid #30363d; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            background: #161b22; 
+        }
+        .total-val { font-size: 55px; font-weight: 900; line-height: 1; color: #d4af37; }
+
+        /* IMAGE POPUP MODAL */
+        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        #modalImg { max-width: 100%; max-height: 90vh; border: 4px solid #d4af37; border-radius: 8px; box-shadow: 0 0 30px rgba(212, 175, 55, 0.3); }
+
+        /* DECORATIVE PDF template styling */
+        .pdf-template { background: #ffffff !important; color: #000000 !important; padding: 30px !important; }
+        .pdf-template .header-line { background: #d4af37 !important; }
+        .pdf-template .stat-card { background: #f8fafc !important; border: 2px solid #d4af37 !important; color: #000000 !important; box-shadow: none !important; }
+        .pdf-template .filter-box { display: none !important; }
+        .pdf-template .stock-card { background: #ffffff !important; border: 2px solid #d4af37 !important; color: #000000 !important; box-shadow: none !important; margin-bottom: 20px !important; border-radius: 8px !important; }
+        .pdf-template .card-img { background: #fff !important; }
+        .pdf-template .design-name { color: #000 !important; }
+        .pdf-template .total-val { color: #d4af37 !important; }
+        .pdf-template .lot-row { color: #000 !important; }
+        .pdf-template .variant-badge { right: calc(20% + 15px) !important; background: #000000 !important; color: #ffffff !important; }
+        .pdf-template .dev-footer { color: #d4af37 !important; }
+        
+        @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body>
-
-<div class="main-container">
-    <div id="printHeader" class="flex justify-between items-end pt-6">
+<div id="imageModal" onclick="this.style.display='none'"><img id="modalImg" src=""></div>
+<div class="main-container" id="printableArea">
+    
+    <div class="header-bg flex justify-between items-end pt-4 no-print">
         <div>
-            <h1 class="text-3xl font-black text-white">EMCER TILES PRIVATE LIMITED</h1>
-            <p id="lastUpdated" class="text-xs text-yellow-500 font-bold mt-2">Fetching...</p>
+            <h1 class="text-3xl font-black text-white leading-none uppercase tracking-tighter">EMCER TILES PRIVATE LIMITED</h1>
+            <p class="text-sm text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Live Inventory Portal</p>
+            <p id="lastUpdated" class="text-[10px] text-yellow-500 font-bold uppercase mt-1">Fetching Data...</p>
         </div>
-        <button onclick="downloadPDF(this)" class="bg-amber-500 text-black px-6 py-2 font-black uppercase text-xs rounded hover:bg-amber-600">📄 Download Clean PDF</button>
+        <div class="text-right">
+            <button onclick="downloadPDF(this)" class="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-black px-5 py-2 text-[11px] font-black uppercase rounded-full transition-all mr-2 shadow-lg">📄 Download PDF</button>
+            <button onclick="fetchLiveData()" class="bg-slate-800 text-white px-5 py-2 text-[11px] font-black uppercase rounded-full transition-all hover:bg-slate-700">🔄 Refresh Data</button>
+            <div class="text-[11px] font-black text-amber-500 mt-2 uppercase tracking-wider">Designed & Developed By: Yashdeep Jivani</div>
+        </div>
     </div>
-
-    <div id="filterSection" class="filter-box mt-8">
-        <div class="flex flex-col"><label class="text-[10px] text-amber-500">SEARCH</label><input type="text" id="searchName" oninput="applyFilters()" class="bg-slate-900 border border-slate-700 p-2 rounded text-white"></div>
-        <div class="flex flex-col"><label class="text-[10px] text-amber-500">BRAND</label><select id="filterBrand" onchange="applyFilters()" class="bg-slate-900 border border-slate-700 p-2 rounded text-white"><option value="">All</option></select></div>
-        <div class="flex flex-col"><label class="text-[10px] text-amber-500">SIZE</label><select id="filterSize" onchange="applyFilters()" class="bg-slate-900 border border-slate-700 p-2 rounded text-white"><option value="">All</option></select></div>
+    
+    <div class="header-line"></div>
+    
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 no-print">
+        <div class="stat-card"><div class="stat-label">Designs</div><div id="statDesigns" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="stat-label">Total Boxes</div><div id="statBoxes" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="stat-label">Brands</div><div id="statBrands" class="stat-val">0</div></div>
+        <div class="stat-card"><div class="stat-label">Results Found</div><div id="statFiltered" class="stat-val">0</div></div>
     </div>
-
-    <div id="reportContainer"><div id="reportList"></div></div>
+    
+    <div class="filter-box no-print">
+        <div class="filter-group"><label>Search Design / Lot</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Type design name..."></div>
+        <div class="filter-group"><label>Variant / Grade</label><select id="filterVariant" onchange="applyFilters()"></select></div>
+        <div class="filter-group"><label>Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"></select></div>
+        <div class="filter-group"><label>Series</label><select id="filterSeries" onchange="applyFilters()"></select></div>
+        <div class="filter-group"><label>Brand</label><select id="filterBrand" onchange="applyFilters()"></select></div>
+    </div>
+    
+    <div id="reportContainer">
+        <div id="reportList"></div>
+    </div>
+    
+    <div class="text-center text-[11px] font-black text-amber-500 mt-8 uppercase dev-footer print-only" style="display:none">
+        Emcer Tiles Private Limited © 2026 | Designed & Developed By: Yashdeep Jivani
+    </div>
 </div>
 
 <script>
+    // URL CONFIGURATION - PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJKfexL72pvC3h_1cnlvLN1uw01Gos8wyvvtXjXmkHxkHzJmmduzxGk7BfjeDvxoU/exec";
-    let masterData = [];
+
+    let masterData = [], designMap = {};
+
+    async function initPortal() {
+        // Design.json if needed
+        try {
+            const resImg = await fetch('design.json?v=' + Date.now());
+            if (resImg.ok) {
+                (await resImg.json()).forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
+            }
+        } catch (e) { console.log("fallback placeholder image"); }
+        
+        fetchLiveData();
+    }
 
     async function fetchLiveData() {
-        const res = await fetch(SCRIPT_URL);
-        masterData = await res.json();
-        document.getElementById('lastUpdated').innerText = "Last Updated: " + new Date().toLocaleTimeString();
-        render(masterData);
+        document.getElementById('lastUpdated').innerText = "Fetching live data from sheet...";
+        
+        try {
+            const resStock = await fetch(SCRIPT_URL + '?v=' + Date.now());
+            if (resStock.ok) {
+                masterData = await resStock.json();
+                document.getElementById('lastUpdated').innerText = "Updated: " + new Date().toLocaleString();
+                setupFilters(); 
+                applyFilters();
+            } else {
+                document.getElementById('lastUpdated').innerText = "Failed to connect to sheet.";
+            }
+        } catch (e) { 
+            console.error(e); 
+            document.getElementById('lastUpdated').innerText = "Error fetching data.";
+        }
+    }
+
+    function setupFilters() {
+        const brands = new Set(), sizes = new Set(), variants = new Set();
+        masterData.forEach(i => { 
+            if(i.Brand) brands.add(i.Brand); 
+            if(i.Size) sizes.add(i.Size); 
+            const vVal = i.Variant || i.Grade || i["Grade"];
+            if(vVal) variants.add(vVal); 
+        });
+        const fill = (id, set) => document.getElementById(id).innerHTML = `<option value="">All All</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
+        fill('filterBrand', brands); fill('filterSize', sizes); fill('filterVariant', variants);
+        updateSeriesOptions();
+    }
+
+    function updateSeriesOptions() {
+        const sz = document.getElementById('filterSize').value, srs = new Set();
+        masterData.forEach(i => { if(sz==="" || i.Size===sz) if(i.Series) srs.add(i.Series); });
+        document.getElementById('filterSeries').innerHTML = '<option value="">All All</option>' + [...srs].sort().map(s => `<option value="${s}">${s}</option>`).join('');
+    }
+
+    function applyFilters() {
+        const f = { n: document.getElementById('searchName').value.toLowerCase(), b: document.getElementById('filterBrand').value, sz: document.getElementById('filterSize').value, s: document.getElementById('filterSeries').value, v: document.getElementById('filterVariant').value };
+        const groups = {}; let total = 0, brands = new Set();
+        
+        masterData.forEach(item => {
+            const desc = (item["Item Description"] || item["Description"] || item["Design URL"] || "").toString().trim();
+            const brand = (item.Brand || item["Brands"] || "").toString().trim();
+            const series = (item.Series || "").toString().trim();
+            const size = (item.Size || item["Item Size"] || "").toString().trim();
+            const variant = (item.Variant || item.Grade || item["Grade (Variant)"] || "STD").toString().trim();
+            const qty = Number(item["Net Qty"] || item["Total"] || item["Boxes"] || 0);
+            const lotNo = (item["Lot no."] || item["Lot No"] || item["Lot"] || "N/A").toString();
+
+            if ((desc.toLowerCase().includes(f.n) || lotNo.toLowerCase().includes(f.n)) && 
+                (!f.b || brand===f.b) && 
+                (!f.sz || size===f.sz) && 
+                (!f.s || series===f.s) && 
+                (!f.v || variant===f.v)) {
+                
+                const k = `${desc}|${brand}|${series}|${size}|${variant}`.toLowerCase();
+                if (!groups[k]) groups[k] = { desc, brand, series, size, variant, lots: [], total: 0 };
+                groups[k].lots.push({ lot: lotNo, qty });
+                groups[k].total += qty; total += qty; brands.add(brand);
+            }
+        });
+        const items = Object.values(groups);
+        document.getElementById('statDesigns').innerText = items.length;
+        document.getElementById('statBoxes').innerText = total;
+        document.getElementById('statBrands').innerText = brands.size;
+        document.getElementById('statFiltered').innerText = items.length;
+        render(items);
     }
 
     function render(items) {
+        if(items.length === 0) {
+            document.getElementById('reportList').innerHTML = `<div class="text-center py-10 font-bold text-slate-500 uppercase">No Inventory Found</div>`;
+            return;
+        }
         document.getElementById('reportList').innerHTML = items.map(item => {
-            const isLow = item.Total < 50;
+            // Find DesignURL in item keys or fallback to designMap/placeholder
+            const rawUrl = item["DesignURL"] || item["Design URL"] || designMap[item.desc.toLowerCase().trim()] || 'https://via.placeholder.com/400';
+            const imgUrl = rawUrl.includes('placeholder') ? rawUrl : "https://images.weserv.nl/?url=" + encodeURIComponent(rawUrl.replace('https://', ''));
             return `
-            <div class="stock-card ${isLow ? 'low-stock' : ''}">
-                ${isLow ? '<div class="low-stock-badge">LOW STOCK</div>' : ''}
-                <div class="variant-badge">${item.Grade || 'STD'}</div>
-                <div class="card-img"><img src="${item.ImgUrl || 'https://via.placeholder.com/200'}"></div>
-                <div class="p-6 flex-1">
-                    <div class="text-xs text-amber-500 font-bold uppercase">${item.Brand || 'N/A'}</div>
-                    <div class="text-2xl font-black uppercase">${item["Item Description"]}</div>
-                    <div class="text-slate-400 font-bold mt-1">LOT: ${item["Lot No"]}</div>
+            <div class="stock-card relative overflow-hidden">
+                <div class="variant-badge">${item.variant}</div>
+                <div class="card-img" onclick="document.getElementById('modalImg').src='${rawUrl}'; document.getElementById('imageModal').style.display='flex'"><img src="${imgUrl}" crossorigin="anonymous"></div>
+                <div class="card-info relative z-10">
+                    <span class="brand-tag">${item.brand}</span>
+                    <div class="design-name">${item.desc}</div>
+                    <div class="design-meta">${item.series} | ${item.size}</div>
+                    <div class="flex-grow">${item.lots.map(l => `<div class="lot-row"><span>LOT: ${l.lot}</span><span>${l.qty} Bx</span></div>`).join('')}</div>
                 </div>
-                <div class="card-total">
-                    <div class="text-5xl font-black text-amber-500">${item.Total}</div>
-                    <div class="text-[10px] uppercase font-bold">Boxes</div>
-                </div>
+                <div class="card-total"><div class="total-val">${item.total}</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Boxes</div></div>
             </div>`;
         }).join('');
     }
 
     async function downloadPDF(btn) {
-        const report = document.getElementById('reportContainer');
-        const header = document.getElementById('printHeader');
-        const filters = document.getElementById('filterSection');
-        
-        // Hide UI elements for clean PDF
-        header.style.display = 'none';
-        filters.style.display = 'none';
-        report.classList.add('pdf-template');
-        
-        const date = new Date().toISOString().slice(0, 10);
-        btn.innerText = "Generating..."; btn.disabled = true;
+        const element = document.getElementById('printableArea'); // Print whole area for company name/stats/devfooter
+        const originalText = btn.innerText;
+        btn.innerText = "Please Wait..."; btn.disabled = true;
 
-        await html2pdf().set({
-            margin: 10,
-            filename: `Emcer_Stock_${date}.pdf`,
+        // Apply decorative bright styles specifically for PDF generation
+        element.classList.add('pdf-template');
+        document.querySelector('.print-only').style.display = 'block'; // Show footer only in print
+
+        const opt = {
+            margin: 12,
+            filename: 'Emcer_Live_Stock_Report.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        }).from(report).save();
+            html2canvas: { scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff' },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all', 'css'] }
+        };
 
-        // Restore
-        header.style.display = '';
-        filters.style.display = '';
-        report.classList.remove('pdf-template');
-        btn.innerText = "📄 Download Clean PDF"; btn.disabled = false;
+        try {
+            await html2pdf().set(opt).from(element).save();
+        } catch (e) { 
+            alert("PDF Error"); 
+            console.error(e);
+        } finally { 
+            // Revert back
+            element.classList.remove('pdf-template');
+            document.querySelector('.print-only').style.display = 'none'; // Hide footer back
+            btn.innerText = originalText; 
+            btn.disabled = false; 
+        }
     }
 
-    function applyFilters() {
-        const q = document.getElementById('searchName').value.toLowerCase();
-        const filtered = masterData.filter(i => i["Item Description"].toLowerCase().includes(q));
-        render(filtered);
-    }
-
-    fetchLiveData();
+    initPortal();
 </script>
 </body>
 </html>
