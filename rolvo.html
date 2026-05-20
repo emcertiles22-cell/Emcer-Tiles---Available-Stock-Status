@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NexTile - Emcer Live Stock</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .main-container { max-width: 1100px; margin: auto; padding: 20px; }
+        
+        /* STICKY FILTER BOX */
+        .filter-box { 
+            position: sticky; top: 0; z-index: 100; 
+            background: white; border: 2px solid #000; padding: 20px; 
+            margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .stock-card { background: white; border: 2px solid #000; display: flex; margin-bottom: 25px; position: relative; overflow: hidden; transition: 0.3s; }
+        .low-stock { border: 2px solid #ef4444 !important; }
+        .low-stock-badge { position: absolute; bottom: 0; left: 0; background: #ef4444; color: white; padding: 2px 10px; font-size: 10px; font-weight: 900; }
+        
+        .variant-badge { position: absolute; top: 0; right: 0; background: #000; color: #fff; padding: 5px 15px; font-size: 11px; font-weight: 900; z-index: 10; border-bottom-left-radius: 8px; }
+        
+        .card-img { width: 30%; border-right: 2px solid #000; padding: 10px; overflow: hidden; }
+        .card-img img { width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s; cursor: zoom-in; }
+        .card-img img:hover { transform: scale(1.15); }
+        
+        .card-info { width: 50%; padding: 20px; }
+        .card-total { width: 20%; border-left: 2px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <div id="printHeader">
+        <h1 class="text-3xl font-black uppercase">EMCER TILES PRIVATE LIMITED</h1>
+        <p id="lastUpdated" class="text-xs text-blue-600 font-bold uppercase">Updating...</p>
+        <button onclick="downloadPDF(this)" class="bg-red-600 text-white px-4 py-2 mt-2 font-black uppercase text-xs">📄 Download Clean PDF</button>
+    </div>
+
+    <div id="filterSection" class="filter-box mt-6">
+        <input type="text" id="searchName" placeholder="Search Design..." oninput="applyFilters()">
+        <select id="filterBrand" onchange="applyFilters()"><option value="">Brand</option></select>
+        <select id="filterSize" onchange="applyFilters()"><option value="">Size</option></select>
+        <select id="filterVariant" onchange="applyFilters()"><option value="">Variant</option></select>
+    </div>
+
+    <div id="reportList"></div>
+</div>
+
+<script>
+    // PDF FUNCTION WITH DATE & CLEAN OUTPUT
+    async function downloadPDF(btn) {
+        const report = document.getElementById('reportList');
+        const date = new Date().toISOString().slice(0, 10);
+        
+        btn.innerText = "Generating..."; btn.disabled = true;
+
+        const opt = {
+            margin: 10,
+            filename: `Emcer_Stock_${date}.pdf`, // Dynamic Date Name
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        await html2pdf().set(opt).from(report).save();
+        btn.innerText = "📄 Download Clean PDF"; btn.disabled = false;
+    }
+
+    // RENDER LOGIC WITH LOW STOCK ALERT
+    function render(items) {
+        document.getElementById('reportList').innerHTML = items.map(item => {
+            const isLow = item.total < 50;
+            return `
+            <div class="stock-card ${isLow ? 'low-stock' : ''}">
+                ${isLow ? '<div class="low-stock-badge">LOW STOCK</div>' : ''}
+                <div class="variant-badge">${item.variant}</div>
+                <div class="card-img"><img src="https://via.placeholder.com/200"></div>
+                <div class="card-info">
+                    <div class="font-black text-xl uppercase">${item.desc}</div>
+                    <div class="text-blue-600 font-bold">${item.size} | ${item.brand}</div>
+                </div>
+                <div class="card-total">
+                    <div class="text-4xl font-black">${item.total}</div>
+                    <div class="text-[10px] font-bold uppercase">Boxes</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+    
+    // Initial call
+    initPortal();
+</script>
+</body>
+</html>
