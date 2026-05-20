@@ -66,22 +66,24 @@
             page-break-inside: avoid; 
         }
         
-     .variant-badge {
-    position: absolute;
-    top: 12px;
-    right: calc(20% + 15px);    /* Total Boxes ni border line thi perfect left ma fiks rehse */
-    background: #d4af37;
-    color: #000;
-    padding: 4px 14px;          /* 좌우 padding vadhavi jethi text kapay nahi */
-    font-size: 11px;
-    font-weight: 900;
-    text-transform: uppercase;
-    z-index: 10;
-    border-radius: 9999px;      /* Perfect capsule shape banning */
-    display: inline-block;
-    white-space: nowrap;        /* Text ne ek j line ma rakhse, kapava nahi de */
-    text-align: center;
-
+    /* VARIANT BADGE - PERFECT ROUND CAPSULE WITHOUT CUTTING */
+        .variant-badge { 
+            position: absolute; 
+            top: 15px; 
+            right: calc(5% + 20px); 
+            background: #d4af37; 
+            color: #000; 
+            padding: 4px 16px; 
+            font-size: 11px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            z-index: 10; 
+            border-radius: 9999px;
+            display: inline-block !important;
+            white-space: nowrap;
+            text-align: center;
+            min-width: 60px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 
        
         }
