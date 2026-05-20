@@ -2,95 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EMCER ELITE INVENTORY</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        body { background: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; }
-        .stock-card { 
-            background: #1e293b; border: 2px solid #334155; border-radius: 24px; 
-            display: flex; gap: 24px; padding: 24px; transition: 0.3s; align-items: center;
-        }
-        .stock-card:hover { border-color: #f59e0b; transform: translateY(-5px); }
-        .card-img { width: 300px; height: 220px; flex-shrink: 0; border-radius: 16px; overflow: hidden; background: #000; }
-        .card-img img { width: 100%; height: 100%; object-fit: cover; }
-        .sticky-top { position: sticky; top: 0; z-index: 1000; background: #0f172a; padding: 20px 0; border-bottom: 1px solid #334155; }
+        body { background: #0f172a; color: white; font-family: sans-serif; }
+        .card { background: #1e293b; border-radius: 16px; display: flex; align-items: center; padding: 20px; border: 1px solid #334155; }
+        .card img { width: 250px; height: 180px; object-fit: cover; border-radius: 12px; }
     </style>
 </head>
-<body class="px-8 pb-20">
+<body class="p-8">
 
 <div class="max-w-6xl mx-auto">
-    <div class="sticky-top">
-        <div class="flex justify-between items-center mb-8">
-            <div>
-                <h1 class="text-4xl font-black text-amber-500 uppercase tracking-tighter">Emcer Tiles Private Limited</h1>
-                <p class="text-sm font-bold text-slate-500 uppercase">Live Inventory Portal | <span id="time"></span></p>
-            </div>
-            <div class="flex gap-4">
-                <button onclick="downloadPDF()" class="bg-amber-600 text-black px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-xl hover:bg-amber-500">📄 Download PDF</button>
-                <button onclick="shareWhatsApp()" class="bg-green-600 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-xl hover:bg-green-500">💬 WhatsApp</button>
-            </div>
-        </div>
-        
-        <div class="grid grid-cols-5 gap-4 bg-slate-900 p-6 rounded-3xl border border-slate-700">
-            <input type="text" id="search" placeholder="🔍 SEARCH DESIGN..." class="bg-slate-950 p-4 rounded-xl text-sm font-bold border border-slate-700 focus:border-amber-500 outline-none">
-            <select class="bg-slate-950 p-4 rounded-xl text-sm font-bold text-slate-400"><option>All Brands</option></select>
-            <select class="bg-slate-950 p-4 rounded-xl text-sm font-bold text-slate-400"><option>All Sizes</option></select>
-            <select class="bg-slate-950 p-4 rounded-xl text-sm font-bold text-slate-400"><option>All Series</option></select>
-            <select class="bg-slate-950 p-4 rounded-xl text-sm font-bold text-slate-400"><option>All Grades</option></select>
-        </div>
-    </div>
-
-    <div id="reportList" class="space-y-6 mt-8"></div>
+    <h1 class="text-3xl font-black text-amber-500 mb-6">EMCER TILES PRIVATE LIMITED</h1>
+    <div id="reportList" class="space-y-4"></div>
 </div>
 
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJKfexL72pvC3h_1cnlvLN1uw01Gos8wyvvtXjXmkHxkHzJmmduzxGk7BfjeDvxoU/exec"; 
 
     async function loadData() {
-        const res = await fetch(SCRIPT_URL);
-        const data = await res.json();
-        render(data);
+        try {
+            const res = await fetch(SCRIPT_URL);
+            const data = await res.json();
+            console.log("Data:", data); // આનાથી કન્સોલમાં ખબર પડશે કે કી (keys) શું છે
+            render(data);
+        } catch(e) { console.error("Error:", e); }
     }
 
     function render(items) {
-        document.getElementById('reportList').innerHTML = items.map(i => `
-            <div class="stock-card">
-                <div class="card-img"><img src="${i.imgUrl}" onerror="this.src='https://via.placeholder.com/300x220?text=No+Image'"></div>
-                
-                <div class="flex-grow">
-                    <div class="flex items-center gap-3 mb-3">
-                        <span class="bg-slate-700 text-slate-300 text-[10px] px-4 py-1.5 rounded-full font-black uppercase">${i.brand}</span>
-                        ${i.total < 50 ? '<span class="text-red-500 text-[10px] font-black animate-pulse">● LOW STOCK</span>' : ''}
-                    </div>
-                    <h2 class="text-4xl font-black uppercase text-white mb-1">${i.name}</h2>
-                    <p class="text-slate-400 font-bold text-lg mb-4">${i.size} | ${i.series} | ${i.grade}</p>
+        document.getElementById('reportList').innerHTML = items.map(i => {
+            // અહીં તમારી શીટના સાચા હેડર નામ લખો. 
+            // દા.ત. જો શીટમાં 'Item Description' હોય તો i["Item Description"] લખો.
+            const name = i["Item Description"] || "NO NAME";
+            const total = i["Total"] || 0;
+            const img = i["ImgUrl"] || "https://via.placeholder.com/250";
+            const brand = i["Brand"] || "-";
+            const size = i["Size"] || "-";
+            const series = i["Series"] || "-";
+            const grade = i["Variant"] || "-";
+
+            return `
+            <div class="card">
+                <img src="${img}" onerror="this.src='https://via.placeholder.com/250'">
+                <div class="ml-6 flex-grow">
+                    <div class="text-amber-500 font-bold text-xs uppercase">${brand} | ${series}</div>
+                    <div class="text-2xl font-black uppercase">${name}</div>
+                    <div class="text-slate-400 font-semibold">${size} | ${grade}</div>
                 </div>
-
-                <div class="text-center border-l border-slate-700 pl-8 pr-4">
-                    <div class="text-7xl font-black text-amber-500">${i.total}</div>
-                    <div class="text-xs font-bold text-slate-500 uppercase mt-2">Total Boxes</div>
+                <div class="text-right">
+                    <div class="text-5xl font-black text-amber-500">${total}</div>
+                    <div class="text-xs font-bold text-slate-500 uppercase">Total Boxes</div>
                 </div>
-            </div>
-        `).join('');
+            </div>`;
+        }).join('');
     }
 
-    function downloadPDF() {
-        const element = document.body;
-        html2pdf().from(element).set({
-            margin: 10,
-            filename: 'Emcer_Stock.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 }
-        }).save();
-    }
-
-    function shareWhatsApp() {
-        window.open('https://wa.me/?text=Check out our live inventory: [LINK]');
-    }
-
-    document.getElementById('time').innerText = new Date().toLocaleTimeString();
     loadData();
 </script>
 </body>
