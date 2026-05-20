@@ -214,19 +214,35 @@
         }
     }
 
-    function setupFilters() {
-        const brands = new Set(), sizes = new Set(), variants = new Set();
-        masterData.forEach(i => { 
-            if(i.Brand) brands.add(i.Brand); 
-            if(i.Size) sizes.add(i.Size); 
-            const vVal = i.Variant || i.Grade || i["Grade"];
-            if(vVal) variants.add(vVal); 
-        });
-        const fill = (id, set) => document.getElementById(id).innerHTML = `<option value="">All All</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
-        fill('filterBrand', brands); fill('filterSize', sizes); fill('filterVariant', variants);
-        updateSeriesOptions();
-    }
+   function setupFilters() {
+    const brands = new Set(), sizes = new Set(), variants = new Set();
+    
+    masterData.forEach(i => { 
+        // Brand ke liye sahi field check karo
+        if(i.Brand) brands.add(i.Brand); 
+        
+        // Size
+        if(i.Size) sizes.add(i.Size); 
+        
+        // Variant/Grade ke liye sahi field check karo
+        const vVal = i.Variant || i.Grade || i["Grade (Variant)"];
+        if(vVal) variants.add(vVal); 
+    });
 
+    // Helper function to populate dropdowns
+    const fill = (id, set) => {
+        const select = document.getElementById(id);
+        select.innerHTML = `<option value="">All All</option>` + 
+            [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
+    };
+
+    // Correct mapping:
+    fill('filterBrand', brands);    // Brand mein sirf Brands aayenge
+    fill('filterVariant', variants); // Variant mein sirf Variants aayenge
+    fill('filterSize', sizes);       // Size mein sirf Sizes aayenge
+    
+    updateSeriesOptions();
+}
     function updateSeriesOptions() {
         const sz = document.getElementById('filterSize').value, srs = new Set();
         masterData.forEach(i => { if(sz==="" || i.Size===sz) if(i.Series) srs.add(i.Series); });
