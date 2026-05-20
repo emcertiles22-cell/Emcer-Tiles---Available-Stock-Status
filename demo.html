@@ -33,28 +33,57 @@
 </head>
 <body>
 
-<div id="printableArea" class="max-w-6xl mx-auto">
-    <div class="sticky-header">
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-black text-amber-500 uppercase">EMCER TILES PRIVATE LIMITED</h1>
-            <div class="flex gap-2">
-                <button onclick="downloadPDF()" class="bg-amber-600 text-black px-4 py-2 font-black text-[10px] rounded">📄 DOWNLOAD PDF</button>
-                <button onclick="shareWhatsApp()" class="bg-green-600 text-white px-4 py-2 font-black text-[10px] rounded">💬 WHATSAPP</button>
-            </div>
-        </div>
+<style>
+    body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; }
+    
+    /* Sticky Filter Bar */
+    .sticky-filter { 
+        position: sticky; top: 0; z-index: 1000; 
+        background: rgba(15, 23, 42, 0.95); 
+        backdrop-filter: blur(10px);
+        padding: 20px; border-bottom: 1px solid #334155;
+    }
 
-        <div class="grid grid-cols-5 gap-2">
-            <input type="text" id="search" placeholder="SEARCH..." oninput="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded">
-            <select id="brand" multiple onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
-            <select id="size" multiple onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
-            <select id="series" multiple onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
-            <select id="grade" multiple onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
-        </div>
-    </div>
+    /* Product Card */
+    .stock-card { 
+        background: #1e293b; border: 1px solid #334155; 
+        border-radius: 16px; display: flex; align-items: center;
+        transition: transform 0.3s ease, border 0.3s ease;
+    }
+    .stock-card:hover { border-color: #d4af37; transform: translateY(-5px); }
 
-    <div id="list" class="p-4"></div>
+    /* Image Zoom */
+    .img-box { width: 200px; height: 160px; overflow: hidden; border-radius: 12px 0 0 12px; }
+    .img-box img { transition: transform 0.5s ease; width: 100%; height: 100%; object-fit: cover; }
+    .img-box:hover img { transform: scale(1.2); }
+
+    /* Low Stock Alert Badge */
+    .low-stock { 
+        background: #991b1b; color: #fca5a5; padding: 2px 8px; 
+        font-size: 10px; font-weight: 800; border-radius: 4px;
+    }
+</style>
+
+<div class="sticky-filter">
+    <div class="grid grid-cols-5 gap-4">
+        <input type="text" placeholder="Search Design..." class="bg-slate-900 p-3 rounded-lg border border-slate-700">
+        </div>
 </div>
 
+<div class="p-6">
+    <div class="stock-card mb-4">
+        <div class="img-box"><img src="your-image-url.jpg"></div>
+        <div class="p-5 flex-grow">
+            <span class="low-stock">LOW STOCK</span>
+            <h2 class="text-2xl font-black uppercase">Eleganza Light</h2>
+            <p class="text-slate-400">1200x2400 MM | Glazed Vitrified</p>
+        </div>
+        <div class="px-8 text-center border-l border-slate-700">
+            <div class="text-4xl font-black text-amber-500">24</div>
+            <div class="text-xs font-bold text-slate-500 uppercase">Total Boxes</div>
+        </div>
+    </div>
+</div>
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJKfexL72pvC3h_1cnlvLN1uw01Gos8wyvvtXjXmkHxkHzJmmduzxGk7BfjeDvxoU/exec"; 
     let data = [];
