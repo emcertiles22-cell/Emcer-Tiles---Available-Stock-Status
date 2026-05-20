@@ -2,108 +2,85 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NexTile - Emcer Live Stock</title>
+    <title>EMCER LIVE INVENTORY</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        .sticky-nav { position: sticky; top: 0; z-index: 50; background: #0f172a; padding: 20px 0; border-bottom: 1px solid #1e293b; }
         
-        /* 6. Sticky Header & Filter */
-        .sticky-nav { position: sticky; top: 0; z-index: 50; background: #0f172a; padding-bottom: 10px; }
+        /* Attractive Card UI */
+        .stock-card { 
+            background: #1e293b; border: 1px solid #334155; border-radius: 16px; 
+            display: flex; margin-bottom: 20px; overflow: hidden; transition: all 0.3s; 
+        }
+        .stock-card:hover { transform: translateY(-5px); border-color: #d4af37; }
         
-        .stock-card { background: #1e293b; border: 1px solid #334155; display: flex; margin-bottom: 25px; min-height: 220px; position: relative; border-radius: 16px; overflow: hidden; transition: transform 0.3s; }
+        .card-img-box { width: 200px; height: 180px; background: #fff; padding: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .card-img-box img { max-width: 100%; height: 100%; object-fit: contain; transition: transform 0.5s; }
+        .card-img-box:hover img { transform: scale(1.3); }
         
-        /* 5. Image Zoom-In Effect */
-        .card-img { width: 30%; background: #ffffff; padding: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-right: 1px solid #334155; overflow: hidden; }
-        .card-img img { max-height: 180px; transition: transform 0.4s; }
-        .card-img:hover img { transform: scale(1.2); }
-        
-        /* 1. Low Stock Alert */
-        .low-stock-label { position: absolute; bottom: 10px; left: 10px; background: #ef4444; color: white; padding: 2px 8px; font-size: 9px; font-weight: 900; border-radius: 4px; text-transform: uppercase; }
-        
-        .variant-badge { position: absolute; top: 15px; right: 15px; background: #d4af37; color: #000; padding: 4px 16px; font-size: 11px; font-weight: 900; border-radius: 99px; }
-        .filter-box { background: #1e293b; padding: 20px; border-radius: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        .low-stock { background: #991b1b; color: #fca5a5; padding: 2px 8px; font-size: 10px; font-weight: 900; border-radius: 4px; display: inline-block; }
     </style>
 </head>
 <body>
 
-<div class="main-container" id="printableArea">
+<div class="main-container px-6" id="printableArea">
     <div class="sticky-nav">
-        <div class="flex justify-between items-end pt-6">
-            <h1 class="text-3xl font-black text-white uppercase">EMCER TILES</h1>
-            <div class="text-right no-print">
-                <button onclick="downloadPDF()" class="bg-yellow-600 text-black px-4 py-2 text-[10px] font-black rounded-full">📄 PDF</button>
-                <button onclick="shareWhatsApp()" class="bg-green-600 text-white px-4 py-2 text-[10px] font-black rounded-full">💬 WHATSAPP</button>
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-black text-amber-500 uppercase">EMCER TILES</h1>
+            <div class="flex gap-3">
+                <button onclick="downloadPDF()" class="bg-amber-600 text-black px-4 py-2 text-[10px] font-black rounded-lg">📄 PDF REPORT</button>
             </div>
         </div>
         
-        <div class="filter-box mt-4">
-            <input type="text" id="searchName" placeholder="SEARCH DESIGN..." oninput="applyFilters()" class="bg-slate-900 p-2 text-white text-xs rounded border border-slate-700">
-            <select id="filterBrand" multiple onchange="applyFilters()" class="bg-slate-900 text-white text-xs p-2 rounded" title="Hold Ctrl/Cmd to select multiple"></select>
-            <select id="filterSize" multiple onchange="applyFilters()" class="bg-slate-900 text-white text-xs p-2 rounded" title="Hold Ctrl/Cmd to select multiple"></select>
+        <div class="grid grid-cols-4 gap-4 mt-4">
+            <input type="text" id="searchName" placeholder="SEARCH DESIGN..." oninput="applyFilters()" class="bg-slate-900 border border-slate-700 text-white p-2 rounded text-xs">
+            <select id="filterBrand" multiple onchange="applyFilters()" class="bg-slate-900 text-white text-xs p-2 rounded border border-slate-700"></select>
+            <select id="filterSize" multiple onchange="applyFilters()" class="bg-slate-900 text-white text-xs p-2 rounded border border-slate-700"></select>
         </div>
     </div>
 
-    <div id="reportList"></div>
+    <div id="reportList" class="mt-6"></div>
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxJKfexL72pvC3h_1cnlvLN1uw01Gos8wyvvtXjXmkHxkHzJmmduzxGk7BfjeDvxoU/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxJKfexL72pvC3h_1cnlvLN1uw01Gos8wyvvtXjXmkHxkHzJmmduzxGk7BfjeDvxoU/exec"; 
     let masterData = [];
 
-    // 2. Dynamic Date for PDF Name
-    function getFileName() {
-        const date = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
-        return `Emcer_Stock_${date}.pdf`;
-    }
-
-    // 4. WhatsApp Share
-    function shareWhatsApp() {
-        alert("PDF download karo ane share karo! (Direct file sharing link thi possible chhe)");
-    }
-
-    // 3. Page Numbers in PDF (using html2pdf footer option)
-    async function downloadPDF() {
-        const element = document.getElementById('printableArea');
-        const opt = {
-            margin: 10,
-            filename: getFileName(),
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: 'avoid-all' }
-        };
-        await html2pdf().set(opt).from(element).save();
-    }
-
-    function applyFilters() {
-        const search = document.getElementById('searchName').value.toLowerCase();
-        // Multi-select logic
-        const brands = Array.from(document.getElementById('filterBrand').selectedOptions).map(o => o.value);
-        const sizes = Array.from(document.getElementById('filterSize').selectedOptions).map(o => o.value);
-
-        const filtered = masterData.filter(i => {
-            return (i["Item Description"].toLowerCase().includes(search)) &&
-                   (brands.length === 0 || brands.includes(i.Brand)) &&
-                   (sizes.length === 0 || sizes.includes(i.Size));
-        });
-        render(filtered);
+    async function fetchData() {
+        const res = await fetch(WEB_APP_URL);
+        masterData = await res.json();
+        render(masterData);
     }
 
     function render(items) {
-        document.getElementById('reportList').innerHTML = items.map(item => `
-            <div class="stock-card">
-                ${item.Total < 50 ? '<div class="low-stock-label">LOW STOCK</div>' : ''}
-                <div class="card-img"><img src="${item.ImgUrl}" crossorigin="anonymous"></div>
-                <div class="card-info p-4">
-                    <div class="text-xl font-black">${item["Item Description"]}</div>
-                    <div class="text-amber-500 font-bold">${item.Total} Boxes</div>
+        document.getElementById('reportList').innerHTML = items.map(i => `
+            <div class="stock-card relative">
+                ${i.Total < 50 ? '<div class="absolute top-2 left-2 low-stock">LOW STOCK</div>' : ''}
+                <div class="card-img-box"><img src="${i.ImgUrl}" crossorigin="anonymous"></div>
+                <div class="p-6 flex flex-col justify-center">
+                    <h2 class="text-xl font-black uppercase">${i["Item Description"]}</h2>
+                    <p class="text-slate-400 text-xs font-bold">${i.Brand} | ${i.Size} | ${i.Series}</p>
+                    <div class="mt-2 text-2xl font-black text-amber-500">${i.Total} <span class="text-xs">BOXES</span></div>
                 </div>
             </div>
         `).join('');
     }
 
-    // Start
-    fetch(WEB_APP_URL).then(r => r.json()).then(data => { masterData = data; applyFilters(); });
+    async function downloadPDF() {
+        const element = document.getElementById('printableArea');
+        const opt = {
+            margin: 5,
+            filename: `Emcer_Stock_${new Date().toLocaleDateString()}.pdf`,
+            image: { type: 'jpeg', quality: 1 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        await html2pdf().set(opt).from(element).save();
+    }
+
+    fetchData();
 </script>
 </body>
 </html>
