@@ -32,24 +32,56 @@
 </head>
 <body>
 
-<div id="printableArea">
-    <div class="sticky-section">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-black text-amber-500 tracking-tighter">EMCER TILES PRIVATE LIMITED</h1>
-            <div class="flex gap-3">
-                <button onclick="downloadPDF()" class="bg-amber-600 text-black px-6 py-2 text-[11px] font-black rounded-lg">📄 DOWNLOAD PDF</button>
-                <button onclick="shareWhatsApp()" class="bg-green-600 text-white px-6 py-2 text-[11px] font-black rounded-lg">💬 WHATSAPP</button>
+<div id="bookingModal">
+    <div class="modal-box">
+        <h2 class="text-3xl font-extrabold mb-1">Confirm Booking</h2>
+        <p id="bookItemName" class="text-blue-600 font-bold mb-8 text-sm uppercase"></p>
+        <div class="space-y-5">
+            <div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Party Name / Salesman</label><input type="text" id="partyName" placeholder="Enter details"></div>
+            <div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Order Quantity (Boxes)</label><input type="number" id="bookQty" placeholder="0"></div>
+            <div class="flex gap-4 pt-4">
+                <button onclick="confirmBooking()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold uppercase shadow-lg hover:bg-blue-700 transition">Confirm</button>
+                <button onclick="document.getElementById('bookingModal').style.display='none'" class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold uppercase">Cancel</button>
             </div>
         </div>
-        
-        <div class="grid grid-cols-5 gap-4">
-            <input type="text" id="search" placeholder="SEARCH DESIGN..." oninput="filterData()" class="bg-slate-900 border border-slate-700 text-white p-3 rounded text-[11px] font-bold">
-            <select id="brand" multiple onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-3 rounded text-[11px] font-bold"></select>
-            <select id="size" multiple onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-3 rounded text-[11px] font-bold"></select>
-            <select id="series" multiple onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-3 rounded text-[11px] font-bold"></select>
-            <select id="grade" multiple onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-3 rounded text-[11px] font-bold"></select>
-        </div>
     </div>
+</div>
+
+<div class="main-container">
+    <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+        <div>
+            <h1 class="text-5xl font-extrabold tracking-tight text-slate-900">Emcer Tiles <span class="text-blue-600">Private Limited</span></h1>
+            <p id="updateTime" class="text-[11px] font-bold text-slate-500 mt-2 uppercase tracking-widest">Synchronizing Live Warehouse...</p>
+        </div>
+        <div class="flex flex-col items-end gap-3">
+            <div class="flex gap-3">
+                <button onclick="downloadPDF()" class="bg-red-500 text-white px-6 py-3 rounded-2xl font-bold text-xs uppercase shadow-md hover:bg-red-600 transition">PDF Report</button>
+                <button onclick="location.reload()" class="bg-slate-900 text-white px-5 py-3 rounded-2xl font-bold text-xs uppercase">Refresh</button>
+            </div>
+            <div class="text-[10px] font-bold text-slate-400">Designed & Developed By: <span class="dev-tag">Yashdeep Jivani</span></div>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+        <div class="glass-card p-5 text-center"><div class="text-xs font-bold text-slate-400 uppercase mb-1">Designs</div><div id="stat-designs" class="text-3xl font-extrabold">0</div></div>
+        <div class="glass-card p-5 text-center"><div class="text-xs font-bold text-slate-400 uppercase mb-1">Stock</div><div id="stat-boxes" class="text-3xl font-extrabold">0</div></div>
+        <div class="glass-card p-5 text-center"><div class="text-xs font-bold text-slate-400 uppercase mb-1">Brands</div><div id="stat-brands" class="text-3xl font-extrabold">0</div></div>
+        <div class="glass-card p-5 text-center"><div class="text-xs font-bold text-slate-400 uppercase mb-1">Filtered</div><div id="stat-results" class="text-3xl font-extrabold">0</div></div>
+    </div>
+
+    <div class="glass-card p-8 grid grid-cols-1 md:grid-cols-5 gap-6 mb-10 shadow-xl">
+        <div><label class="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Type here..."></div>
+        <div><label class="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Brand</label><select id="filterBrand" onchange="applyFilters()"><option value="">All Brands</option></select></div>
+        <div><label class="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"><option value="">All Sizes</option></select></div>
+        <div><label class="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Series</label><select id="filterSeries" onchange="applyFilters()"><option value="">All Series</option></select></div>
+        <div><label class="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Grade</label><select id="filterGrade" onchange="applyFilters()"><option value="">All Grades</option></select></div>
+    </div>
+
+    <div id="reportList" class="space-y-8 pb-20">
+        <div class="py-20 text-center font-bold text-slate-400 animate-pulse uppercase tracking-widest">Accessing Real-time Stock...</div>
+    </div>
+</div>
+
 
     <div id="reportList" class="p-6"></div>
 </div>
