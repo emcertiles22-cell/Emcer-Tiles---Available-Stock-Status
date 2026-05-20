@@ -7,7 +7,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
-        .sticky-nav { position: sticky; top: 0; z-index: 50; background: #0f172a; padding: 20px 0; border-bottom: 1px solid #1e293b; }
+        
+        /* Sticky Header */
+        .sticky-nav { position: sticky; top: 0; z-index: 100; background: #0f172a; padding: 20px 0; border-bottom: 2px solid #1e293b; }
         
         /* Attractive Card UI */
         .stock-card { 
@@ -16,28 +18,31 @@
         }
         .stock-card:hover { transform: translateY(-5px); border-color: #d4af37; }
         
-        .card-img-box { width: 200px; height: 180px; background: #fff; padding: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .card-img-box { width: 220px; height: 180px; background: #fff; padding: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-right: 1px solid #334155; }
         .card-img-box img { max-width: 100%; height: 100%; object-fit: contain; transition: transform 0.5s; }
         .card-img-box:hover img { transform: scale(1.3); }
         
-        .low-stock { background: #991b1b; color: #fca5a5; padding: 2px 8px; font-size: 10px; font-weight: 900; border-radius: 4px; display: inline-block; }
+        .low-stock { background: #991b1b; color: #fca5a5; padding: 4px 10px; font-size: 10px; font-weight: 900; border-radius: 6px; display: inline-block; margin-bottom: 5px; }
+        .variant-badge { background: #d4af37; color: #000; padding: 2px 10px; font-size: 10px; font-weight: 900; border-radius: 4px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
 <div class="main-container px-6" id="printableArea">
     <div class="sticky-nav">
-        <div class="flex justify-between items-center">
-            <h1 class="text-2xl font-black text-amber-500 uppercase">EMCER TILES</h1>
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-3xl font-black text-amber-500 uppercase tracking-tighter">EMCER TILES</h1>
             <div class="flex gap-3">
-                <button onclick="downloadPDF()" class="bg-amber-600 text-black px-4 py-2 text-[10px] font-black rounded-lg">📄 PDF REPORT</button>
+                <button onclick="downloadPDF()" class="bg-amber-600 text-black px-6 py-2 text-[11px] font-black rounded-lg hover:bg-amber-500">📄 DOWNLOAD PDF</button>
             </div>
         </div>
         
-        <div class="grid grid-cols-4 gap-4 mt-4">
-            <input type="text" id="searchName" placeholder="SEARCH DESIGN..." oninput="applyFilters()" class="bg-slate-900 border border-slate-700 text-white p-2 rounded text-xs">
-            <select id="filterBrand" multiple onchange="applyFilters()" class="bg-slate-900 text-white text-xs p-2 rounded border border-slate-700"></select>
-            <select id="filterSize" multiple onchange="applyFilters()" class="bg-slate-900 text-white text-xs p-2 rounded border border-slate-700"></select>
+        <div class="grid grid-cols-5 gap-4">
+            <input type="text" id="searchName" placeholder="SEARCH DESIGN..." oninput="applyFilters()" class="bg-slate-900 border border-slate-700 text-white p-2 rounded text-xs uppercase font-bold">
+            <select id="filterBrand" multiple onchange="applyFilters()" class="bg-slate-900 text-white text-[10px] p-2 rounded border border-slate-700 uppercase font-bold"></select>
+            <select id="filterSize" multiple onchange="applyFilters()" class="bg-slate-900 text-white text-[10px] p-2 rounded border border-slate-700 uppercase font-bold"></select>
+            <select id="filterSeries" multiple onchange="applyFilters()" class="bg-slate-900 text-white text-[10px] p-2 rounded border border-slate-700 uppercase font-bold"></select>
+            <select id="filterVariant" multiple onchange="applyFilters()" class="bg-slate-900 text-white text-[10px] p-2 rounded border border-slate-700 uppercase font-bold"></select>
         </div>
     </div>
 
@@ -51,18 +56,54 @@
     async function fetchData() {
         const res = await fetch(WEB_APP_URL);
         masterData = await res.json();
-        render(masterData);
+        populateFilters();
+        applyFilters();
+    }
+
+    function populateFilters() {
+        const getUnique = (key) => [...new Set(masterData.map(i => i[key]).filter(Boolean))].sort();
+        const fill = (id, data) => document.getElementById(id).innerHTML = data.map(v => `<option value="${v}">${v}</option>`).join('');
+        
+        fill('filterBrand', getUnique('Brand'));
+        fill('filterSize', getUnique('Size'));
+        fill('filterSeries', getUnique('Series'));
+        fill('filterVariant', getUnique('Grade'));
+    }
+
+    function applyFilters() {
+        const search = document.getElementById('searchName').value.toLowerCase();
+        const getSelected = (id) => Array.from(document.getElementById(id).selectedOptions).map(o => o.value);
+        
+        const brands = getSelected('filterBrand');
+        const sizes = getSelected('filterSize');
+        const series = getSelected('filterSeries');
+        const variants = getSelected('filterVariant');
+
+        const filtered = masterData.filter(i => {
+            return i["Item Description"].toLowerCase().includes(search) &&
+                   (brands.length === 0 || brands.includes(i.Brand)) &&
+                   (sizes.length === 0 || sizes.includes(i.Size)) &&
+                   (series.length === 0 || series.includes(i.Series)) &&
+                   (variants.length === 0 || variants.includes(i.Grade));
+        });
+        render(filtered);
     }
 
     function render(items) {
         document.getElementById('reportList').innerHTML = items.map(i => `
-            <div class="stock-card relative">
-                ${i.Total < 50 ? '<div class="absolute top-2 left-2 low-stock">LOW STOCK</div>' : ''}
+            <div class="stock-card">
                 <div class="card-img-box"><img src="${i.ImgUrl}" crossorigin="anonymous"></div>
-                <div class="p-6 flex flex-col justify-center">
-                    <h2 class="text-xl font-black uppercase">${i["Item Description"]}</h2>
-                    <p class="text-slate-400 text-xs font-bold">${i.Brand} | ${i.Size} | ${i.Series}</p>
-                    <div class="mt-2 text-2xl font-black text-amber-500">${i.Total} <span class="text-xs">BOXES</span></div>
+                <div class="p-6 flex-1 flex flex-col justify-center">
+                    <div class="flex gap-2 mb-1">
+                        <span class="variant-badge">${i.Grade || 'N/A'}</span>
+                        ${i.Total < 50 ? '<span class="low-stock">LOW STOCK</span>' : ''}
+                    </div>
+                    <h2 class="text-2xl font-black uppercase text-white">${i["Item Description"]}</h2>
+                    <p class="text-slate-400 text-xs font-bold uppercase">${i.Brand} | ${i.Series} | ${i.Size}</p>
+                </div>
+                <div class="px-10 flex flex-col justify-center items-center border-l border-slate-700 bg-slate-800/30">
+                    <div class="text-4xl font-black text-amber-500">${i.Total}</div>
+                    <div class="text-[10px] text-slate-400 font-bold uppercase">Total Boxes</div>
                 </div>
             </div>
         `).join('');
@@ -72,8 +113,7 @@
         const element = document.getElementById('printableArea');
         const opt = {
             margin: 5,
-            filename: `Emcer_Stock_${new Date().toLocaleDateString()}.pdf`,
-            image: { type: 'jpeg', quality: 1 },
+            filename: `Emcer_Stock_${new Date().toLocaleDateString().replace(/\//g,'-')}.pdf`,
             html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
