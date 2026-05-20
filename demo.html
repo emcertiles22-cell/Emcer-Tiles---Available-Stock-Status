@@ -9,115 +9,110 @@
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
         
         /* Sticky Header */
-        .sticky-nav { position: sticky; top: 0; z-index: 100; background: #0f172a; padding: 20px 0; border-bottom: 2px solid #1e293b; }
+        .sticky-nav { position: sticky; top: 0; z-index: 100; background: #0f172a; padding: 15px; border-bottom: 2px solid #334155; }
         
-        /* Attractive Card UI */
-        .stock-card { 
-            background: #1e293b; border: 1px solid #334155; border-radius: 16px; 
-            display: flex; margin-bottom: 20px; overflow: hidden; transition: all 0.3s; 
-        }
-        .stock-card:hover { transform: translateY(-5px); border-color: #d4af37; }
+        /* Card UI */
+        .stock-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; display: flex; margin-bottom: 15px; overflow: hidden; page-break-inside: avoid; }
+        .card-img { width: 180px; height: 140px; background: #0f172a; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .card-img img { max-width: 100%; height: 100%; object-fit: contain; transition: transform 0.4s; }
+        .card-img:hover img { transform: scale(1.3); }
         
-        .card-img-box { width: 220px; height: 180px; background: #fff; padding: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-right: 1px solid #334155; }
-        .card-img-box img { max-width: 100%; height: 100%; object-fit: contain; transition: transform 0.5s; }
-        .card-img-box:hover img { transform: scale(1.3); }
+        /* Low Stock Badge */
+        .low-stock-alert { background: #991b1b; color: #fca5a5; padding: 2px 8px; font-size: 9px; font-weight: 900; border-radius: 4px; }
         
-        .low-stock { background: #991b1b; color: #fca5a5; padding: 4px 10px; font-size: 10px; font-weight: 900; border-radius: 6px; display: inline-block; margin-bottom: 5px; }
-        .variant-badge { background: #d4af37; color: #000; padding: 2px 10px; font-size: 10px; font-weight: 900; border-radius: 4px; text-transform: uppercase; }
+        /* Hide scrollbars on selects */
+        select { appearance: none; -webkit-appearance: none; }
     </style>
 </head>
 <body>
 
-<div class="main-container px-6" id="printableArea">
+<div id="printableArea" class="max-w-6xl mx-auto">
     <div class="sticky-nav">
         <div class="flex justify-between items-center mb-4">
-            <h1 class="text-3xl font-black text-amber-500 uppercase tracking-tighter">EMCER TILES</h1>
-            <div class="flex gap-3">
-                <button onclick="downloadPDF()" class="bg-amber-600 text-black px-6 py-2 text-[11px] font-black rounded-lg hover:bg-amber-500">📄 DOWNLOAD PDF</button>
+            <h1 class="text-2xl font-black text-amber-500 uppercase">EMCER TILES PRIVATE LIMITED</h1>
+            <div class="flex gap-2">
+                <button onclick="downloadPDF()" class="bg-amber-600 text-black px-4 py-2 font-black text-[10px] rounded">📄 DOWNLOAD PDF</button>
             </div>
         </div>
-        
-        <div class="grid grid-cols-5 gap-4">
-            <input type="text" id="searchName" placeholder="SEARCH DESIGN..." oninput="applyFilters()" class="bg-slate-900 border border-slate-700 text-white p-2 rounded text-xs uppercase font-bold">
-            <select id="filterBrand" multiple onchange="applyFilters()" class="bg-slate-900 text-white text-[10px] p-2 rounded border border-slate-700 uppercase font-bold"></select>
-            <select id="filterSize" multiple onchange="applyFilters()" class="bg-slate-900 text-white text-[10px] p-2 rounded border border-slate-700 uppercase font-bold"></select>
-            <select id="filterSeries" multiple onchange="applyFilters()" class="bg-slate-900 text-white text-[10px] p-2 rounded border border-slate-700 uppercase font-bold"></select>
-            <select id="filterVariant" multiple onchange="applyFilters()" class="bg-slate-900 text-white text-[10px] p-2 rounded border border-slate-700 uppercase font-bold"></select>
+
+        <div class="grid grid-cols-5 gap-2">
+            <input type="text" id="search" placeholder="SEARCH DESIGN..." oninput="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded">
+            <select id="brand" onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
+            <select id="size" onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
+            <select id="series" onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
+            <select id="grade" onchange="filterData()" class="bg-slate-900 border border-slate-700 text-white p-2 text-[10px] rounded"></select>
         </div>
     </div>
 
-    <div id="reportList" class="mt-6"></div>
+    <div id="list" class="p-4"></div>
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxJKfexL72pvC3h_1cnlvLN1uw01Gos8wyvvtXjXmkHxkHzJmmduzxGk7BfjeDvxoU/exec"; 
-    let masterData = [];
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJKfexL72pvC3h_1cnlvLN1uw01Gos8wyvvtXjXmkHxkHzJmmduzxGk7BfjeDvxoU/exec"; // અહીં તમારી URL મૂકો
+    let data = [];
 
     async function fetchData() {
-        const res = await fetch(WEB_APP_URL);
-        masterData = await res.json();
-        populateFilters();
-        applyFilters();
+        const res = await fetch(SCRIPT_URL);
+        data = await res.json();
+        setupFilters();
+        filterData();
     }
 
-    function populateFilters() {
-        const getUnique = (key) => [...new Set(masterData.map(i => i[key]).filter(Boolean))].sort();
-        const fill = (id, data) => document.getElementById(id).innerHTML = data.map(v => `<option value="${v}">${v}</option>`).join('');
+    function setupFilters() {
+        const unique = (key) => [...new Set(data.map(i => i[key]))].sort();
+        const fill = (id, arr) => document.getElementById(id).innerHTML = `<option value="">ALL ${id.toUpperCase()}</option>` + arr.map(v => `<option value="${v}">${v}</option>`).join('');
         
-        fill('filterBrand', getUnique('Brand'));
-        fill('filterSize', getUnique('Size'));
-        fill('filterSeries', getUnique('Series'));
-        fill('filterVariant', getUnique('Grade'));
+        fill('brand', unique('Brand'));
+        fill('size', unique('Size'));
+        fill('series', unique('Series'));
+        fill('grade', unique('Grade'));
     }
 
-    function applyFilters() {
-        const search = document.getElementById('searchName').value.toLowerCase();
-        const getSelected = (id) => Array.from(document.getElementById(id).selectedOptions).map(o => o.value);
-        
-        const brands = getSelected('filterBrand');
-        const sizes = getSelected('filterSize');
-        const series = getSelected('filterSeries');
-        const variants = getSelected('filterVariant');
+    function filterData() {
+        const s = document.getElementById('search').value.toLowerCase();
+        const b = document.getElementById('brand').value;
+        const sz = document.getElementById('size').value;
+        const sr = document.getElementById('series').value;
+        const gr = document.getElementById('grade').value;
 
-        const filtered = masterData.filter(i => {
-            return i["Item Description"].toLowerCase().includes(search) &&
-                   (brands.length === 0 || brands.includes(i.Brand)) &&
-                   (sizes.length === 0 || sizes.includes(i.Size)) &&
-                   (series.length === 0 || series.includes(i.Series)) &&
-                   (variants.length === 0 || variants.includes(i.Grade));
-        });
+        const filtered = data.filter(i => 
+            i["Item Description"].toLowerCase().includes(s) &&
+            (b === "" || i.Brand === b) &&
+            (sz === "" || i.Size === sz) &&
+            (sr === "" || i.Series === sr) &&
+            (gr === "" || i.Grade === gr)
+        );
+
         render(filtered);
     }
 
     function render(items) {
-        document.getElementById('reportList').innerHTML = items.map(i => `
+        document.getElementById('list').innerHTML = items.map(i => `
             <div class="stock-card">
-                <div class="card-img-box"><img src="${i.ImgUrl}" crossorigin="anonymous"></div>
-                <div class="p-6 flex-1 flex flex-col justify-center">
-                    <div class="flex gap-2 mb-1">
-                        <span class="variant-badge">${i.Grade || 'N/A'}</span>
-                        ${i.Total < 50 ? '<span class="low-stock">LOW STOCK</span>' : ''}
-                    </div>
-                    <h2 class="text-2xl font-black uppercase text-white">${i["Item Description"]}</h2>
-                    <p class="text-slate-400 text-xs font-bold uppercase">${i.Brand} | ${i.Series} | ${i.Size}</p>
+                <div class="card-img"><img src="${i.ImgUrl}" crossorigin="anonymous"></div>
+                <div class="p-4 flex-1">
+                    ${i.Total < 50 ? '<span class="low-stock-alert">LOW STOCK (< 50)</span>' : ''}
+                    <h2 class="text-xl font-black text-white uppercase mt-1">${i["Item Description"]}</h2>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">${i.Brand} | ${i.Series} | ${i.Size} | ${i.Grade}</p>
                 </div>
-                <div class="px-10 flex flex-col justify-center items-center border-l border-slate-700 bg-slate-800/30">
-                    <div class="text-4xl font-black text-amber-500">${i.Total}</div>
-                    <div class="text-[10px] text-slate-400 font-bold uppercase">Total Boxes</div>
+                <div class="px-6 flex flex-col justify-center items-center bg-slate-800/50">
+                    <span class="text-2xl font-black text-amber-500">${i.Total}</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase">Total Boxes</span>
                 </div>
             </div>
         `).join('');
     }
 
     async function downloadPDF() {
-        const element = document.getElementById('printableArea');
+        const date = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
         const opt = {
             margin: 5,
-            filename: `Emcer_Stock_${new Date().toLocaleDateString().replace(/\//g,'-')}.pdf`,
+            filename: `Emcer_Stock_${date}.pdf`,
             html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: 'avoid-all', after: '.stock-card' }
         };
-        await html2pdf().set(opt).from(element).save();
+        await html2pdf().set(opt).from(document.getElementById('printableArea')).save();
     }
 
     fetchData();
