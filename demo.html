@@ -2,88 +2,88 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexTile - Premium Live Stock</title>
+    <title>EMCER LIVE INVENTORY</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        .stock-card { transition: all 0.3s ease; border: 1px solid #e2e8f0; }
-        .stock-card:hover { transform: scale(1.01); border-color: #2563eb; }
-        .sticky-header { position: sticky; top: 0; z-index: 999; background: white; padding: 15px 0; border-bottom: 1px solid #e2e8f0; }
-        .low-stock-badge { background: #fee2e2; color: #b91c1c; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; }
+        body { background: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; }
+        .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; }
+        .sticky-nav { position: sticky; top: 0; z-index: 1000; background: #0f172a; padding: 20px 0; }
+        .low-stock { color: #f87171; font-weight: 800; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
-<body class="bg-slate-50">
+<body class="p-6">
 
-<div id="printableArea" class="max-w-6xl mx-auto p-4">
-    <div class="sticky-header shadow-sm mb-6">
-        <div class="flex justify-between items-center">
-            <h1 class="text-2xl font-extrabold text-slate-900">NexTile <span class="text-blue-600">Stock</span></h1>
-            <div class="flex gap-2">
-                <button onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase">PDF Report</button>
-                <button onclick="shareWhatsApp()" class="bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase">WhatsApp</button>
+<div class="max-w-7xl mx-auto">
+    <div class="sticky-nav">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-3xl font-black text-amber-500 uppercase">Emcer Tiles Private Limited</h1>
+                <p class="text-xs text-slate-500 font-bold">LIVE INVENTORY PORTAL | UPDATED: <span id="time"></span></p>
             </div>
+            <div class="flex gap-3">
+                <button onclick="downloadPDF()" class="bg-amber-600 text-black px-6 py-3 rounded-xl font-black text-[11px] uppercase shadow-lg">📄 Download PDF</button>
+                <button onclick="shareWhatsApp()" class="bg-green-600 text-white px-6 py-3 rounded-xl font-black text-[11px] uppercase shadow-lg">💬 WhatsApp</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-5 gap-4 bg-slate-900 p-4 rounded-2xl border border-slate-700">
+            <input type="text" id="search" placeholder="🔍 SEARCH DESIGN..." class="bg-transparent border-none text-sm font-bold focus:ring-0">
+            <select id="brand" class="bg-slate-800 p-2 rounded-lg text-[10px] font-bold"><option>All Brands</option></select>
+            <select id="size" class="bg-slate-800 p-2 rounded-lg text-[10px] font-bold"><option>All Sizes</option></select>
+            <select id="series" class="bg-slate-800 p-2 rounded-lg text-[10px] font-bold"><option>All Series</option></select>
+            <select id="grade" class="bg-slate-800 p-2 rounded-lg text-[10px] font-bold"><option>All Grades</option></select>
         </div>
     </div>
 
-    <div id="reportList" class="space-y-4"></div>
+    <div id="reportList" class="mt-6 space-y-4">
+        </div>
 </div>
 
 <script>
-    // તમારી Google Apps Script URL અહીં મૂકો
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJKfexL72pvC3h_1cnlvLN1uw01Gos8wyvvtXjXmkHxkHzJmmduzxGk7BfjeDvxoU/exec';
-
-    async function fetchData() {
-        const response = await fetch(SCRIPT_URL);
-        const data = await response.json();
+    // 1. Data Fetching
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJKfexL72pvC3h_1cnlvLN1uw01Gos8wyvvtXjXmkHxkHzJmmduzxGk7BfjeDvxoU/exec"; 
+    
+    async function loadData() {
+        const res = await fetch(SCRIPT_URL);
+        const data = await res.json();
         render(data);
     }
 
+    // 2. Rendering Function
     function render(items) {
-        const area = document.getElementById('reportList');
-        area.innerHTML = items.map(item => `
-            <div class="stock-card p-4 bg-white rounded-2xl flex gap-6 items-center">
-                <div class="w-32 h-24 overflow-hidden rounded-lg bg-slate-100">
-                    <img src="${item.ImgUrl || 'https://via.placeholder.com/150'}" class="w-full h-full object-cover hover:scale-110 transition-transform">
-                </div>
+        document.getElementById('reportList').innerHTML = items.map(i => `
+            <div class="glass-card flex p-6 gap-6 hover:border-amber-500 transition-all">
+                <img src="${i.imgUrl}" class="w-40 h-32 object-cover rounded-lg">
                 <div class="flex-grow">
-                    ${item.Total < 50 ? '<span class="low-stock-badge uppercase mb-1 inline-block">Low Stock (< 50)</span>' : ''}
-                    <div class="text-lg font-bold uppercase">${item["Item Description"]}</div>
-                    <div class="text-[10px] text-slate-400 font-bold uppercase">${item.Brand} | ${item.Size} | ${item.Variant}</div>
+                    <div class="flex gap-2">
+                        <span class="text-[10px] font-black text-amber-500">${i.brand}</span>
+                        ${i.total < 50 ? '<span class="low-stock text-[10px]">● LOW STOCK</span>' : ''}
+                    </div>
+                    <h2 class="text-2xl font-black">${i.name}</h2>
+                    <p class="text-slate-400 text-xs">${i.size} | ${i.series} | ${i.grade}</p>
                 </div>
-                <div class="text-right">
-                    <div class="text-3xl font-black text-blue-600">${item.Total}</div>
-                    <div class="text-[10px] font-bold text-slate-400 uppercase">Boxes</div>
+                <div class="text-right border-l border-slate-700 pl-6">
+                    <div class="text-4xl font-black text-white">${i.total}</div>
+                    <div class="text-[10px] uppercase font-bold text-slate-500">Total Boxes</div>
                 </div>
             </div>
         `).join('');
     }
 
-    // PDF with Page Numbering
-    async function downloadPDF() {
-        const { jsPDF } = window.jspdf;
-        const element = document.getElementById('printableArea');
-        const canvas = await html2canvas(element, { scale: 2 });
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        
-        const pageCount = pdf.internal.getNumberOfPages();
-        for(let i = 1; i <= pageCount; i++) {
-            pdf.setPage(i);
-            pdf.text('Page ' + i + ' of ' + pageCount, 180, 285);
-        }
-        pdf.save('Stock_Report.pdf');
+    // 3. Features Functions
+    function downloadPDF() {
+        const element = document.body;
+        html2pdf().from(element).save('Emcer_Stock_Report.pdf');
     }
 
     function shareWhatsApp() {
-        window.open(`https://wa.me/?text=NexTile Stock Report: ${window.location.href}`);
+        window.open('https://wa.me/?text=Check out our live stock: [LINK]');
     }
 
-    fetchData();
+    document.getElementById('time').innerText = new Date().toLocaleString();
+    loadData();
 </script>
 </body>
 </html>
