@@ -3,239 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexTile Command - Emcer Live Stock</title>
+    <title>NexTile - Live Stock Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
         :root {
-            --matrix-gold: #dfb76c;
-            --jet-black: #050608;
-            --panel-dark: #0d0f12;
-            --border-glow: #161a22;
+            --cyber-gold: #c5a059;
+            --deep-space: #0f172a;
+            --card-dark: #1e293b;
         }
         
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--jet-black); 
-            color: #e2e8f0;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
+            background-color: var(--deep-space); 
+            color: #f1f5f9; 
         }
         
-        .main-container { max-width: 1400px; margin: auto; padding: 16px; }
-        @media(min-width: 768px) { .main-container { padding: 30px; } }
+        .main-container { max-width: 1250px; margin: auto; padding: 20px; }
         
-        /* Industrial Premium Sharp Panel */
-        .matrix-panel {
-            background-color: var(--panel-dark);
-            border: 1px solid var(--border-glow);
-            border-radius: 0px !important;
+        /* Premium Sparkle Tag */
+        .yashdeep-tag-premium {
+            background: #1e293b; color: #fff; border: 1.5px solid var(--cyber-gold);
+            padding: 6px 18px; border-radius: 50px; font-weight: 800; font-size: 11px;
+            box-shadow: 0 0 15px rgba(197, 160, 89, 0.2);
+            text-shadow: 0 0 8px rgba(255,255,255,0.4);
+            animation: glow 2s infinite ease-in-out;
         }
+        @keyframes glow { 0%, 100% { box-shadow: 0 0 15px rgba(197, 160, 89, 0.2); } 50% { box-shadow: 0 0 25px rgba(197, 160, 89, 0.4); } }
 
-        /* Fixed Geometric Stock Cards - Perfectly Mobile Responsive */
+        /* ✅ Ultimate Gold Neon Border Cards */
         .stock-card { 
-            background: #090b0d;
-            border: 1px solid #161a22; 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent; 
+            border-image: linear-gradient(145deg, #c5a059 0%, #a68b55 100%) 1;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
             display: flex; 
-            flex-direction: column; /* Mobile first */
-            margin-bottom: 20px; 
+            margin-bottom: 25px; 
+            min-height: 250px; 
             position: relative; 
             page-break-inside: avoid;
-            border-radius: 0px !important;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            transition: all 0.25s ease-in-out;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        @media(min-width: 768px) {
-            .stock-card { flex-direction: row; min-height: 220px; }
-        }
-        
         .stock-card:hover {
-            border-color: var(--matrix-gold);
-            background: #0c0e12;
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px 0 rgba(197, 160, 89, 0.2);
+            border-image: linear-gradient(145deg, #dfb76c 0%, #c5a059 100%) 1;
         }
 
         .variant-badge { 
-            position: absolute; top: 0; right: 0; 
-            background: var(--matrix-gold); color: #000; 
-            padding: 4px 14px; font-size: 10px; font-weight: 900; 
+            position: absolute; top: 0; right: 20%; 
+            background: var(--cyber-gold); color: #000; 
+            padding: 5px 18px; font-size: 11px; font-weight: 900; 
             text-transform: uppercase; z-index: 10; 
-            letter-spacing: 0.05em;
+            border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        @media(min-width: 768px) { .variant-badge { right: 22%; } }
         
         .brand-tag { 
             font-size: 10px; background: rgba(59, 130, 246, 0.1); 
-            color: #3b82f6; padding: 3px 10px; 
+            color: #60a5fa; padding: 3px 10px; border-radius: 6px; 
             font-weight: 800; display: inline-block; margin-bottom: 8px; 
-            text-transform: uppercase; border: 1px solid rgba(59, 130, 246, 0.2);
+            text-transform: uppercase;
         }
         
-        /* Proportion Tile Container - Auto Scales on Mobile */
-        .card-img-frame { 
-            width: 100%; 
-            border-bottom: 1px solid #161a22;
-            padding: 16px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background: #020304;
+        /* ✅ Portrait Forced Tile Container */
+        .card-img-zone { 
+            width: 32%; border-right: 1px solid rgba(255, 255, 255, 0.05); 
+            padding: 12px; display: flex; align-items: center; justify-content: center; 
+            background: #020617;
             cursor: pointer;
         }
-        @media(min-width: 768px) {
-            .card-img-frame { width: 25%; border-bottom: none; border-right: 1px solid #161a22; padding: 12px; }
+        .card-img-zone img { 
+            height: 220px; /* Fixed height for bannie types */
+            width: auto; /* Width automatic rahese */
+            aspect-ratio: 9/16; /* Portrait ratio forced */
+            object-fit: cover; /* Crop thaya vagar set thase */
+            display: block; border-radius: 12px;
+            transition: 0.5s ease;
         }
-        .card-img-frame img { 
-            max-height: 180px; 
-            width: auto; 
-            max-width: 100%; 
-            object-fit: contain; 
-            display: block; 
-            border: 1px solid #222b35;
-        }
+        .stock-card:hover .card-img-zone img { transform: scale(1.03); }
 
-        .card-info { width: 100%; padding: 20px; display: flex; flex-direction: column; justify-content: center; }
-        @media(min-width: 768px) { .card-info { width: 55%; padding: 22px; } }
-        
-        .design-name { font-size: 20px; font-weight: 800; text-transform: uppercase; line-height: 1.2; color: #fff; letter-spacing: -0.01em; }
-        @media(min-width: 768px) { .design-name { font-size: 22px; } }
-        
-        .design-meta { color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 3px; margin-bottom: 12px; }
+        .card-info { width: 48%; padding: 22px; display: flex; flex-direction: column; justify-content: center; }
+        .design-name { font-size: 24px; font-weight: 800; text-transform: uppercase; line-height: 1.1; margin-bottom: 4px; color: #fff; tracking: -0.01em; }
+        .design-meta { color: #9ca3af; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
         
         .lot-row { 
             display: flex; justify-content: space-between; 
-            border-bottom: 1px solid #161a22; 
-            padding: 8px 0; font-size: 13px; font-weight: 600; color: #cbd5e1;
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+            padding: 8px 0; font-size: 13px; font-weight: 600; color: #d1d5db;
         }
         
-        /* Total Box Section - Gold Styling */
         .card-total { 
-            width: 100%; 
-            border-top: 1px solid #161a22; 
-            display: flex; 
-            flex-direction: row; 
-            align-items: center; 
-            justify-content: space-between; 
-            padding: 12px 20px;
-            background: #040507; 
+            width: 20%; border-left: 1px solid rgba(255, 255, 255, 0.05); 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            background: rgba(15, 23, 42, 0.5); 
         }
-        @media(min-width: 768px) {
-            .card-total { width: 20%; border-top: none; border-left: 1px solid #161a22; flex-direction: column; justify-content: center; padding: 0; }
-        }
-        .total-val { font-size: 32px; font-weight: 900; line-height: 1; color: var(--matrix-gold); text-shadow: 0 0 10px rgba(223, 183, 108, 0.15); }
-        @media(min-width: 768px) { .total-val { font-size: 40px; } }
+        .total-val { font-size: 46px; font-weight: 900; line-height: 1; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.1); }
         
-        /* Balanced Balanced Inputs Grid Layout - Fluid Grid */
-        .filter-grid-layout {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            padding: 16px;
-            margin-bottom: 24px;
-            align-items: end;
-        }
-        @media(min-width: 768px) {
-            .filter-grid-layout { grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; padding: 20px; }
-        }
-        
-        .filter-group { display: flex; flex-direction: column; }
-        label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #64748b; margin-bottom: 6px; letter-spacing: 0.05em; }
-        
+        /* Dark Theme Inputs */
         select, input { 
-            background: #020304 !important; 
+            background: #1e293b !important; 
             color: #fff !important; 
-            border: 1px solid #222b35 !important; 
-            border-radius: 0px !important;
-            padding: 12px; font-weight: 600; font-size: 13px; outline: none; 
+            border: 1px solid rgba(255,255,255,0.05) !important; 
+            border-radius: 12px;
+            padding: 12px; font-weight: 700; font-size: 13px; outline: none; 
+            transition: 0.2s;
             text-transform: uppercase;
-            width: 100%;
         }
-        select:focus, input:focus { border-color: var(--matrix-gold); }
+        select:focus, input:focus { border-color: var(--cyber-gold); }
         
-        .btn-ui {
-            border-radius: 0px !important;
-            transition: all 0.2s ease;
-            width: 100%;
-            text-align: center;
-        }
-        @media(min-width: 768px) { .btn-ui { width: auto; } }
-
-        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
-
-        /* Pure Print Corrections Override */
+        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
+        
         @media print { 
             .no-print { display: none !important; } 
             body { background: #ffffff !important; color: #000000 !important; }
-            .main-container { padding: 0mm; margin: 0mm; }
-            .stock-card { 
-                background: #ffffff !important; 
-                border: 1px solid #000000 !important; 
-                color: #000000 !important;
-                box-shadow: none !important;
-                margin-bottom: 15mm;
-                flex-direction: row !important;
-                page-break-inside: avoid !important;
-            }
-            .card-img-frame { width: 25% !important; border-bottom: none !important; border-right: 1px solid #000000 !important; background: #fafafa !important; }
-            .card-info { width: 55% !important; }
-            .card-total { width: 20% !important; border-top: none !important; border-left: 1px solid #000000 !important; background: #f1f5f9 !important; flex-direction: column !important; justify-content: center !important; }
-            .design-name, .lot-row span { color: #000000 !important; }
-            .total-val { color: #000000 !important; text-shadow: none !important; }
-            .card-img-frame img { border: 1px solid #000000 !important; }
-            .variant-badge { border: 1px solid #000000 !important; background: #000000 !important; color: #ffffff !important; }
-            .lot-row { border-bottom: 1px solid #e2e8f0 !important; }
+            .stock-card { background: #fff; border: 1px solid #000; color: #000; }
+            .design-name, .total-val { color: #000; }
         }
     </style>
 </head>
 <body>
 
 <div id="imageModal" onclick="this.style.display='none'">
-    <img id="modalImg" class="max-w-full max-h-[90vh] border border-neutral-800 shadow-2xl" src="">
+    <img id="modalImg" class="max-w-full max-h-[90vh] rounded-xl border border-neutral-800 shadow-2xl" src="">
 </div>
 
 <div class="main-container">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center pt-2 pb-6 gap-4">
+    <div class="flex flex-col md:flex-row justify-between items-center pt-2 pb-6 gap-4">
         <div>
-            <h1 class="text-xl md:text-2xl font-black text-white tracking-tight leading-none">EMCER TILES PRIVATE LIMITED</h1>
-            <p class="text-[11px] text-blue-400 font-extrabold uppercase tracking-[0.2em] mt-1.5">Live Stock Control Dashboard</p>
-            <p id="lastUpdated" class="text-[10px] text-amber-500 font-medium uppercase mt-1">Establishing Secure Node Link...</p>
+            <h1 class="text-3xl font-black text-white tracking-tight leading-none">EMCER TILES PRIVATE LIMITED</h1>
+            <p class="text-[11px] text-blue-400 font-extrabold uppercase tracking-[0.2em] mt-2">Live Cloud Stock Portal</p>
+            <p id="lastUpdated" class="text-[10px] text-amber-500 font-medium uppercase mt-1"> estabelecendo conexão live node matrix...</p>
         </div>
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center no-print gap-3 w-full md:w-auto justify-between md:justify-end">
-            <div class="flex gap-2 w-full sm:w-auto">
-                <button onclick="downloadPDF(this)" class="btn-ui bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 text-[11px] font-bold uppercase flex-1 sm:flex-none">📄 Download PDF</button>
-                <button onclick="location.reload()" class="btn-ui bg-neutral-800 hover:bg-neutral-700 text-white px-5 py-2.5 text-[11px] font-bold uppercase border border-neutral-700 flex-1 sm:flex-none">🔄 Refresh</button>
+        <div class="flex flex-col items-center md:items-end no-print gap-3">
+            <div class="flex gap-2">
+                <button onclick="downloadPDF(this)" class="bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase transition">📄 Download PDF</button>
+                <button onclick="location.reload()" class="bg-neutral-800 hover:bg-neutral-700 text-white px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase transition border border-neutral-700">🔄 Refresh</button>
             </div>
-            <div class="border border-amber-500/40 px-4 py-2 text-amber-500 font-black text-[11px] uppercase tracking-wider bg-amber-500/5 text-center">✨ Yashdeep Jivani ✨</div>
+            <div class="yashdeep-tag-premium">✨ YASHDEEP JIVANI ✨</div>
         </div>
     </div>
+
+    <div class="h-[1px] bg-gradient-to-r from-transparent via-neutral-800 to-transparent my-4"></div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 no-print">
-        <div class="matrix-panel p-4 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Total Designs</div><div id="statDesigns" class="text-xl md:text-2xl font-black mt-1 text-white">0</div></div>
-        <div class="matrix-panel p-4 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Total Boxes</div><div id="statBoxes" class="text-xl md:text-2xl font-black mt-1 text-emerald-400">0</div></div>
-        <div class="matrix-panel p-4 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Active Brands</div><div id="statBrands" class="text-xl md:text-2xl font-black mt-1 text-white">0</div></div>
-        <div class="matrix-panel p-4 text-center" style="border-color: rgba(223, 183, 108, 0.3);"><div class="text-amber-500 text-[10px] uppercase font-bold tracking-wider">Filtered View</div><div id="statFiltered" class="text-xl md:text-2xl font-black mt-1 text-amber-500">0</div></div>
+        <div class="bg-card-dark p-4 rounded-xl border border-neutral-800 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Total Designs</div><div id="statDesigns" class="text-2xl font-black mt-1">0</div></div>
+        <div class="bg-card-dark p-4 rounded-xl border border-neutral-800 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Total Boxes</div><div id="statBoxes" class="text-2xl font-black mt-1 text-emerald-400">0</div></div>
+        <div class="bg-card-dark p-4 rounded-xl border border-neutral-800 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Brands</div><div id="statBrands" class="text-2xl font-black mt-1">0</div></div>
+        <div class="bg-card-dark p-4 rounded-xl border border-neutral-800 text-center" style="border-color: rgba(197, 160, 89, 0.3);"><div class="text-amber-500 text-[10px] uppercase font-bold tracking-wider">Filtered View</div><div id="statFiltered" class="text-2xl font-black mt-1 text-amber-500">0</div></div>
     </div>
 
-    <div class="matrix-panel filter-grid-layout no-print">
-        <div class="filter-group"><label>Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Type material name..."></div>
-        <div class="filter-group"><label>Brand</label><select id="filterBrand" onchange="applyFilters()"></select></div>
-        <div class="filter-group"><label>Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"></select></div>
-        <div class="filter-group"><label>Series</label><select id="filterSeries" onchange="applyFilters()"></select></div>
-        <div class="filter-group"><label>Variant</label><select id="filterVariant" onchange="applyFilters()"></select></div>
-        <button onclick="resetFilters()" class="btn-ui bg-neutral-800 hover:bg-neutral-700 text-slate-300 p-3 border border-neutral-700" title="Reset Filters">
-            <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-        </button>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-6 no-print bg-slate-900 p-5 rounded-2xl border border-neutral-800 shadow-xl">
+        <div class="col-span-2 md:col-span-2 flex flex-col"><label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Type material name..."></div>
+        <div class="flex flex-col"><label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Brand</label><select id="filterBrand" onchange="applyFilters()"></select></div>
+        <div class="flex flex-col"><label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"></select></div>
+        <div class="flex flex-col"><label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Series</label><select id="filterSeries" onchange="applyFilters()"></select></div>
+        <div class="flex flex-col"><label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Variant</label><select id="filterVariant" onchange="applyFilters()"></select></div>
     </div>
 
     <div id="reportList">
-        <div class="text-center py-24 opacity-40 font-bold tracking-widest text-xs uppercase text-slate-500 animate-pulse">Syncing Active Matrix Database Cluster...</div>
+        <div class="text-center py-20 opacity-30 font-black tracking-widest text-xs uppercase text-slate-400">Connectando Live Node Matrix Database Cluster...</div>
     </div>
 </div>
 
 <script>
+    // ✅ TAMARI APPS SCRIPT WEB APP URL
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_bjbw3zsKm-QQwHC9TIyBwzGGMfeDr2tNFfBc-jTnd0TZISKbzkn8C7HRhk4TJzaBcg/exec";
+
     let masterData = [];
 
     async function initPortal() {
@@ -249,7 +186,7 @@
             }
         } catch (e) { 
             console.error(e); 
-            document.getElementById('reportList').innerHTML = `<div class='text-center text-red-500 font-bold py-12'>Sync Interrupted. Cloud Script Connection Dropped.</div>`;
+            document.getElementById('reportList').innerHTML = `<div class='text-center text-red-400 font-bold py-10'>Falha ao sincronizar database.</div>`;
         }
     }
 
@@ -265,15 +202,6 @@
         const sz = document.getElementById('filterSize').value, srs = new Set();
         masterData.forEach(i => { if(sz==="" || i.Size===sz) if(i.Series) srs.add(i.Series); });
         document.getElementById('filterSeries').innerHTML = '<option value="">All</option>' + [...srs].sort().map(s => `<option value="${s}">${s}</option>`).join('');
-    }
-
-    function resetFilters() {
-        document.getElementById('searchName').value = '';
-        document.getElementById('filterBrand').value = '';
-        document.getElementById('filterSize').value = '';
-        document.getElementById('filterVariant').value = '';
-        updateSeriesOptions();
-        applyFilters();
     }
 
     function applyFilters() {
@@ -295,8 +223,8 @@
                   variant = (item.Variant||"").trim(), 
                   qty = Number(item.Total || item["Net Qty"] || 0);
             
-            const baseImg = item.DesignURL || item.ImgUrl || '';
-            const imgUrl = baseImg ? baseImg : 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400';
+            // ✅ AUTO IMAGE SETTING: DesignURL is sent from apps script
+            const imgUrl = item.DesignURL ? item.DesignURL : 'https://via.placeholder.com/400';
             const lotNo = item["Lot No"] || item["Lot no."] || "N/A";
 
             if (desc.toLowerCase().includes(f.n) && (!f.b || brand===f.b) && (!f.sz || size===f.sz) && (!f.s || series===f.s) && (!f.v || variant===f.v)) {
@@ -309,49 +237,39 @@
         
         const items = Object.values(groups);
         document.getElementById('statDesigns').innerText = items.length;
-        document.getElementById('statBoxes').innerText = total.toLocaleString();
+        document.getElementById('statBoxes').innerText = total;
         document.getElementById('statBrands').innerText = brands.size;
         document.getElementById('statFiltered').innerText = items.length;
         render(items);
     }
 
     function render(items) {
-        if(items.length === 0) {
-            document.getElementById('reportList').innerHTML = `<div class="text-center py-20 opacity-30 font-bold uppercase tracking-widest text-xs text-slate-500">Zero Filter Matches Found on System Node</div>`;
-            return;
-        }
-
         document.getElementById('reportList').innerHTML = items.map(item => {
-            let finalImg = item.imgUrl;
-            if (item.imgUrl.includes('drive.google.com')) {
-                const fileId = item.imgUrl.split('/d/')[1]?.split('/')[0] || item.imgUrl.split('id=')[1];
-                if (fileId) finalImg = `https://docs.google.com/uc?export=view&id=${fileId}`;
-            } else if (!item.imgUrl.includes('unsplash') && !item.imgUrl.includes('placeholder')) {
-                finalImg = "https://images.weserv.nl/?url=" + encodeURIComponent(item.imgUrl.replace('https://', ''));
-            }
-
+            // ✅ Using safe direct drive link conversion from apps script
+            const finalImg = item.imgUrl.includes('placeholder') ? item.imgUrl : "https://images.weserv.nl/?url=" + encodeURIComponent(item.imgUrl.replace('https://', ''));
+            
             return `
             <div class="stock-card">
                 <div class="variant-badge">${item.variant || 'STD'}</div>
-                <div class="card-img-frame" onclick="document.getElementById('modalImg').src='${finalImg}'; document.getElementById('imageModal').style.display='flex'">
-                    <img src="${finalImg}" loading="lazy" crossorigin="anonymous" onerror="this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400'">
+                <div class="card-img-zone" onclick="document.getElementById('modalImg').src='${item.imgUrl}'; document.getElementById('imageModal').style.display='flex'">
+                    <img src="${finalImg}" loading="lazy" crossorigin="anonymous" onerror="this.src='https://via.placeholder.com/400'">
                 </div>
                 <div class="card-info">
                     <div><span class="brand-tag">${item.brand}</span></div>
                     <div class="design-name">${item.desc}</div>
                     <div class="design-meta">${item.series || 'REGULAR'} | ${item.size}</div>
-                    <div class="w-full mt-2">
+                    <div class="flex-grow mt-2">
                         ${item.lots.map(l => `
                             <div class="lot-row">
-                                <span class="text-slate-400 text-xs font-semibold tracking-wider">LOT: ${l.lot}</span>
-                                <span class="font-bold text-slate-200">${l.qty} Bx</span>
+                                <span class="text-slate-400 text-xs tracking-wider">LOT: ${l.lot}</span>
+                                <span class="font-bold text-slate-100">${l.qty} Bx</span>
                             </div>
                         `).join('')}
                     </div>
                 </div>
                 <div class="card-total">
-                    <div class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest md:mb-1.5">Total Boxes</div>
                     <div class="total-val">${Math.round(item.total)}</div>
+                    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Boxes</div>
                 </div>
             </div>`;
         }).join('');
@@ -360,13 +278,13 @@
     async function downloadPDF(btn) {
         const element = document.getElementById('reportList');
         const originalText = btn.innerText;
-        btn.innerText = "Processing System PDF..."; btn.disabled = true;
+        btn.innerText = "Processing PDF Node Cluster..."; btn.disabled = true;
 
         const opt = {
-            margin: [12, 10, 12, 10],
+            margin: 10,
             filename: 'NexTile_Live_Stock.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff' },
+            html2canvas: { scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#0f172a' },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
             pagebreak: { mode: ['avoid-all', 'css'] }
         };
