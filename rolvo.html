@@ -2,189 +2,252 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NexTile - Emcer Live Stock</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;700;900&family=Playfair+Display:wght=700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <style>
+        :root {
+            --matrix-gold: #dfb76c;
+            --jet-black: #050608;
+            --panel-dark: #0d0f12;
+            --border-glow: #161a22;
+        }
+        
         body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #0f172a; 
-            color: #f1f5f9; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--jet-black); 
+            color: #e2e8f0;
+            min-height: 100vh;
             margin: 0;
             padding: 0;
         }
-        .main-container { max-width: 1200px; margin: auto; padding: 20px; }
-        .header-line { height: 4px; background: #d4af37; margin: 15px 0; }
         
-        .stat-card { 
-            background: #1e293b; 
-            border: 1px solid #334155; 
-            padding: 15px; 
-            text-align: center; 
-            border-radius: 12px;
+        .main-container { max-width: 1400px; margin: auto; padding: 16px; }
+        @media(min-width: 768px) { .main-container { padding: 30px; } }
+        
+        .matrix-panel {
+            background-color: var(--panel-dark);
+            border: 1px solid #1e2530;
+            border-radius: 0px !important;
         }
-        .stat-val { font-size: 24px; font-weight: 900; color: #d4af37; }
-        .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; }
+
+        /* Precise Golden Sharp Borders for Each Design Card */
+        .stock-card { 
+            background: #090b0d;
+            border: 2px solid var(--matrix-gold); /* Prominent Gold Border requested */
+            display: flex; 
+            flex-direction: column; 
+            margin-bottom: 24px; 
+            position: relative; 
+            page-break-inside: avoid;
+            border-radius: 0px !important;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+            transition: all 0.25s ease-in-out;
+        }
+        @media(min-width: 768px) {
+            .stock-card { flex-direction: row; min-height: 240px; }
+        }
+        .stock-card:hover {
+            box-shadow: 0 12px 35px rgba(223, 183, 108, 0.15);
+            background: #0c0e12;
+        }
+
+        .variant-badge { 
+            position: absolute; top: 0; right: 0; 
+            background: var(--matrix-gold); color: #000; 
+            padding: 5px 16px; font-size: 11px; font-weight: 900; 
+            text-transform: uppercase; z-index: 10; 
+            letter-spacing: 0.05em;
+        }
+        @media(min-width: 768px) { .variant-badge { right: 20%; } }
         
-        .filter-box { 
-            background: #1e293b; 
-            border: 1px solid #334155; 
-            padding: 20px; 
-            margin-bottom: 25px; 
-            border-radius: 12px;
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
-            gap: 15px; 
+        .brand-tag { 
+            font-size: 10px; background: rgba(59, 130, 246, 0.1); 
+            color: #3b82f6; padding: 3px 10px; 
+            font-weight: 800; display: inline-block; margin-bottom: 8px; 
+            text-transform: uppercase; border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Fixed Grid Portrait View - Solves Image Sizing Fluctuation */
+        .card-img-frame { 
+            width: 100%; 
+            border-bottom: 1px solid #161a22;
+            padding: 16px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: #020304;
+            cursor: pointer;
+        }
+        @media(min-width: 768px) {
+            .card-img-frame { width: 30%; border-bottom: none; border-right: 1px solid #161a22; padding: 14px; }
+        }
+        .card-img-frame img { 
+            height: 200px;
+            width: auto;
+            aspect-ratio: 3/4; /* Forced Uniform Portrait Geometry */
+            object-fit: cover; 
+            display: block; 
+            border: 1px solid #222b35;
+        }
+
+        .card-info { width: 100%; padding: 20px; display: flex; flex-direction: column; justify-content: center; }
+        @media(min-width: 768px) { .card-info { width: 50%; padding: 24px; } }
+        
+        .design-name { font-size: 22px; font-weight: 800; text-transform: uppercase; line-height: 1.2; color: #fff; letter-spacing: -0.01em; }
+        .design-meta { color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 3px; margin-bottom: 12px; }
+        
+        .lot-row { 
+            display: flex; justify-content: space-between; 
+            border-bottom: 1px solid #161a22; 
+            padding: 8px 0; font-size: 13px; font-weight: 600; color: #cbd5e1;
+        }
+        
+        /* Total Box Highlight - High Contrast Matrix Gold */
+        .card-total { 
+            width: 100%; 
+            border-top: 1px solid #161a22; 
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 16px 20px;
+            background: #040507; 
+        }
+        @media(min-width: 768px) {
+            .card-total { width: 20%; border-top: none; border-left: 1px solid #161a22; flex-direction: column; justify-content: center; padding: 0; }
+        }
+        .total-val { font-size: 40px; font-weight: 900; line-height: 1; color: var(--matrix-gold); text-shadow: 0 0 15px rgba(223, 183, 108, 0.3); }
+        
+        .filter-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
             align-items: end;
         }
+        @media(min-width: 768px) {
+            .filter-grid-layout { grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; padding: 20px; }
+        }
+        
         .filter-group { display: flex; flex-direction: column; }
-        label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px; letter-spacing: 0.05em; }
+        label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #64748b; margin-bottom: 6px; letter-spacing: 0.05em; }
+        
         select, input { 
-            background: #0f172a;
-            border: 1px solid #334155; 
-            padding: 10px; 
-            font-weight: 700; 
-            font-size: 13px; 
-            color: white;
-            text-transform: uppercase; 
-            outline: none; 
-            border-radius: 8px;
+            background: #020304 !important; 
+            color: #fff !important; 
+            border: 1px solid #222b35 !important; 
+            border-radius: 0px !important;
+            padding: 12px; font-weight: 600; font-size: 13px; outline: none; 
+            text-transform: uppercase;
             width: 100%;
         }
-
-        .stock-card { 
-            background: #1e293b; 
-            border: 1px solid #334155; 
-            display: flex; 
-            flex-direction: row;
-            margin-bottom: 25px; 
-            min-height: 220px; 
-            position: relative; 
-            border-radius: 16px;
-            overflow: hidden;
-            page-break-inside: avoid; 
-        }
+        select:focus, input:focus { border-color: var(--matrix-gold); }
         
-    /* VARIANT BADGE - PERFECT ROUND CAPSULE WITHOUT CUTTING */
-        .variant-badge { 
-            position: absolute; 
-            top: 15px; 
-            right: calc(5% + 20px); 
-            background: #d4af37; 
-            color: #000; 
-            padding: 4px 16px; 
-            font-size: 11px; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            z-index: 10; 
-            border-radius: 9999px;
-            display: inline-block !important;
-            white-space: nowrap;
+        .btn-ui {
+            border-radius: 0px !important;
+            transition: all 0.2s ease;
+            width: 100%;
             text-align: center;
-            min-width: 60px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-
-       
         }
-        .brand-tag { font-size: 10px; background: rgba(212, 175, 55, 0.15); color: #d4af37; padding: 3px 10px; border-radius: 4px; font-weight: 800; display: inline-block; margin-bottom: 8px; text-transform: uppercase; }
-        
-        .card-img { width: 30%; background: #ffffff; padding: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-right: 1px solid #334155; }
-        .card-img img { max-height: 180px; width: auto; max-width: 100%; object-fit: contain; display: block; }
-        
-        .card-info { width: 50%; padding: 25px; display: flex; flex-direction: column; justify-content: center; }
-        .design-name { font-size: 26px; font-weight: 900; color: #ffffff; text-transform: uppercase; line-height: 1.1; margin-bottom: 4px; font-family: 'Playfair Display', serif; }
-        .design-meta { color: #94a3b8; font-size: 13px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; }
-        
-        .lot-container { display: flex; flex-direction: column; gap: 4px; width: 100%; }
-        .lot-row { display: flex; justify-content: space-between; border-bottom: 1px dotted #334155; padding: 6px 0; font-size: 14px; font-weight: 700; }
-        
-        .card-total { width: 20%; border-left: 1px solid #334155; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.02); }
-        .total-val { font-size: 45px; font-weight: 900; line-height: 1; color: #d4af37; }
+        @media(min-width: 768px) { .btn-ui { width: auto; } }
+
+        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
 
         @media print { 
-            body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background-color: #0f172a !important; }
             .no-print { display: none !important; } 
-            .main-container { padding: 0 !important; width: 100% !important; max-width: 100% !important; }
-            .stock-card { border: 1px solid #334155 !important; background-color: #1e293b !important; page-break-inside: avoid !important; }
-            .total-val, .design-name { color: #d4af37 !important; }
+            body { background: #ffffff !important; color: #000000 !important; }
+            .stock-card { 
+                background: #ffffff !important; 
+                border: 2px solid #000000 !important; 
+                color: #000000 !important;
+                box-shadow: none !important;
+                margin-bottom: 15mm;
+                flex-direction: row !important;
+                page-break-inside: avoid !important;
+            }
+            .card-img-frame { width: 30% !important; border-bottom: none !important; border-right: 1px solid #000000 !important; background: #fafafa !important; }
+            .card-info { width: 50% !important; }
+            .card-total { width: 20% !important; border-top: none !important; border-left: 1px solid #000000 !important; background: #f1f5f9 !important; flex-direction: column !important; justify-content: center !important; }
+            .design-name, .lot-row span { color: #000000 !important; }
+            .total-val { color: #000000 !important; text-shadow: none !important; }
+            .variant-badge { border: 1px solid #000000 !important; background: #000000 !important; color: #ffffff !important; }
         }
-
-        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
     </style>
 </head>
 <body>
 
-<div id="imageModal" onclick="this.style.display='none'"><img id="modalImg" class="max-w-full max-h-[90vh] border-4 border-[#d4af37] rounded-lg shadow-2xl" src=""></div>
+<div id="imageModal" onclick="this.style.display='none'">
+    <img id="modalImg" class="max-w-full max-h-[90vh] border border-neutral-700" src="">
+</div>
 
-<div class="main-container" id="printableArea">
-    <div class="flex justify-between items-end pt-6">
+<div class="main-container">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center pt-2 pb-6 gap-4">
         <div>
-            <h1 class="text-4xl font-black text-white leading-none uppercase tracking-tighter" style="font-family: 'Playfair Display', serif;">EMCER TILES PRIVATE LIMITED</h1>
-            <p class="text-sm text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Live Inventory Portal</p>
-            <p id="lastUpdated" class="text-[10px] text-yellow-500 font-bold uppercase mt-1">Updating...</p>
+            <h1 class="text-xl md:text-2xl font-black text-white tracking-tight leading-none">EMCER TILES PRIVATE LIMITED</h1>
+            <p class="text-[11px] text-blue-400 font-extrabold uppercase tracking-[0.2em] mt-1.5">Inventory Portal</p>
+            <p id="lastUpdated" class="text-[10px] text-amber-500 font-medium uppercase mt-1">Initializing Secure Cloud Synchronizer...</p>
         </div>
-        <div class="text-right no-print">
-            <button onclick="downloadPDF(this)" class="bg-yellow-600 text-black px-5 py-2 text-[11px] font-black uppercase rounded-full transition hover:bg-yellow-500 mr-2 shadow-lg">📄 Download Colorful PDF</button>
-            <button onclick="location.reload()" class="bg-slate-700 text-white px-5 py-2 text-[11px] font-black uppercase rounded-full transition hover:bg-slate-600">🔄 Refresh</button>
-            <div class="text-[10px] font-bold text-slate-500 mt-2 uppercase tracking-widest">Designed & Developed By: Yashdeep Jivani</div>
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center no-print gap-3 w-full md:w-auto justify-between md:justify-end">
+            <div class="flex gap-2 w-full sm:w-auto">
+                <button onclick="downloadPDF(this)" class="btn-ui bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 text-[11px] font-bold uppercase flex-1 sm:flex-none">📄 Download PDF</button>
+                <button onclick="location.reload()" class="btn-ui bg-neutral-800 hover:bg-neutral-700 text-white px-5 py-2.5 text-[11px] font-bold uppercase border border-neutral-700 flex-1 sm:flex-none">🔄 Refresh</button>
+            </div>
+            <div class="border border-amber-500/40 px-4 py-2 text-amber-500 font-black text-[11px] uppercase tracking-wider bg-amber-500/5 text-center">✨DESIGNED & DEVELOPED BY -  Yashdeep Jivani ✨</div>
         </div>
     </div>
-    
-    <div class="header-line"></div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 no-print">
-        <div class="stat-card"><div class="stat-label">Designs</div><div id="statDesigns" class="stat-val">0</div></div>
-        <div class="stat-card"><div class="stat-label">Boxes</div><div id="statBoxes" class="stat-val">0</div></div>
-        <div class="stat-card"><div class="stat-label">Brands</div><div id="statBrands" class="stat-val">0</div></div>
-        <div class="stat-card"><div class="stat-label">Results</div><div id="statFiltered" class="stat-val">0</div></div>
+        <div class="matrix-panel p-4 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Total Designs</div><div id="statDesigns" class="text-xl md:text-2xl font-black mt-1 text-white">0</div></div>
+        <div class="matrix-panel p-4 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Total Boxes</div><div id="statBoxes" class="text-xl md:text-2xl font-black mt-1 text-emerald-400">0</div></div>
+        <div class="matrix-panel p-4 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Active Brands</div><div id="statBrands" class="text-xl md:text-2xl font-black mt-1 text-white">0</div></div>
+        <div class="matrix-panel p-4 text-center" style="border-color: rgba(223, 183, 108, 0.3);"><div class="text-amber-500 text-[10px] uppercase font-bold tracking-wider">Filtered View</div><div id="statFiltered" class="text-xl md:text-2xl font-black mt-1 text-amber-500">0</div></div>
     </div>
 
-    <div class="filter-box no-print">
-        <div class="filter-group"><label>Search Design/Lot</label><input type="text" id="searchName" placeholder="TYPE HERE..." oninput="applyFilters()"></div>
+    <div class="matrix-panel filter-grid-layout no-print">
+        <div class="filter-group"><label>Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Type material name..."></div>
         <div class="filter-group"><label>Brand</label><select id="filterBrand" onchange="applyFilters()"></select></div>
         <div class="filter-group"><label>Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"></select></div>
         <div class="filter-group"><label>Series</label><select id="filterSeries" onchange="applyFilters()"></select></div>
-        <div class="filter-group"><label>Grade</label><select id="filterGrade" onchange="applyFilters()"></select></div>
+        <div class="filter-group"><label>Variant</label><select id="filterVariant" onchange="applyFilters()"></select></div>
+        <button onclick="resetFilters()" class="btn-ui bg-neutral-800 hover:bg-neutral-700 text-slate-300 p-3 border border-neutral-700" title="Reset Filters">
+            <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </button>
     </div>
 
-    <div id="reportList"></div>
-
-    <div class="text-center py-10 opacity-30 text-[10px] font-bold uppercase tracking-[0.5em] no-print">
-        Emcer Tiles Private Limited © 2026
+    <div id="reportList">
+        <div class="text-center py-24 opacity-40 font-bold tracking-widest text-xs uppercase text-slate-500 animate-pulse">Syncing Active Matrix Database Cluster...</div>
     </div>
 </div>
 
 <script>
-    // TAMARI DEPLOYED GOOGLE WEB APP URL AHEI COPI-PASTE KARO
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxJKfexL72pvC3h_1cnlvLN1uw01Gos8wyvvtXjXmkHxkHzJmmduzxGk7BfjeDvxoU/exec";
-
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyH9UAcs4Z9Gn9hTjxOKmerNtHZaCDyH3B9fUKx_00KSio6zC6O68CnuP4lyO17t3wI/exec";
     let masterData = [];
 
     async function initPortal() {
         try {
-            // CODE.GS MATHI LIVE DATA LOAD THASE
-            const resStock = await fetch(WEB_APP_URL);
+            const resStock = await fetch(APPS_SCRIPT_URL);
             if (resStock.ok) {
                 masterData = await resStock.json();
-                document.getElementById('lastUpdated').innerText = "Updated: " + new Date().toLocaleString();
+                document.getElementById('lastUpdated').innerText = "LIVE NODE MATRIX ATTACHED: " + new Date().toLocaleString();
                 setupFilters(); 
                 applyFilters();
             }
-        } catch (e) { console.error(e); }
+        } catch (e) { 
+            console.error(e); 
+            document.getElementById('reportList').innerHTML = `<div class='text-center text-red-500 font-bold py-12'>Sync Interrupted. Connection Timed Out.</div>`;
+        }
     }
 
     function setupFilters() {
-        const brands = new Set(), sizes = new Set(), grades = new Set();
-        masterData.forEach(i => { 
-            if(i.Brand) brands.add(i.Brand); 
-            if(i.Size) sizes.add(i.Size); 
-            if(i.Grade) grades.add(i.Grade); 
-        });
+        const brands = new Set(), sizes = new Set(), variants = new Set();
+        masterData.forEach(i => { if(i.Brand) brands.add(i.Brand); if(i.Size) sizes.add(i.Size); if(i.Variant) variants.add(i.Variant); });
         const fill = (id, set) => document.getElementById(id).innerHTML = `<option value="">All</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
-        fill('filterBrand', brands); 
-        fill('filterSize', sizes); 
-        fill('filterGrade', grades);
+        fill('filterBrand', brands); fill('filterSize', sizes); fill('filterVariant', variants);
         updateSeriesOptions();
     }
 
@@ -194,120 +257,122 @@
         document.getElementById('filterSeries').innerHTML = '<option value="">All</option>' + [...srs].sort().map(s => `<option value="${s}">${s}</option>`).join('');
     }
 
+    function resetFilters() {
+        document.getElementById('searchName').value = '';
+        document.getElementById('filterBrand').value = '';
+        document.getElementById('filterSize').value = '';
+        document.getElementById('filterVariant').value = '';
+        updateSeriesOptions();
+        applyFilters();
+    }
+
     function applyFilters() {
         const f = { 
             n: document.getElementById('searchName').value.toLowerCase(), 
             b: document.getElementById('filterBrand').value, 
             sz: document.getElementById('filterSize').value, 
             s: document.getElementById('filterSeries').value, 
-            g: document.getElementById('filterGrade').value 
+            v: document.getElementById('filterVariant').value 
         };
         
         const groups = {}; let total = 0, brands = new Set();
         
         masterData.forEach(item => {
-            // CODE.GS NI KEY PARATHI EXACT MATCHING
-            const desc = (item["Item Description"] || "").trim();
-            const brand = (item.Brand || "").trim();
-            const series = (item.Series || "").trim();
-            const size = (item.Size || "").trim();
-            const grade = (item.Grade || "").trim();
-            const lotNo = (item["Lot No"] || "").toString().toLowerCase();
-            const qty = Number(item["Total"] || 0);
-            const imgUrl = item["ImgUrl"] || 'https://placehold.co/600x400/1e293b/64748b?text=No+Image';
+            const desc = (item["Item Description"]||"").trim(), 
+                  brand = (item.Brand||"").trim(), 
+                  series = (item.Series||"").trim(), 
+                  size = (item.Size||"").trim(), 
+                  variant = (item.Variant||"").trim(), 
+                  qty = Number(item.Total || item["Net Qty"] || 0);
+            
+            const baseImg = item.DesignURL || item.ImgUrl || '';
+            // Stable backup premium tile texture that NEVER gets blocked by firewalls
+            const fallbackImg = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500&auto=format&fit=crop';
+            const imgUrl = baseImg ? baseImg : fallbackImg;
+            const lotNo = item["Lot No"] || item["Lot no."] || "N/A";
 
-            if ((desc.toLowerCase().includes(f.n) || lotNo.includes(f.n)) && 
-                (!f.b || brand===f.b) && 
-                (!f.sz || size===f.sz) && 
-                (!f.s || series===f.s) && 
-                (!f.g || grade===f.g)) {
-                
-                // DESIGN GROUPING KEY
-                const k = `${desc}|${brand}|${series}|${size}|${grade}`.toLowerCase();
-                if (!groups[k]) groups[k] = { desc, brand, series, size, grade, imgUrl, lots: [], total: 0 };
-                
-                groups[k].lots.push({ lot: item["Lot No"], qty });
-                groups[k].total += qty; 
-                total += qty; 
-                brands.add(brand);
+            if (desc.toLowerCase().includes(f.n) && (!f.b || brand===f.b) && (!f.sz || size===f.sz) && (!f.s || series===f.s) && (!f.v || variant===f.v)) {
+                const k = `${desc}|${brand}|${series}|${size}|${variant}`.toLowerCase();
+                if (!groups[k]) groups[k] = { desc, brand, series, size, variant, imgUrl, lots: [], total: 0 };
+                groups[k].lots.push({ lot: lotNo, qty });
+                groups[k].total += qty; total += qty; brands.add(brand);
             }
         });
         
         const items = Object.values(groups);
         document.getElementById('statDesigns').innerText = items.length;
-        document.getElementById('statBoxes').innerText = total;
+        document.getElementById('statBoxes').innerText = total.toLocaleString();
         document.getElementById('statBrands').innerText = brands.size;
         document.getElementById('statFiltered').innerText = items.length;
         render(items);
     }
 
     function render(items) {
+        if(items.length === 0) {
+            document.getElementById('reportList').innerHTML = `<div class="text-center py-20 opacity-30 font-bold uppercase tracking-widest text-xs text-slate-500">Zero Active Filter Matches Found</div>`;
+            return;
+        }
+
         document.getElementById('reportList').innerHTML = items.map(item => {
-            // PROXY LINK BYPASS FOR CORRS PDF IMAGE ISSUES
-            const cleanImgUrl = item.imgUrl.includes('placehold') ? item.imgUrl : "https://images.weserv.nl/?url=" + encodeURIComponent(item.imgUrl.replace('https://', ''));
+            let finalImg = item.imgUrl;
             
+            // Direct Clean Google Drive Conversion Node
+            if (item.imgUrl.includes('drive.google.com')) {
+                const fileId = item.imgUrl.split('/d/')[1]?.split('/')[0] || item.imgUrl.split('id=')[1];
+                if (fileId) finalImg = `https://docs.google.com/uc?export=view&id=${fileId}`;
+            }
+
+            // High-grade fallback system to handle ERR_CONNECTION_CLOSED blocks dynamically
+            const backupImg = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500&auto=format&fit=crop';
+
             return `
             <div class="stock-card">
-                <div class="variant-badge">${item.grade}</div>
-                <div class="card-img" onclick="openFullView('${item.imgUrl}')">
-                    <img src="${cleanImgUrl}" crossorigin="anonymous">
+                <div class="variant-badge">${item.variant || 'STD'}</div>
+                <div class="card-img-frame" onclick="document.getElementById('modalImg').src='${finalImg}'; document.getElementById('imageModal').style.display='flex'">
+                    <img src="${finalImg}" loading="lazy" crossorigin="anonymous" onerror="this.onerror=null; this.src='${backupImg}';">
                 </div>
                 <div class="card-info">
-                    <div>
-                        <span class="brand-tag">${item.brand}</span>
-                    </div>
+                    <div><span class="brand-tag">${item.brand}</span></div>
                     <div class="design-name">${item.desc}</div>
-                    <div class="design-meta">${item.series} | ${item.size}</div>
-                    <div class="lot-container">
-                        ${item.lots.map(l => `<div class="lot-row"><span>LOT: ${l.lot || 'N/A'}</span><span class="text-yellow-500">${l.qty} Bx</span></div>`).join('')}
+                    <div class="design-meta">${item.series || 'REGULAR'} | ${item.size}</div>
+                    <div class="w-full mt-2">
+                        ${item.lots.map(l => `
+                            <div class="lot-row">
+                                <span class="text-slate-400 text-xs font-semibold tracking-wider">LOT: ${l.lot}</span>
+                                <span class="font-bold text-slate-200">${l.qty} Bx</span>
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
                 <div class="card-total">
-                    <div class="total-val">${item.total}</div>
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">Total Boxes</div>
+                    <div class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest md:mb-1.5">Total Boxes</div>
+                    <div class="total-val">${Math.round(item.total)}</div>
                 </div>
             </div>`;
         }).join('');
     }
 
-    // FULL VIEW POPUP FUNCTION
-    function openFullView(url) {
-        document.getElementById('modalImg').src = url;
-        document.getElementById('imageModal').style.display = 'flex';
-    }
-
     async function downloadPDF(btn) {
-        const element = document.getElementById('printableArea');
+        const element = document.getElementById('reportList');
         const originalText = btn.innerText;
-        btn.innerText = "Generating PDF..."; btn.disabled = true;
+        btn.innerText = "Processing PDF Report..."; btn.disabled = true;
 
         const opt = {
-            margin: [10, 10, 10, 10],
-            filename: 'Emcer_Live_Stock_Report.pdf',
+            margin: [12, 10, 12, 10],
+            filename: 'NexTile_Live_Stock.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { 
-                scale: 2, 
-                useCORS: true, 
-                backgroundColor: '#0f172a',
-                logging: false,
-                letterRendering: true
-            },
+            html2canvas: { scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff' },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
             pagebreak: { mode: ['avoid-all', 'css'] }
         };
 
         try {
             await html2pdf().set(opt).from(element).save();
-        } catch (e) { 
-            console.error(e);
-            alert("PDF Generation Error"); 
-        } finally { 
-            btn.innerText = originalText; 
-            btn.disabled = false; 
-        }
+        } catch (e) { console.error(e); }
+        finally { btn.innerText = originalText; btn.disabled = false; }
     }
 
-    initPortal();
+    window.onload = initPortal;
 </script>
 </body>
 </html>
