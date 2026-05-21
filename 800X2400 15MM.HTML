@@ -3,299 +3,376 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexTile - Premium Live Stock</title>
+    <title>NexTile - Emcer Live Stock</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #000; }
-        .main-container { max-width: 1250px; margin: auto; padding: 20px; }
+        :root {
+            --matrix-gold: #dfb76c;
+            --jet-black: #050608;
+            --panel-dark: #0d0f12;
+            --border-glow: #161a22;
+        }
         
-        @keyframes blink-glow { 0% { opacity: 1; text-shadow: 0 0 5px #2563eb; } 50% { opacity: 0.4; text-shadow: none; } 100% { opacity: 1; text-shadow: 0 0 5px #2563eb; } }
-        .dev-tag { font-weight: 900; color: #2563eb; animation: blink-glow 1.5s infinite; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid #2563eb; padding: 2px 6px; border-radius: 4px; }
-
-        .stat-card { background: white; border: 3px solid #000; padding: 15px; text-align: center; box-shadow: 6px 6px 0px #000; transition: 0.3s; }
-        .stat-card:hover { transform: translateY(-4px); box-shadow: 10px 10px 0px #2563eb; }
-        .stat-val { font-size: 32px; font-weight: 900; line-height: 1; margin-bottom: 5px; }
-        .stat-label { font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
-
-        .stock-card { background: white; border: 2px solid #000; display: flex; margin-top: 20px; min-height: 220px; transition: 0.2s; box-shadow: 4px 4px 0px rgba(0,0,0,0.05); overflow: hidden; }
-        .card-img { width: 22%; border-right: 2px solid #000; padding: 12px; cursor: zoom-in; display: flex; align-items: center; justify-content: center; background: #fff; }
-        .card-info { width: 53%; padding: 20px; display: flex; flex-direction: column; }
-        .card-total { width: 25%; border-left: 2px solid #000; background: #fafafa; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--jet-black); 
+            color: #e2e8f0;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
         
-        #bookingModal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; }
-        .modal-box { background: white; padding: 30px; border: 4px solid #000; width: 90%; max-width: 400px; box-shadow: 12px 12px 0px #2563eb; }
-
-        label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #475569; display: block; margin-bottom: 4px; }
-        input, select { border: 2px solid #e2e8f0; padding: 10px; font-weight: 700; width: 100%; outline: none; border-radius: 4px; transition: 0.2s; }
-        input:focus, select:focus { border-color: #000; background: #f8fafc; }
+        .main-container { max-width: 1400px; margin: auto; padding: 16px; }
+        @media(min-width: 768px) { .main-container { padding: 30px; } }
         
-        @media (max-width: 768px) {
-            .stock-card { flex-direction: column; }
-            .card-img, .card-info, .card-total { width: 100%; border: none; border-bottom: 2px solid #000; }
+        .matrix-panel {
+            background-color: var(--panel-dark);
+            border: 1px solid #1e2530;
+            border-radius: 0px !important;
+        }
+
+        /* Precise Golden Sharp Borders for Each Design Card */
+        .stock-card { 
+            background: #090b0d;
+            border: 2px solid var(--matrix-gold); /* Prominent Gold Border requested */
+            display: flex; 
+            flex-direction: column; 
+            margin-bottom: 24px; 
+            position: relative; 
+            page-break-inside: avoid;
+            border-radius: 0px !important;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+            transition: all 0.25s ease-in-out;
+        }
+        @media(min-width: 768px) {
+            .stock-card { flex-direction: row; min-height: 240px; }
+        }
+        .stock-card:hover {
+            box-shadow: 0 12px 35px rgba(223, 183, 108, 0.15);
+            background: #0c0e12;
+        }
+
+        .variant-badge { 
+            position: absolute; top: 0; right: 0; 
+            background: var(--matrix-gold); color: #000; 
+            padding: 5px 16px; font-size: 11px; font-weight: 900; 
+            text-transform: uppercase; z-index: 10; 
+            letter-spacing: 0.05em;
+        }
+        @media(min-width: 768px) { .variant-badge { right: 20%; } }
+        
+        .brand-tag { 
+            font-size: 10px; background: rgba(59, 130, 246, 0.1); 
+            color: #3b82f6; padding: 3px 10px; 
+            font-weight: 800; display: inline-block; margin-bottom: 8px; 
+            text-transform: uppercase; border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Fixed Grid Portrait View - Solves Image Sizing Fluctuation */
+        .card-img-frame { 
+            width: 100%; 
+            border-bottom: 1px solid #161a22;
+            padding: 16px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: #020304;
+            cursor: pointer;
+        }
+        @media(min-width: 768px) {
+            .card-img-frame { width: 30%; border-bottom: none; border-right: 1px solid #161a22; padding: 14px; }
+        }
+        .card-img-frame img { 
+            height: 200px;
+            width: auto;
+            aspect-ratio: 3/4; /* Forced Uniform Portrait Geometry */
+            object-fit: cover; 
+            display: block; 
+            border: 1px solid #222b35;
+        }
+
+        .card-info { width: 100%; padding: 20px; display: flex; flex-direction: column; justify-content: center; }
+        @media(min-width: 768px) { .card-info { width: 50%; padding: 24px; } }
+        
+        .design-name { font-size: 22px; font-weight: 800; text-transform: uppercase; line-height: 1.2; color: #fff; letter-spacing: -0.01em; }
+        .design-meta { color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 3px; margin-bottom: 12px; }
+        
+        .lot-row { 
+            display: flex; justify-content: space-between; 
+            border-bottom: 1px solid #161a22; 
+            padding: 8px 0; font-size: 13px; font-weight: 600; color: #cbd5e1;
+        }
+        
+        /* Total Box Highlight - High Contrast Matrix Gold */
+        .card-total { 
+            width: 100%; 
+            border-top: 1px solid #161a22; 
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 16px 20px;
+            background: #040507; 
+        }
+        @media(min-width: 768px) {
+            .card-total { width: 20%; border-top: none; border-left: 1px solid #161a22; flex-direction: column; justify-content: center; padding: 0; }
+        }
+        .total-val { font-size: 40px; font-weight: 900; line-height: 1; color: var(--matrix-gold); text-shadow: 0 0 15px rgba(223, 183, 108, 0.3); }
+        
+        .filter-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            align-items: end;
+        }
+        @media(min-width: 768px) {
+            .filter-grid-layout { grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; padding: 20px; }
+        }
+        
+        .filter-group { display: flex; flex-direction: column; }
+        label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #64748b; margin-bottom: 6px; letter-spacing: 0.05em; }
+        
+        select, input { 
+            background: #020304 !important; 
+            color: #fff !important; 
+            border: 1px solid #222b35 !important; 
+            border-radius: 0px !important;
+            padding: 12px; font-weight: 600; font-size: 13px; outline: none; 
+            text-transform: uppercase;
+            width: 100%;
+        }
+        select:focus, input:focus { border-color: var(--matrix-gold); }
+        
+        .btn-ui {
+            border-radius: 0px !important;
+            transition: all 0.2s ease;
+            width: 100%;
+            text-align: center;
+        }
+        @media(min-width: 768px) { .btn-ui { width: auto; } }
+
+        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
+
+        @media print { 
+            .no-print { display: none !important; } 
+            body { background: #ffffff !important; color: #000000 !important; }
+            .stock-card { 
+                background: #ffffff !important; 
+                border: 2px solid #000000 !important; 
+                color: #000000 !important;
+                box-shadow: none !important;
+                margin-bottom: 15mm;
+                flex-direction: row !important;
+                page-break-inside: avoid !important;
+            }
+            .card-img-frame { width: 30% !important; border-bottom: none !important; border-right: 1px solid #000000 !important; background: #fafafa !important; }
+            .card-info { width: 50% !important; }
+            .card-total { width: 20% !important; border-top: none !important; border-left: 1px solid #000000 !important; background: #f1f5f9 !important; flex-direction: column !important; justify-content: center !important; }
+            .design-name, .lot-row span { color: #000000 !important; }
+            .total-val { color: #000000 !important; text-shadow: none !important; }
+            .variant-badge { border: 1px solid #000000 !important; background: #000000 !important; color: #ffffff !important; }
         }
     </style>
 </head>
 <body>
 
-<div id="bookingModal">
-    <div class="modal-box">
-        <h2 class="text-2xl font-black mb-1 uppercase">Stock Booking</h2>
-        <p id="bookItemName" class="text-blue-600 font-bold text-sm mb-6"></p>
-        <div class="space-y-4">
-            <div><label>Party Name / Salesman</label><input type="text" id="partyName" placeholder="Enter Name..."></div>
-            <div><label>Order Quantity (Boxes)</label><input type="number" id="bookQty" placeholder="0"></div>
-            <div class="flex gap-3 pt-4">
-                <button onclick="confirmBooking()" class="flex-1 bg-black text-white py-3 font-black uppercase hover:bg-blue-600 transition">Confirm</button>
-                <button onclick="document.getElementById('bookingModal').style.display='none'" class="flex-1 bg-gray-100 py-3 font-black uppercase">Cancel</button>
-            </div>
-        </div>
-    </div>
+<div id="imageModal" onclick="this.style.display='none'">
+    <img id="modalImg" class="max-w-full max-h-[90vh] border border-neutral-700" src="">
 </div>
 
 <div class="main-container">
-    <div class="flex justify-between items-start mb-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center pt-2 pb-6 gap-4">
         <div>
-            <h1 class="text-4xl font-black tracking-tighter uppercase leading-none">Emcer Tiles Private Limited</h1>
-            <div class="flex gap-4 mt-2">
-                <p id="updateTime" class="text-[10px] font-black text-blue-600 uppercase">Syncing Live...</p>
-                <p class="text-slate-400 font-bold text-[10px] uppercase tracking-widest">Live Inventory Portal</p>
+            <h1 class="text-xl md:text-2xl font-black text-white tracking-tight leading-none">EMCER TILES PRIVATE LIMITED</h1>
+            <p class="text-[11px] text-blue-400 font-extrabold uppercase tracking-[0.2em] mt-1.5">Live Stock Control Dashboard</p>
+            <p id="lastUpdated" class="text-[10px] text-amber-500 font-medium uppercase mt-1">Initializing Secure Cloud Synchronizer...</p>
+        </div>
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center no-print gap-3 w-full md:w-auto justify-between md:justify-end">
+            <div class="flex gap-2 w-full sm:w-auto">
+                <button onclick="downloadPDF(this)" class="btn-ui bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 text-[11px] font-bold uppercase flex-1 sm:flex-none">📄 Download PDF</button>
+                <button onclick="location.reload()" class="btn-ui bg-neutral-800 hover:bg-neutral-700 text-white px-5 py-2.5 text-[11px] font-bold uppercase border border-neutral-700 flex-1 sm:flex-none">🔄 Refresh</button>
             </div>
-        </div>
-        <div class="text-right">
-            <button onclick="downloadPDF()" class="bg-red-600 text-white px-5 py-2 font-black text-[11px] uppercase shadow-lg hover:bg-red-700 transition mb-2">📥 Download PDF</button>
-            <button onclick="location.reload()" class="bg-black text-white px-4 py-2 text-[11px] font-black uppercase">🔄 Refresh</button>
-            <div class="text-[10px] font-black text-slate-500">Designed & Developed By: <span class="dev-tag">Yashdeep Jivani</span></div>
+            <div class="border border-amber-500/40 px-4 py-2 text-amber-500 font-black text-[11px] uppercase tracking-wider bg-amber-500/5 text-center">✨ Yashdeep Jivani ✨</div>
         </div>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 no-print">
-        <div class="stat-card"><div class="stat-label">Total Designs</div><div id="stat-designs" class="stat-val">0</div></div>
-        <div class="stat-card"><div class="stat-label">Available Boxes</div><div id="stat-boxes" class="stat-val">0</div></div>
-        <div class="stat-card"><div class="stat-label">Active Brands</div><div id="stat-brands" class="stat-val">0</div></div>
-        <div class="stat-card"><div class="stat-label">Filtered Results</div><div id="stat-results" class="stat-val">0</div></div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 no-print">
+        <div class="matrix-panel p-4 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Total Designs</div><div id="statDesigns" class="text-xl md:text-2xl font-black mt-1 text-white">0</div></div>
+        <div class="matrix-panel p-4 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Total Boxes</div><div id="statBoxes" class="text-xl md:text-2xl font-black mt-1 text-emerald-400">0</div></div>
+        <div class="matrix-panel p-4 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Active Brands</div><div id="statBrands" class="text-xl md:text-2xl font-black mt-1 text-white">0</div></div>
+        <div class="matrix-panel p-4 text-center" style="border-color: rgba(223, 183, 108, 0.3);"><div class="text-amber-500 text-[10px] uppercase font-bold tracking-wider">Filtered View</div><div id="statFiltered" class="text-xl md:text-2xl font-black mt-1 text-amber-500">0</div></div>
     </div>
 
-    <div class="bg-white border-[3px] border-black p-6 grid grid-cols-1 md:grid-cols-5 gap-4 no-print mb-8">
-        <div><label>Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Type design name..."></div>
-        <div><label>Filter By Brand</label><select id="filterBrand" onchange="applyFilters()"><option value="">All Brands</option></select></div>
-        <div><label>Filter By Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"><option value="">All Sizes</option></select></div>
-        <div><label>Filter By Series</label><select id="filterSeries" onchange="applyFilters()"><option value="">All Series</option></select></div>
-        <div><label>Filter By Grade (Variant)</label><select id="filterGrade" onchange="applyFilters()"><option value="">All Grades</option></select></div>
+    <div class="matrix-panel filter-grid-layout no-print">
+        <div class="filter-group"><label>Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Type material name..."></div>
+        <div class="filter-group"><label>Brand</label><select id="filterBrand" onchange="applyFilters()"></select></div>
+        <div class="filter-group"><label>Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"></select></div>
+        <div class="filter-group"><label>Series</label><select id="filterSeries" onchange="applyFilters()"></select></div>
+        <div class="filter-group"><label>Variant</label><select id="filterVariant" onchange="applyFilters()"></select></div>
+        <button onclick="resetFilters()" class="btn-ui bg-neutral-800 hover:bg-neutral-700 text-slate-300 p-3 border border-neutral-700" title="Reset Filters">
+            <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </button>
     </div>
 
-    <div id="reportList" class="space-y-6 pb-20">
-        <div class="py-20 text-center font-black text-slate-300 text-xl italic uppercase">Connecting to Warehouse Data...</div>
+    <div id="reportList">
+        <div class="text-center py-24 opacity-40 font-bold tracking-widest text-xs uppercase text-slate-500 animate-pulse">Syncing Active Matrix Database Cluster...</div>
     </div>
 </div>
 
 <script>
-    // --- ⚠️ અહિયાં તમારી Apps Script Web App URL નાખો ⚠️ ---
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwo7Rgp4RgkicELRyGGOBZ-paQYl8up1BCIrHDAfVWOQ4NrBW5T7O5JUYudmZqEUAjAA/exec';
-    
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzwo7Rgp4RgkicELRyGGOBZ-paQYl8up1BCIrHDAfVWOQ4NrBW5T7O5JUYudmZqEUAjAA/exec";
     let masterData = [];
-    let designMap = {};
-    let selectedItem = null;
 
-    async function init() {
+    async function initPortal() {
         try {
-            const resImg = await fetch('design.json?v=' + Date.now());
-            if (resImg.ok) {
-                const designs = await resImg.json();
-                designs.forEach(d => { if(d.name) designMap[d.name.toLowerCase().trim()] = d.url; });
+            const resStock = await fetch(APPS_SCRIPT_URL);
+            if (resStock.ok) {
+                masterData = await resStock.json();
+                document.getElementById('lastUpdated').innerText = "LIVE NODE MATRIX ATTACHED: " + new Date().toLocaleString();
+                setupFilters(); 
+                applyFilters();
             }
-            fetchLiveStock();
-        } catch (e) { console.error("Init error:", e); }
-    }
-
-    async function fetchLiveStock() {
-        try {
-            const response = await fetch(SCRIPT_URL);
-            masterData = await response.json();
-            document.getElementById('updateTime').innerText = "UPDATED: " + new Date().toLocaleString();
-            setupFilters();
-            applyFilters();
-        } catch (err) { 
-            console.log("Sync Error"); 
-            document.getElementById('updateTime').innerText = "OFFLINE - RECONNECTING...";
+        } catch (e) { 
+            console.error(e); 
+            document.getElementById('reportList').innerHTML = `<div class='text-center text-red-500 font-bold py-12'>Sync Interrupted. Connection Timed Out.</div>`;
         }
     }
 
     function setupFilters() {
-        const brands = new Set(), sizes = new Set(), grades = new Set();
-        masterData.forEach(item => {
-            // FIX: Brand column maps to Brand, Variant column maps to Grade
-            if (item["Brand"]) brands.add(item["Brand"].toString().trim());
-            if (item["Size"]) sizes.add(item["Size"].toString().trim());
-            if (item["Variant"]) grades.add(item["Variant"].toString().trim());
-        });
-        
-        const bSel = document.getElementById('filterBrand'), 
-              sSel = document.getElementById('filterSize'), 
-              gSel = document.getElementById('filterGrade');
-              
-        const oldB = bSel.value, oldS = sSel.value, oldG = gSel.value;
-
-        bSel.innerHTML = '<option value="">All Brands</option>';
-        [...brands].sort().forEach(b => bSel.innerHTML += `<option value="${b}">${b}</option>`);
-        
-        sSel.innerHTML = '<option value="">All Sizes</option>';
-        [...sizes].sort().forEach(s => sSel.innerHTML += `<option value="${s}">${s}</option>`);
-        
-        gSel.innerHTML = '<option value="">All Grades</option>';
-        [...grades].sort().forEach(g => gSel.innerHTML += `<option value="${g}">${g}</option>`);
-
-        bSel.value = oldB; sSel.value = oldS; gSel.value = oldG;
+        const brands = new Set(), sizes = new Set(), variants = new Set();
+        masterData.forEach(i => { if(i.Brand) brands.add(i.Brand); if(i.Size) sizes.add(i.Size); if(i.Variant) variants.add(i.Variant); });
+        const fill = (id, set) => document.getElementById(id).innerHTML = `<option value="">All</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
+        fill('filterBrand', brands); fill('filterSize', sizes); fill('filterVariant', variants);
         updateSeriesOptions();
     }
 
     function updateSeriesOptions() {
-        const selectedSize = document.getElementById('filterSize').value;
-        const seriesSet = new Set();
-        masterData.forEach(item => {
-            if (selectedSize === "" || item["Size"].toString().trim() === selectedSize) {
-                if (item["Series"]) seriesSet.add(item["Series"].toString().trim());
-            }
-        });
-        const srSel = document.getElementById('filterSeries');
-        const oldSr = srSel.value;
-        srSel.innerHTML = '<option value="">All Series</option>';
-        [...seriesSet].sort().forEach(sr => srSel.innerHTML += `<option value="${sr}">${sr}</option>`);
-        srSel.value = oldSr;
+        const sz = document.getElementById('filterSize').value, srs = new Set();
+        masterData.forEach(i => { if(sz==="" || i.Size===sz) if(i.Series) srs.add(i.Series); });
+        document.getElementById('filterSeries').innerHTML = '<option value="">All</option>' + [...srs].sort().map(s => `<option value="${s}">${s}</option>`).join('');
+    }
+
+    function resetFilters() {
+        document.getElementById('searchName').value = '';
+        document.getElementById('filterBrand').value = '';
+        document.getElementById('filterSize').value = '';
+        document.getElementById('filterVariant').value = '';
+        updateSeriesOptions();
+        applyFilters();
     }
 
     function applyFilters() {
-        const nameVal = document.getElementById('searchName').value.toLowerCase();
-        const brandVal = document.getElementById('filterBrand').value;
-        const sizeVal = document.getElementById('filterSize').value;
-        const seriesVal = document.getElementById('filterSeries').value;
-        const gradeVal = document.getElementById('filterGrade').value;
+        const f = { 
+            n: document.getElementById('searchName').value.toLowerCase(), 
+            b: document.getElementById('filterBrand').value, 
+            sz: document.getElementById('filterSize').value, 
+            s: document.getElementById('filterSeries').value, 
+            v: document.getElementById('filterVariant').value 
+        };
         
-        const groups = {};
-        let totalBoxes = 0;
-        const uniqueBrands = new Set();
-        const uniqueDesigns = new Set();
-
+        const groups = {}; let total = 0, brands = new Set();
+        
         masterData.forEach(item => {
-            const name = (item["Item Description"] || "N/A").toString().trim();
-            const brand = (item["Brand"] || "N/A").toString().trim();
-            const series = (item["Series"] || "N/A").toString().trim();
-            const size = (item["Size"] || "N/A").toString().trim();
-            const grade = (item["Variant"] || "N/A").toString().trim(); // Grade filter
-            const qty = parseFloat(item["Total"] || 0);
-            const lot = (item["Lot No"] || "N/A").toString().trim();
+            const desc = (item["Item Description"]||"").trim(), 
+                  brand = (item.Brand||"").trim(), 
+                  series = (item.Series||"").trim(), 
+                  size = (item.Size||"").trim(), 
+                  variant = (item.Variant||"").trim(), 
+                  qty = Number(item.Total || item["Net Qty"] || 0);
+            
+            const baseImg = item.DesignURL || item.ImgUrl || '';
+            // Stable backup premium tile texture that NEVER gets blocked by firewalls
+            const fallbackImg = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500&auto=format&fit=crop';
+            const imgUrl = baseImg ? baseImg : fallbackImg;
+            const lotNo = item["Lot No"] || item["Lot no."] || "N/A";
 
-            if (name.toLowerCase().includes(nameVal) &&
-                (brandVal === "" || brand === brandVal) &&
-                (sizeVal === "" || size === sizeVal) &&
-                (seriesVal === "" || series === seriesVal) &&
-                (gradeVal === "" || grade === gradeVal)) {
-                
-                const key = `${name}|${series}|${size}|${grade}|${brand}`.toLowerCase();
-                if (!groups[key]) groups[key] = { name, series, size, grade, brand, lots: [], total: 0 };
-                groups[key].lots.push({ lot, qty });
-                groups[key].total += qty;
-                
-                totalBoxes += qty;
-                uniqueBrands.add(brand);
-                uniqueDesigns.add(name);
+            if (desc.toLowerCase().includes(f.n) && (!f.b || brand===f.b) && (!f.sz || size===f.sz) && (!f.s || series===f.s) && (!f.v || variant===f.v)) {
+                const k = `${desc}|${brand}|${series}|${size}|${variant}`.toLowerCase();
+                if (!groups[k]) groups[k] = { desc, brand, series, size, variant, imgUrl, lots: [], total: 0 };
+                groups[k].lots.push({ lot: lotNo, qty });
+                groups[k].total += qty; total += qty; brands.add(brand);
             }
         });
-
-        document.getElementById('stat-designs').innerText = uniqueDesigns.size;
-        document.getElementById('stat-boxes').innerText = totalBoxes.toLocaleString();
-        document.getElementById('stat-brands').innerText = uniqueBrands.size;
-        document.getElementById('stat-results').innerText = Object.keys(groups).length;
-
-        render(Object.values(groups));
+        
+        const items = Object.values(groups);
+        document.getElementById('statDesigns').innerText = items.length;
+        document.getElementById('statBoxes').innerText = total.toLocaleString();
+        document.getElementById('statBrands').innerText = brands.size;
+        document.getElementById('statFiltered').innerText = items.length;
+        render(items);
     }
 
     function render(items) {
-        const area = document.getElementById('reportList');
-        if (items.length === 0) { 
-            area.innerHTML = `
-                <div class='py-32 text-center'>
-                    <div class='text-6xl mb-4'>📦</div>
-                    <div class='font-black text-2xl uppercase text-slate-300'>No Matching Stock Found</div>
-                </div>`; 
-            return; 
+        if(items.length === 0) {
+            document.getElementById('reportList').innerHTML = `<div class="text-center py-20 opacity-30 font-bold uppercase tracking-widest text-xs text-slate-500">Zero Active Filter Matches Found</div>`;
+            return;
         }
-        area.innerHTML = items.map(item => {
-            const imgUrl = designMap[item.name.toLowerCase().trim()] || 'https://via.placeholder.com/400x600?text=No+Photo';
+
+        document.getElementById('reportList').innerHTML = items.map(item => {
+            let finalImg = item.imgUrl;
+            
+            // Direct Clean Google Drive Conversion Node
+            if (item.imgUrl.includes('drive.google.com')) {
+                const fileId = item.imgUrl.split('/d/')[1]?.split('/')[0] || item.imgUrl.split('id=')[1];
+                if (fileId) finalImg = `https://docs.google.com/uc?export=view&id=${fileId}`;
+            }
+
+            // High-grade fallback system to handle ERR_CONNECTION_CLOSED blocks dynamically
+            const backupImg = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500&auto=format&fit=crop';
+
             return `
             <div class="stock-card">
-                <div class="card-img" onclick="window.open('${imgUrl}')"><img src="${imgUrl}" class="max-h-44"></div>
+                <div class="variant-badge">${item.variant || 'STD'}</div>
+                <div class="card-img-frame" onclick="document.getElementById('modalImg').src='${finalImg}'; document.getElementById('imageModal').style.display='flex'">
+                    <img src="${finalImg}" loading="lazy" crossorigin="anonymous" onerror="this.onerror=null; this.src='${backupImg}';">
+                </div>
                 <div class="card-info">
-                    <div class="flex justify-between items-start mb-1">
-                        <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest">${item.brand} | ${item.series}</span>
-                        <span class="bg-black text-white px-2 py-0.5 text-[9px] font-black uppercase tracking-tighter">${item.grade}</span>
-                    </div>
-                    <div class="text-2xl font-black uppercase leading-tight mb-1 text-slate-800">${item.name}</div>
-                    <div class="text-[11px] font-bold text-slate-400 border-b pb-2 mb-3 uppercase">${item.size}</div>
-                    <div class="space-y-1">
+                    <div><span class="brand-tag">${item.brand}</span></div>
+                    <div class="design-name">${item.desc}</div>
+                    <div class="design-meta">${item.series || 'REGULAR'} | ${item.size}</div>
+                    <div class="w-full mt-2">
                         ${item.lots.map(l => `
-                            <div class="flex justify-between items-center py-2 border-b border-dashed border-slate-200">
-                                <span class="font-bold text-xs uppercase text-slate-600">LOT: ${l.lot}</span>
-                                <div class="flex items-center gap-3">
-                                    <span class="font-black text-slate-900">${l.qty} Bx</span>
-                                    <button onclick="openBooking('${item.name}', '${l.lot}')" class="text-[9px] bg-blue-50 text-blue-600 px-2 py-1 font-black uppercase hover:bg-blue-600 hover:text-white transition">Book</button>
-                                </div>
-                            </div>`).join('')}
+                            <div class="lot-row">
+                                <span class="text-slate-400 text-xs font-semibold tracking-wider">LOT: ${l.lot}</span>
+                                <span class="font-bold text-slate-200">${l.qty} Bx</span>
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
                 <div class="card-total">
-                    <div class="stat-label mb-1">Total Stock</div>
-                    <div class="text-5xl font-black">${item.total}</div>
-                    <div class="stat-label mt-1">Available Boxes</div>
+                    <div class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest md:mb-1.5">Total Boxes</div>
+                    <div class="total-val">${Math.round(item.total)}</div>
                 </div>
             </div>`;
         }).join('');
     }
 
-    function openBooking(name, lot) {
-        selectedItem = { name, lot };
-        document.getElementById('bookItemName').innerText = `${name} (LOT: ${lot})`;
-        document.getElementById('bookingModal').style.display = 'flex';
-    }
-
-    async function confirmBooking() {
-        const party = document.getElementById('partyName').value;
-        const qty = document.getElementById('bookQty').value;
-        if(!party || !qty) { alert("Enter Details"); return; }
-        
-        const btn = document.querySelector('#bookingModal button');
-        btn.innerText = "Booking...";
-        
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ itemName: selectedItem.name, lotNo: selectedItem.lot, orderQty: qty, partyName: party })
-            });
-            alert(`SUCCESS: ${qty} Boxes of ${selectedItem.name} Booked for ${party}`);
-            document.getElementById('bookingModal').style.display = 'none';
-            fetchLiveStock();
-        } catch (e) { alert("Booking Error"); }
-        btn.innerText = "Confirm";
-    }
-
-    async function downloadPDF() {
-        const { jsPDF } = window.jspdf;
+    async function downloadPDF(btn) {
         const element = document.getElementById('reportList');
-        const canvas = await html2canvas(element, { scale: 1.5, useCORS: true });
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        pdf.setFontSize(16);
-        pdf.text("EMCER TILES - LIVE STOCK REPORT", 10, 15);
-        pdf.setFontSize(10);
-        pdf.text("Generated: " + new Date().toLocaleString(), 10, 22);
-        pdf.addImage(imgData, 'PNG', 0, 30, 210, (canvas.height * 210) / canvas.width);
-        pdf.save(`Stock_Report_${new Date().getTime()}.pdf`);
+        const originalText = btn.innerText;
+        btn.innerText = "Processing PDF Report..."; btn.disabled = true;
+
+        const opt = {
+            margin: [12, 10, 12, 10],
+            filename: 'NexTile_Live_Stock.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff' },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all', 'css'] }
+        };
+
+        try {
+            await html2pdf().set(opt).from(element).save();
+        } catch (e) { console.error(e); }
+        finally { btn.innerText = originalText; btn.disabled = false; }
     }
 
-    setInterval(fetchLiveStock, 60000);
-    init();
+    window.onload = initPortal;
 </script>
 </body>
 </html>
