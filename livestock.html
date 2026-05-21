@@ -2,127 +2,150 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NexTile - Emcer Live Stock</title>
+    <title>NexTile Ultimate - Emcer Live Stock</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
         :root {
-            --gold: #c5a059;
-            --deep-black: #090d16;
-            --card-black: #111827;
+            --cyber-gold: #dfb76c;
+            --deep-space: #05070c;
+            --surface-card: #0d131f;
+            --neon-glow: rgba(223, 183, 108, 0.25);
         }
+        
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--deep-black); 
-            color: #f1f5f9; 
+            background-color: var(--deep-space); 
+            color: #f8fafc;
+            overflow-x: hidden;
         }
-        .main-container { max-width: 1250px; margin: auto; padding: 20px; }
         
-        /* Premium Developer Badge */
-        .yashdeep-premium {
-            background: #1f2937; color: #fff; border: 1px solid var(--gold);
-            padding: 6px 18px; border-radius: 50px; font-weight: 800; font-size: 11px;
-            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.15);
-            letter-spacing: 0.05em;
+        .main-container { max-width: 1300px; margin: auto; padding: 24px; }
+        
+        /* Premium Developer Tag */
+        .yashdeep-tag-premium {
+            background: linear-gradient(135deg, #111827, #030712);
+            color: #fff; border: 1px solid var(--cyber-gold);
+            padding: 8px 24px; border-radius: 40px; font-weight: 900; font-size: 11px;
+            box-shadow: 0 0 20px var(--neon-glow);
+            letter-spacing: 0.08em;
+            text-shadow: 0 0 8px rgba(255,255,255,0.5);
         }
 
-        /* Pure Dark Stock Cards */
+        /* Cyber Glass Cards */
         .stock-card { 
-            background: var(--card-black);
-            border: 1px solid rgba(255, 255, 255, 0.04); 
+            background: linear-gradient(145deg, var(--surface-card), #080c14);
+            border: 1px solid rgba(255, 255, 255, 0.03); 
             display: flex; 
-            margin-bottom: 25px; 
-            min-height: 240px; 
+            margin-bottom: 24px; 
+            min-height: 250px; 
             position: relative; 
             page-break-inside: avoid;
-            border-radius: 20px;
+            border-radius: 24px;
             overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .stock-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--gold);
-            box-shadow: 0 20px 40px -20px rgba(0,0,0,0.7);
+            transform: translateY(-6px) scale(1.01);
+            border-color: var(--cyber-gold);
+            box-shadow: 0 30px 60px -25px rgba(0,0,0,0.9), 0 0 20px var(--neon-glow);
         }
 
         .variant-badge { 
             position: absolute; top: 0; right: 20%; 
-            background: var(--gold); color: #000; 
-            padding: 5px 16px; font-size: 11px; font-weight: 900; 
+            background: linear-gradient(135deg, var(--cyber-gold), #b3893c); color: #000; 
+            padding: 6px 20px; font-size: 11px; font-weight: 900; 
             text-transform: uppercase; z-index: 10; 
-            border-bottom-left-radius: 10px;
-            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         
         .brand-tag { 
-            font-size: 10px; background: rgba(59, 130, 246, 0.12); 
-            color: #60a5fa; padding: 4px 10px; border-radius: 6px; 
-            font-weight: 800; display: inline-block; margin-bottom: 8px; 
-            text-transform: uppercase;
+            font-size: 10px; background: rgba(59, 130, 246, 0.1); 
+            color: #3b82f6; padding: 4px 12px; border-radius: 8px; 
+            font-weight: 800; display: inline-block; margin-bottom: 10px; 
+            text-transform: uppercase; border: 1px solid rgba(59, 130, 246, 0.15);
         }
         
         .card-img { 
-            width: 32%; border-right: 1px solid rgba(255, 255, 255, 0.04); 
-            padding: 12px; display: flex; align-items: center; justify-content: center; 
-            background: #030712;
+            width: 32%; border-right: 1px solid rgba(255, 255, 255, 0.03); 
+            padding: 16px; display: flex; align-items: center; justify-content: center; 
+            background: #020408;
             cursor: pointer;
+            overflow: hidden;
         }
         .card-img img { 
-            max-height: 200px; width: auto; max-width: 100%; 
-            object-fit: contain; display: block; border-radius: 12px;
-            transition: 0.4s ease;
+            max-height: 210px; width: auto; max-width: 100%; 
+            object-fit: contain; display: block; border-radius: 16px;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .stock-card:hover .card-img img { transform: scale(1.03); }
+        .stock-card:hover .card-img img { transform: scale(1.05); }
 
-        .card-info { width: 48%; padding: 22px; display: flex; flex-direction: column; }
-        .design-name { font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.1; margin-bottom: 4px; color: #fff; letter-spacing: -0.02em; }
-        .design-meta { color: #9ca3af; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
+        .card-info { width: 48%; padding: 26px; display: flex; flex-direction: column; }
+        .design-name { font-size: 26px; font-weight: 900; text-transform: uppercase; line-height: 1.1; margin-bottom: 6px; color: #fff; letter-spacing: -0.03em; }
+        .design-meta { color: #94a3b8; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 14px; }
         
         .lot-row { 
             display: flex; justify-content: space-between; 
-            border-bottom: 1px dashed rgba(255,255,255,0.06); 
-            padding: 8px 0; font-size: 13px; font-weight: 600; color: #d1d5db;
+            border-bottom: 1px dashed rgba(255,255,255,0.05); 
+            padding: 9px 0; font-size: 13px; font-weight: 600; color: #cbd5e1;
         }
         
         .card-total { 
-            width: 20%; border-left: 1px solid rgba(255, 255, 255, 0.04); 
+            width: 20%; border-left: 1px solid rgba(255, 255, 255, 0.03); 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            background: #0b0f19; 
+            background: rgba(2, 4, 8, 0.3); 
         }
-        .total-val { font-size: 46px; font-weight: 900; line-height: 1; color: #fff; }
+        .total-val { font-size: 48px; font-weight: 900; line-height: 1; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.1); }
         
-        /* Rigid Pure Dark Filter Control Grid */
+        /* Symmetric Input Grid Architecture */
         .filter-grid-layout {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
             gap: 16px;
-            background: #111827;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            padding: 20px;
-            border-radius: 18px;
-            margin-bottom: 30px;
+            background: var(--surface-card);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 24px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            align-items: end;
+            box-shadow: 0 20px 40px -20px rgba(0,0,0,0.5);
         }
         
         .filter-group { display: flex; flex-direction: column; }
-        label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #9ca3af; margin-bottom: 6px; letter-spacing: 0.05em; }
+        label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; letter-spacing: 0.08em; }
         
         select, input { 
-            background: #1f2937 !important; 
+            background: #111827 !important; 
             color: #fff !important; 
-            border: 1px solid rgba(255,255,255,0.08) !important; 
-            border-radius: 10px;
-            padding: 12px; font-weight: 700; font-size: 13px; outline: none; 
-            transition: 0.2s;
+            border: 1px solid rgba(255,255,255,0.05) !important; 
+            border-radius: 12px;
+            padding: 14px; font-weight: 700; font-size: 13px; outline: none; 
+            transition: all 0.3s ease;
             text-transform: uppercase;
         }
-        select:focus, input:focus { border-color: var(--gold); }
+        select:focus, input:focus { border-color: var(--cyber-gold); box-shadow: 0 0 10px var(--neon-glow); }
         
-        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
-        .dashboard-box { background: #111827; border: 1px solid rgba(255,255,255,0.04); border-radius: 16px; }
-        .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #9ca3af; }
-        .stat-val { font-size: 24px; font-weight: 900; }
+        /* Modern Reset Button styling */
+        .btn-reset {
+            background: #1f2937;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #f1f5f9;
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-reset:hover { background: #374151; color: var(--cyber-gold); border-color: var(--cyber-gold); }
+
+        #imageModal { display: none; position: fixed; inset: 0; background: rgba(2,4,8,0.97); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px); }
+        .dashboard-box { background: var(--surface-card); border: 1px solid rgba(255,255,255,0.03); border-radius: 20px; box-shadow: inset 0 2px 4px rgba(255,255,255,0.01); }
+        .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; }
+        .stat-val { font-size: 26px; font-weight: 900; }
 
         @media print { 
             .no-print { display: none !important; } 
@@ -136,49 +159,52 @@
 <body>
 
 <div id="imageModal" onclick="this.style.display='none'">
-    <img id="modalImg" class="max-w-full max-h-[90vh] rounded-lg border border-neutral-800" src="">
+    <img id="modalImg" class="max-w-full max-h-[90vh] rounded-xl border border-neutral-800 shadow-2xl" src="">
 </div>
 
 <div class="main-container">
-    <div class="flex flex-col md:flex-row justify-between items-center pt-4 pb-4 gap-4">
+    <div class="flex flex-col md:flex-row justify-between items-center pt-2 pb-6 gap-4">
         <div>
-            <h1 class="text-3xl font-black text-white tracking-tight leading-none">EMCER TILES PRIVATE LIMITED</h1>
-            <p class="text-[11px] text-blue-400 font-black uppercase tracking-[0.25em] mt-2">Live Cloud Stock Portal</p>
-            <p id="lastUpdated" class="text-[10px] text-amber-500/90 font-bold uppercase mt-1">Fetching Assets...</p>
+            <h1 class="text-3xl font-black text-white tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">EMCER TILES PRIVATE LIMITED</h1>
+            <p class="text-[11px] text-blue-500 font-black uppercase tracking-[0.3em] mt-2">Next-Gen Inventory Command Engine</p>
+            <p id="lastUpdated" class="text-[10px] text-amber-500 font-medium uppercase mt-1">Establishing Cloud Matrix Link...</p>
         </div>
         <div class="flex flex-col items-center md:items-end no-print gap-3">
             <div class="flex gap-2">
-                <button onclick="downloadPDF(this)" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-[11px] font-black uppercase transition shadow-md">📄 Download PDF</button>
-                <button onclick="location.reload()" class="bg-gray-800 hover:bg-gray-700 text-white px-5 py-2.5 rounded-xl text-[11px] font-black uppercase transition border border-gray-700">🔄 Refresh</button>
+                <button onclick="downloadPDF(this)" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl text-[11px] font-black uppercase transition duration-300 shadow-lg shadow-red-950/50">📄 Download PDF</button>
+                <button onclick="location.reload()" class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-xl text-[11px] font-black uppercase transition duration-300 border border-gray-700">🔄 Refresh</button>
             </div>
-            <div class="yashdeep-premium">✨ YASHDEEP JIVANI ✨</div>
+            <div class="yashdeep-tag-premium">✨ YASHDEEP JIVANI ✨</div>
         </div>
     </div>
 
-    <div class="h-[1px] bg-gradient-to-r from-transparent via-neutral-800 to-transparent my-4"></div>
+    <div class="h-[1px] bg-gradient-to-r from-transparent via-neutral-800 to-transparent mb-6"></div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 no-print">
-        <div class="dashboard-box p-4 text-center"><div class="stat-label">Total Designs</div><div id="statDesigns" class="stat-val mt-1">0</div></div>
-        <div class="dashboard-box p-4 text-center"><div class="stat-label">Total Boxes</div><div id="statBoxes" class="stat-val mt-1 text-emerald-400">0</div></div>
-        <div class="dashboard-box p-4 text-center"><div class="stat-label">Brands</div><div id="statBrands" class="stat-val mt-1">0</div></div>
-        <div class="dashboard-box p-4 text-center" style="border-color: rgba(197, 160, 89, 0.25);"><div class="stat-label text-amber-500">Filtered View</div><div id="statFiltered" class="stat-val mt-1 text-amber-400">0</div></div>
+        <div class="dashboard-box p-5 text-center"><div class="stat-label">Total Designs</div><div id="statDesigns" class="stat-val mt-1">0</div></div>
+        <div class="dashboard-box p-5 text-center"><div class="stat-label">Total Boxes</div><div id="statBoxes" class="stat-val mt-1 text-emerald-400">0</div></div>
+        <div class="dashboard-box p-5 text-center"><div class="stat-label">Brands</div><div id="statBrands" class="stat-val mt-1">0</div></div>
+        <div class="dashboard-box p-5 text-center" style="border-color: rgba(223, 183, 108, 0.2);"><div class="stat-label text-amber-400">Matching Results</div><div id="statFiltered" class="stat-val mt-1 text-amber-400">0</div></div>
     </div>
 
-    <div class="filter-grid-layout no-print shadow-xl">
-        <div class="filter-group"><label>Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Type name..."></div>
+    <div class="filter-grid-layout no-print">
+        <div class="filter-group"><label>Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Type material name..."></div>
         <div class="filter-group"><label>Brand</label><select id="filterBrand" onchange="applyFilters()"></select></div>
         <div class="filter-group"><label>Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"></select></div>
         <div class="filter-group"><label>Series</label><select id="filterSeries" onchange="applyFilters()"></select></div>
         <div class="filter-group"><label>Variant</label><select id="filterVariant" onchange="applyFilters()"></select></div>
+        <button onclick="resetFilters()" class="btn-reset" title="Reset All Filters">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </button>
     </div>
 
     <div id="reportList">
-        <div class="text-center py-20 opacity-30 font-black tracking-widest text-sm uppercase text-slate-400">Syncing Master Sheet Engine...</div>
+        <div class="text-center py-24 opacity-30 font-black tracking-widest text-sm uppercase text-slate-400">Synchronizing Live Database Node...</div>
     </div>
 </div>
 
 <script>
-    // 🔗 TAMARI CURRENT WEB APP URL HERE
+    // 🔗 GOOGLE APPS SCRIPT WEB APP API URL
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzwo7Rgp4RgkicELRyGGOBZ-paQYl8up1BCIrHDAfVWOQ4NrBW5T7O5JUYudmZqEUAjAA/exec";
 
     let masterData = [];
@@ -189,7 +215,7 @@
             if (resStock.ok) {
                 masterData = await resStock.json();
                 
-                // Pure static frozen time tracking right at download/sync trigger point
+                // Set constant frozen transaction timestamp on load
                 document.getElementById('lastUpdated').innerText = "LIVE SYNCED: " + new Date().toLocaleString();
                 
                 setupFilters(); 
@@ -197,7 +223,7 @@
             }
         } catch (e) { 
             console.error(e); 
-            document.getElementById('reportList').innerHTML = `<div class='text-center text-red-400 font-bold py-10'>Database Synchronization Refused. Verify deployment configuration.</div>`;
+            document.getElementById('reportList').innerHTML = `<div class='text-center text-red-400 font-bold py-12 bg-red-950/10 border border-red-900/30 rounded-xl'>Database Synchronization Refused. Verify deployment state.</div>`;
         }
     }
 
@@ -213,6 +239,15 @@
         const sz = document.getElementById('filterSize').value, srs = new Set();
         masterData.forEach(i => { if(sz==="" || i.Size===sz) if(i.Series) srs.add(i.Series); });
         document.getElementById('filterSeries').innerHTML = '<option value="">All</option>' + [...srs].sort().map(s => `<option value="${s}">${s}</option>`).join('');
+    }
+
+    function resetFilters() {
+        document.getElementById('searchName').value = '';
+        document.getElementById('filterBrand').value = '';
+        document.getElementById('filterSize').value = '';
+        document.getElementById('filterVariant').value = '';
+        updateSeriesOptions();
+        applyFilters();
     }
 
     function applyFilters() {
@@ -255,7 +290,7 @@
 
     function render(items) {
         if(items.length === 0) {
-            document.getElementById('reportList').innerHTML = `<div class="text-center py-20 opacity-20 font-bold uppercase text-slate-400">No Premium Inventory Matches</div>`;
+            document.getElementById('reportList').innerHTML = `<div class="text-center py-24 opacity-20 font-bold uppercase tracking-widest text-slate-400">No Matching Material Nodes Active</div>`;
             return;
         }
 
@@ -275,15 +310,15 @@
                     <div class="flex-grow mt-2">
                         ${item.lots.map(l => `
                             <div class="lot-row">
-                                <span class="text-slate-400 text-xs">LOT: ${l.lot}</span>
-                                <span class="font-bold text-slate-100">${l.qty} Bx</span>
+                                <span class="text-slate-400 text-xs tracking-wider">LOT: ${l.lot}</span>
+                                <span class="font-bold text-slate-200">${l.qty} Bx</span>
                             </div>
                         `).join('')}
                     </div>
                 </div>
                 <div class="card-total">
                     <div class="total-val">${Math.round(item.total)}</div>
-                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider mt-1">Boxes</div>
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">Boxes</div>
                 </div>
             </div>`;
         }).join('');
@@ -292,13 +327,13 @@
     async function downloadPDF(btn) {
         const element = document.getElementById('reportList');
         const originalText = btn.innerText;
-        btn.innerText = "Compiling PDF..."; btn.disabled = true;
+        btn.innerText = "Compiling Framework..."; btn.disabled = true;
 
         const opt = {
             margin: 10,
-            filename: 'NexTile_Elite_Stock.pdf',
+            filename: 'NexTile_Live_Stock.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#090d16' },
+            html2canvas: { scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#05070c' },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
             pagebreak: { mode: ['avoid-all'] }
         };
