@@ -53,16 +53,12 @@
         ::-webkit-scrollbar-track { background: #020408; }
         ::-webkit-scrollbar-thumb { background: rgba(223, 183, 108, 0.3); border-radius: 10px; }
         
-        /* Premium PDF Report Layout Modification on Print */
         @media print {
             @page { size: A4 portrait; margin: 12mm 10mm; }
             body { background: #ffffff !important; color: #000000 !important; padding: 0; margin: 0; }
             .no-print { display: none !important; }
             .glass-panel { border: none !important; background: transparent !important; backdrop-filter: none !important; padding: 0 !important; margin-bottom: 20px !important; }
-            
-            /* Print Grid to Stack Row System */
             #tileGrid { display: flex !important; flex-direction: column !important; gap: 25px !important; }
-            
             .tile-card { 
                 page-break-inside: avoid !important; 
                 border: 2px solid #111111 !important; 
@@ -77,8 +73,6 @@
                 box-shadow: none !important;
                 transform: none !important;
             }
-            
-            /* Big Clear Image in PDF */
             .tile-card .image-container { 
                 width: 240px !important; 
                 height: 240px !important; 
@@ -86,8 +80,6 @@
                 border-right: 2px solid #111111 !important;
             }
             .tile-card img { width: 100% !important; height: 100% !important; object-fit: cover !important; }
-            
-            /* Details Styling in PDF */
             .tile-card .content-container { 
                 padding: 18px !important; 
                 flex-grow: 1 !important; 
@@ -95,38 +87,32 @@
                 flex-direction: column !important;
                 justify-content: space-between !important;
             }
-            
             .text-gold, #statsCount, #statsQty { color: #000000 !important; font-weight: 800 !important; }
             .text-transparent { background: none !important; -webkit-text-fill-color: initial !important; color: #000000 !important; }
-            
-            /* Clean Tables for Lots in PDF */
             .bg-black\/50 { background: #fafafa !important; border: 1px solid #111111 !important; border-radius: 8px !important; }
             table { width: 100% !important; }
             tr { border-b: 1px solid #dddddd !important; }
             td { color: #000000 !important; font-size: 12px !important; padding: 4px 8px !important; }
-            
             .badge-surface { background: #111111 !important; color: #ffffff !important; padding: 4px 8px !important; border-radius: 4px !important; }
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col justify-between">
+<body class="antialiased min-h-screen flex flex-col justify-between" onload="initLiveSync()">
 
     <header class="glass-nav sticky top-0 z-40 px-6 py-4 shadow-xl no-print">
         <div class="max-w-[1600px] mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div>
                 <div class="flex items-center gap-2">
                     <span class="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-yellow-400 to-amber-600 shadow-[0_0_10px_#dfb76c]"></span>
-                    <h1 class="text-2xl font-black tracking-tight text-gold italic">Emcer Tiles Private Limited </h1>
+                    <h1 class="text-2xl font-black tracking-tight text-gold italic">NexTile</h1>
                 </div>
-                <p class="text-[10px] text-amber-500 font-extrabold uppercase tracking-widest mt-0.5">Inventory Portal</p>
-                <p class="text-[10px] text-amber-500 font-extrabold uppercase tracking-widest mt-0.5">Designed & Developed By - Yashdeep Jivani</p>
+                <p class="text-[10px] text-amber-500 font-extrabold uppercase tracking-widest mt-0.5">Emcer Tiles Private Limited</p>
             </div>
             
             <div class="flex items-center gap-3 w-full sm:w-auto justify-end flex-wrap">
-                <label class="cursor-pointer bg-gold-gradient hover:opacity-90 text-black px-5 py-2.5 rounded-xl text-xs font-black shadow-lg transition-all flex items-center gap-2 tracking-wider uppercase">
-                    <span>📁</span> Upload JSON Files
-                    <input type="file" id="fileInput" multiple accept=".json" class="hidden" onchange="handleFileUpload(event)">
-                </label>
+                <button onclick="initLiveSync()" class="bg-black/40 text-gold hover:bg-black border border-amber-500/30 px-4 py-2.5 rounded-xl text-xs font-black transition-all tracking-wider uppercase flex items-center gap-1.5">
+                    🔄 Sync Live Data
+                </button>
                 <button onclick="exportFilteredCSV()" class="bg-amber-950/40 hover:bg-amber-950/80 text-gold px-4 py-2.5 rounded-xl text-xs font-black border border-amber-500/30 transition-all tracking-wider uppercase flex items-center gap-1.5">
                     📊 Export Excel
                 </button>
@@ -205,9 +191,9 @@
         </div>
 
         <div id="tileGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
-            <div class="col-span-full py-28 text-center glass-panel rounded-3xl border-dashed border-amber-500/20 no-print">
-                <span class="text-4xl block mb-4 animate-bounce">📁</span>
-                <p class="text-amber-600/70 font-medium text-sm">Please select <b>stock.json.json</b> and <b>Design.json.json</b> together to load live stock.</p>
+            <div id="statusPlaceholder" class="col-span-full py-28 text-center glass-panel rounded-3xl border-dashed border-amber-500/20 no-print">
+                <span class="text-4xl block mb-4 animate-spin">🔄</span>
+                <p class="text-amber-600/70 font-medium text-sm"> Cloud Engine Connecting... Fetching live data.....</p>
             </div>
         </div>
     </main>
@@ -235,95 +221,106 @@
     </footer>
 
     <script>
+        // ⚠️ અહીં તમારી GOOGLE APPS SCRIPT ની DEPLOYED WEB APP URL પેસ્ટ કરી દો!
+        const CONFIG_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwSa_mmBG93WUI4BctN3g7NPTy9k0l7FkUDKcu9RukI5x2AoBDqea-LNO8-x8_cDVCM/exec";
+
         var designDataStore = {};
         var finalGroups = [];
         var currentFilteredData = [];
 
-        async function handleFileUpload(event) {
-            const files = event.target.files;
-            let rawStock = [];
-            let stockLoaded = false;
+        // ઓટોમેટીક ડેટા સિંક સિસ્ટમ લોડ થતા જ રન થશે
+        async function initLiveSync() {
+            const placeholder = document.getElementById('statusPlaceholder');
+            if(placeholder) {
+                placeholder.innerHTML = `<span class="text-4xl block mb-4 animate-spin">🔄</span>
+                                         <p class="text-amber-600/70 font-medium text-sm">Syncing Live Sheet Data...</p>`;
+            }
 
-            for (let file of files) {
-                try {
-                    const text = await file.text();
-                    const json = JSON.parse(text);
-                    const dataArray = Array.isArray(json) ? json : (json.data || []);
-                    if (dataArray.length === 0) continue;
+            if(!CONFIG_WEB_APP_URL || CONFIG_WEB_APP_URL.includes("YOUR_GOOGLE")) {
+                alert("Please setup your CONFIG_WEB_APP_URL inside script tag first!");
+                if(placeholder) placeholder.innerHTML = "❌ Error: Google Sheet Web App URL not structured.";
+                return;
+            }
 
-                    if (dataArray[0]["name"] !== undefined && dataArray[0]["url"] !== undefined) {
-                        dataArray.forEach(d => { 
-                            let dName = String(d["name"]).trim().toLowerCase();
-                            if (dName) {
-                                designDataStore[dName] = d.url || "";
-                            }
-                        });
-                    } 
-                    else if (dataArray[0]["Item Description"] !== undefined) {
-                        rawStock = dataArray;
-                        stockLoaded = true;
-                    }
-                } catch (e) {
-                    console.error("Error parsing file:", e);
+            try {
+                const response = await fetch(CONFIG_WEB_APP_URL);
+                const cloudData = await response.json();
+                
+                // ડેટા પાર્સિંગ એન્જિન (Design + Stock)
+                if (cloudData.designs && Array.isArray(cloudData.designs)) {
+                    cloudData.designs.forEach(d => {
+                        let dName = String(d.name).trim().toLowerCase();
+                        if (dName) designDataStore[dName] = d.url || "";
+                    });
                 }
+
+                if (cloudData.stock && Array.isArray(cloudData.stock)) {
+                    processStockData(cloudData.stock);
+                } else {
+                    throw new Error("Stock sheets data layout invalid.");
+                }
+
+            } catch (error) {
+                console.error("Cloud Connection Failure:", error);
+                alert("Failed to pull live stock from Google Sheet. Check script cross-origin or permissions.");
+                if(placeholder) placeholder.innerHTML = "❌ Connection Failed. Click Sync Live Data manually.";
             }
+        }
 
-            if (stockLoaded) {
-                const groups = {};
+        function processStockData(rawStock) {
+            const groups = {};
 
-                rawStock.forEach((item) => {
-                    let name = item["Item Description"] ? String(item["Item Description"]).trim() : "";
-                    if (!name || name === "Common Item No.") return;
+            rawStock.forEach((item) => {
+                let name = item["Item Description"] ? String(item["Item Description"]).trim() : "";
+                if (!name || name === "Common Item No.") return;
 
-                    let cleanName = name.toLowerCase();
+                let cleanName = name.toLowerCase();
+                let size = item["Size"] || "UNKNOWN SIZE";
+                let series = item["Series"] || "GENERAL";
+                let brand = item["Brand"] || "EMCER";
+                let variant = item["Variant"] || "PRE";
+                let lotNo = item["Lot no."] || "UNKNOWN LOT";
+                let netQty = Number(item["Net Qty"]) || 0;
 
-                    let size = item["Size"] || "UNKNOWN SIZE";
-                    let series = item["Series"] || "GENERAL";
-                    let brand = item["Brand"] || "EMCER";
-                    let variant = item["Variant"] || "PRE";
-                    let lotNo = item["Lot no."] || "UNKNOWN LOT";
-                    let netQty = Number(item["Net Qty"]) || 0;
+                const groupKey = (name + "|" + series + "|" + variant + "|" + size).toLowerCase().trim();
+                
+                let foundImg = designDataStore[cleanName] || "";
+                if (!foundImg) {
+                    let partialMatchKey = Object.keys(designDataStore).find(k => cleanName.includes(k) || k.includes(cleanName));
+                    if (partialMatchKey) foundImg = designDataStore[partialMatchKey];
+                }
 
-                    const groupKey = (name + "|" + series + "|" + variant + "|" + size).toLowerCase().trim();
-                    
-                    let foundImg = designDataStore[cleanName] || "";
-                    if (!foundImg) {
-                        let partialMatchKey = Object.keys(designDataStore).find(k => cleanName.includes(k) || k.includes(cleanName));
-                        if (partialMatchKey) foundImg = designDataStore[partialMatchKey];
-                    }
+                if (!foundImg) {
+                    foundImg = 'https://placehold.co/400x300/0a0c12/dfb76c?text=' + encodeURIComponent(name);
+                }
 
-                    if (!foundImg) {
-                        foundImg = 'https://placehold.co/400x300/0a0c12/dfb76c?text=' + encodeURIComponent(name);
-                    }
+                if (!groups[groupKey]) {
+                    groups[groupKey] = {
+                        name: name,
+                        series: series,
+                        size: size,
+                        brand: brand,
+                        variant: variant,
+                        img: foundImg,
+                        lots: {},
+                        total: 0
+                    };
+                }
 
-                    if (!groups[groupKey]) {
-                        groups[groupKey] = {
-                            name: name,
-                            series: series,
-                            size: size,
-                            brand: brand,
-                            variant: variant,
-                            img: foundImg,
-                            lots: {},
-                            total: 0
-                        };
-                    }
+                if (!groups[groupKey].lots[lotNo]) {
+                    groups[groupKey].lots[lotNo] = 0;
+                }
+                groups[groupKey].lots[lotNo] += netQty;
+                groups[groupKey].total += netQty;
+            });
 
-                    if (!groups[groupKey].lots[lotNo]) {
-                        groups[groupKey].lots[lotNo] = 0;
-                    }
-                    groups[groupKey].lots[lotNo] += netQty;
-                    groups[groupKey].total += netQty;
-                });
+            finalGroups = Object.values(groups).map(g => {
+                g.lots = Object.keys(g.lots).map(k => ({ lot: k, qty: g.lots[k] }));
+                return g;
+            });
 
-                finalGroups = Object.values(groups).map(g => {
-                    g.lots = Object.keys(g.lots).map(k => ({ lot: k, qty: g.lots[k] }));
-                    return g;
-                });
-
-                buildSizeDropdownOnly();
-                renderUI();
-            }
+            buildSizeDropdownOnly();
+            renderUI();
         }
 
         function buildSizeDropdownOnly() {
@@ -401,11 +398,10 @@
             let textToCopy = `📦 *NexTile Live Stock Report*\n---------------------------\n👑 *Item:* ${g.name}\n✨ *Brand:* ${g.brand}\n📏 *Size:* ${g.size}\n🎨 *Series:* ${g.series}\n💎 *Variant (Grade):* ${g.variant}\n\n📊 *Available Lots:*\n${lotDetails}\n---------------------------\n👑 *Total Stock:* ${g.total} BOX`;
             
             navigator.clipboard.writeText(textToCopy).then(() => {
-                alert(`✅ Stock Details for "${g.name}" copied directly! Now you can paste on WhatsApp.`);
+                alert(`✅ Stock Details for "${g.name}" copied directly!`);
             });
         }
 
-        // ફિલ્ટર થયેલા એક્સેલ ડેટામાં ઈમેજ URL લિંક તરીકે ઓપન થશે
         function exportFilteredCSV() {
             if(currentFilteredData.length === 0) {
                 alert("No filtered data available to export!");
@@ -431,8 +427,9 @@
 
         function renderUI() {
             const grid = document.getElementById('tileGrid');
+            if(!grid) return;
+
             const search = document.getElementById('search').value.toLowerCase().trim();
-            
             const fSize = document.getElementById('filterSize').value;
             const fSeries = document.getElementById('filterSeries').value;
             const fBrand = document.getElementById('filterBrand').value;
@@ -440,7 +437,6 @@
             const qCond = document.getElementById('qtyCondition').value;
             const qVal = Number(document.getElementById('qtyValue').value) || 0;
 
-            // ફિલ્ટરિંગ લોજિક
             currentFilteredData = finalGroups.filter(g => {
                 const matchSearch = g.name.toLowerCase().includes(search);
                 const matchSize = fSize === "" || g.size === fSize;
