@@ -103,7 +103,7 @@
         <div class="max-w-[1600px] mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div>
                 <div class="flex items-center gap-2">
-                    <span class="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-yellow-400 to-amber-600 shadow-[0_0_10px_#dfb76c]"></span>
+                    
                     <h1 class="text-2xl font-black tracking-tight text-gold bold">Emcer Tiles Private Limited</h1>
                     <p id="lastUpdated" class="text-[10px] text-amber-500/60 font-bold mt-1 uppercase tracking-wider">Last Sync: Loading...</p>
                 </div>
@@ -260,12 +260,7 @@
 
         // તમારા Apps Script ના ડેટા કોલમ પ્રમાણે પ્રોસેસિંગ એન્જિન
         function processFlatRows(rows) {
-            // function processFlatRows(rows) { ની અંદર પહેલી જ લાઇન આ નાખો:
-const timeObj = rows.find(item => item.LastUpdatedTime);
-if(timeObj) {
-    const d = new Date(timeObj.LastUpdatedTime);
-    document.getElementById('lastUpdated').innerText = "Last Sync: " + d.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-}
+          
             const groups = {};
 
             rows.forEach((item) => {
