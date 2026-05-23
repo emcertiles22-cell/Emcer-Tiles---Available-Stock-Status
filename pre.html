@@ -260,6 +260,12 @@
 
         // તમારા Apps Script ના ડેટા કોલમ પ્રમાણે પ્રોસેસિંગ એન્જિન
         function processFlatRows(rows) {
+            // function processFlatRows(rows) { ની અંદર પહેલી જ લાઇન આ નાખો:
+const timeObj = rows.find(item => item.LastUpdatedTime);
+if(timeObj) {
+    const d = new Date(timeObj.LastUpdatedTime);
+    document.getElementById('lastUpdated').innerText = "Last Sync: " + d.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+}
             const groups = {};
 
             rows.forEach((item) => {
