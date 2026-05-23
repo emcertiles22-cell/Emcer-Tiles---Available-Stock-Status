@@ -111,7 +111,7 @@
             
             <div class="flex items-center gap-3 w-full sm:w-auto justify-end flex-wrap">
                 <button onclick="initLiveSync()" class="bg-black/40 text-gold hover:bg-black border border-amber-500/30 px-4 py-2.5 rounded-xl text-xs font-black transition-all tracking-wider uppercase flex items-center gap-1.5">
-                    🔄 Sync Live Data
+                    🔄 Sync Live Stock
                 </button>
                 <button onclick="exportFilteredCSV()" class="bg-amber-950/40 hover:bg-amber-950/80 text-gold px-4 py-2.5 rounded-xl text-xs font-black border border-amber-500/30 transition-all tracking-wider uppercase flex items-center gap-1.5">
                     📊 Export Excel
@@ -129,7 +129,6 @@
     <main class="max-w-[1600px] w-full mx-auto px-6 mt-8 flex-grow">
         
         <div class="glass-panel rounded-3xl p-6 mb-8 shadow-2xl">
-            
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-center border-b border-amber-500/10 pb-6 mb-6">
                 <div class="relative sm:col-span-2 lg:col-span-2 no-print">
                     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-amber-600/60 text-sm">🔍</span>
@@ -153,7 +152,7 @@
 
             <div class="no-print">
                 <p class="text-[10px] font-black text-amber-600/70 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                    <span class="text-gold text-xs">⚙️</span> Dependent Smart Filter Panels
+                    <span class="text-gold text-xs">⚙️</span> Dependent Filter Panels
                 </p>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                     <div>
@@ -193,7 +192,7 @@
         <div id="tileGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
             <div id="statusPlaceholder" class="col-span-full py-28 text-center glass-panel rounded-3xl border-dashed border-amber-500/20 no-print">
                 <span class="text-4xl block mb-4 animate-spin">🔄</span>
-                <p class="text-amber-600/70 font-medium text-sm"> Cloud Engine Connecting... Fetching live data.....</p>
+                <p class="text-amber-600/70 font-medium text-sm">NexTile Engine Initializing... Fetching Live Sync from Apps Script Web App.</p>
             </div>
         </div>
     </main>
@@ -221,78 +220,61 @@
     </footer>
 
     <script>
-        // ⚠️ અહીં તમારી GOOGLE APPS SCRIPT ની DEPLOYED WEB APP URL પેસ્ટ કરી દો!
-        const CONFIG_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwSa_mmBG93WUI4BctN3g7NPTy9k0l7FkUDKcu9RukI5x2AoBDqea-LNO8-x8_cDVCM/exec";
+        // ⚠️ અહીં તમારી Apps Script ની Deployed Web App URL પેસ્ટ કરી દો ભાઈ!
+        const CONFIG_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwSa_mmBG93WUI4BctN3g7NPTy9k0l7FkUDKcu9RukI5x2AoBDqea-LNO8-x8_cDVCM/exec"; 
 
-        var designDataStore = {};
         var finalGroups = [];
         var currentFilteredData = [];
 
-        // ઓટોમેટીક ડેટા સિંક સિસ્ટમ લોડ થતા જ રન થશે
+        // Apps Script Flat API Integration Engine
         async function initLiveSync() {
             const placeholder = document.getElementById('statusPlaceholder');
             if(placeholder) {
                 placeholder.innerHTML = `<span class="text-4xl block mb-4 animate-spin">🔄</span>
-                                         <p class="text-amber-600/70 font-medium text-sm">Syncing Live Sheet Data...</p>`;
+                                         <p class="text-amber-600/70 font-medium text-sm">Syncing flat rows directly from Script Engine...</p>`;
             }
 
-            if(!CONFIG_WEB_APP_URL || CONFIG_WEB_APP_URL.includes("YOUR_GOOGLE")) {
-                alert("Please setup your CONFIG_WEB_APP_URL inside script tag first!");
-                if(placeholder) placeholder.innerHTML = "❌ Error: Google Sheet Web App URL not structured.";
+            if(!CONFIG_WEB_APP_URL || CONFIG_WEB_APP_URL.includes("YOUR_APPS_SCRIPT")) {
+                alert("Please add your deployed Apps Script URL in CONFIG_WEB_APP_URL field inside the code!");
+                if(placeholder) placeholder.innerHTML = "❌ Setup Config Parameter URL inside source code.";
                 return;
             }
 
             try {
                 const response = await fetch(CONFIG_WEB_APP_URL);
-                const cloudData = await response.json();
+                const rawData = await response.json();
                 
-                // ડેટા પાર્સિંગ એન્જિન (Design + Stock)
-                if (cloudData.designs && Array.isArray(cloudData.designs)) {
-                    cloudData.designs.forEach(d => {
-                        let dName = String(d.name).trim().toLowerCase();
-                        if (dName) designDataStore[dName] = d.url || "";
-                    });
-                }
-
-                if (cloudData.stock && Array.isArray(cloudData.stock)) {
-                    processStockData(cloudData.stock);
+                if (Array.isArray(rawData) && rawData.length > 0) {
+                    processFlatRows(rawData);
                 } else {
-                    throw new Error("Stock sheets data layout invalid.");
+                    throw new Error("Returned structured JSON layout is empty or invalid.");
                 }
 
             } catch (error) {
-                console.error("Cloud Connection Failure:", error);
-                alert("Failed to pull live stock from Google Sheet. Check script cross-origin or permissions.");
-                if(placeholder) placeholder.innerHTML = "❌ Connection Failed. Click Sync Live Data manually.";
+                console.error("Live Web App Connection Error:", error);
+                alert("Failed to sync live rows! Make sure your Apps Script deployment is published as 'Anyone' access level.");
+                if(placeholder) placeholder.innerHTML = "❌ Live Sync Connection Failed. Retrying recommended.";
             }
         }
 
-        function processStockData(rawStock) {
+        // તમારા Apps Script ના ડેટા કોલમ પ્રમાણે પ્રોસેસિંગ એન્જિન
+        function processFlatRows(rows) {
             const groups = {};
 
-            rawStock.forEach((item) => {
+            rows.forEach((item) => {
                 let name = item["Item Description"] ? String(item["Item Description"]).trim() : "";
                 if (!name || name === "Common Item No.") return;
 
-                let cleanName = name.toLowerCase();
                 let size = item["Size"] || "UNKNOWN SIZE";
                 let series = item["Series"] || "GENERAL";
                 let brand = item["Brand"] || "EMCER";
-                let variant = item["Variant"] || "PRE";
-                let lotNo = item["Lot no."] || "UNKNOWN LOT";
-                let netQty = Number(item["Net Qty"]) || 0;
+                let variant = item["Variant"] || item["Grade"] || "PRE"; // Grade અથવા Variant બંને સેફ
+                let lotNo = item["Lot No"] || item["Lot no."] || "UNKNOWN LOT";
+                let netQty = Number(item["Total"]) || 0; // તમારા કોડ પ્રમાણે બુકિંગ માઈનસ થયેલો ચોખ્ખો સ્ટોક 'Total' માં છે
+                let img = item["ImgUrl"] || `https://placehold.co/400x300/0a0c12/dfb76c?text=${encodeURIComponent(name)}`;
 
+                // Item + Series + Variant + Size વાઇઝ યુનિક ગ્રુપિંગ કી
                 const groupKey = (name + "|" + series + "|" + variant + "|" + size).toLowerCase().trim();
-                
-                let foundImg = designDataStore[cleanName] || "";
-                if (!foundImg) {
-                    let partialMatchKey = Object.keys(designDataStore).find(k => cleanName.includes(k) || k.includes(cleanName));
-                    if (partialMatchKey) foundImg = designDataStore[partialMatchKey];
-                }
-
-                if (!foundImg) {
-                    foundImg = 'https://placehold.co/400x300/0a0c12/dfb76c?text=' + encodeURIComponent(name);
-                }
 
                 if (!groups[groupKey]) {
                     groups[groupKey] = {
@@ -301,7 +283,7 @@
                         size: size,
                         brand: brand,
                         variant: variant,
-                        img: foundImg,
+                        img: img,
                         lots: {},
                         total: 0
                     };
@@ -314,10 +296,13 @@
                 groups[groupKey].total += netQty;
             });
 
+            // લોટ્સ કન્વર્ટ કરો અને 0 થી વધુ સ્ટોક હોય એવા જ આઈટમ કાર્ડ્સ બતાવો
             finalGroups = Object.values(groups).map(g => {
-                g.lots = Object.keys(g.lots).map(k => ({ lot: k, qty: g.lots[k] }));
+                g.lots = Object.keys(g.lots)
+                    .map(k => ({ lot: k, qty: g.lots[k] }))
+                    .filter(l => l.qty > 0); // જે લોટ ની કવોન્ટિટી 0 થઈ ગઈ હોય એ લિસ્ટ માંથી નીકળી જશે
                 return g;
-            });
+            }).filter(g => g.total > 0); // જો આખી પ્રોડક્ટ નો ટોટલ સ્ટોક 0 હોય તો કાર્ડ નહિ બને
 
             buildSizeDropdownOnly();
             renderUI();
@@ -456,12 +441,12 @@
             document.getElementById('statsQty').innerText = totalBoxes.toLocaleString() + " BOX";
 
             if (currentFilteredData.length === 0) {
-                grid.innerHTML = '<div class="col-span-full text-center py-24 glass-panel rounded-3xl text-amber-600/50 font-bold text-sm tracking-wide">No active stock matches found. Check applied filters.</div>';
+                grid.innerHTML = '<div class="col-span-full text-center py-24 glass-panel rounded-3xl text-amber-600/50 font-bold text-sm tracking-wide">No active live stock matches found. Check applied filters.</div>';
                 return;
             }
 
             grid.innerHTML = currentFilteredData.map((g, idx) => {
-                let trueIndex = finalGroups.findIndex(orig => orig.name === g.name && orig.series === g.series && orig.size === g.size);
+                let trueIndex = finalGroups.findIndex(orig => orig.name === g.name && orig.series === g.series && orig.size === g.size && orig.variant === g.variant);
                 
                 return `
                 <div class="tile-card rounded-2xl overflow-hidden flex flex-col h-full group">
