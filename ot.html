@@ -6,7 +6,6 @@
     <title>NexTile - Emcer Live Stock</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
         :root {
@@ -34,7 +33,7 @@
             border-radius: 0px !important;
         }
 
-        /* --- FORMAT 1 styles (Prominent Sharp Gold Border Profile) --- */
+        /* --- FORMAT 1: Row Specifications --- */
         .stock-card { 
             background: #090b0d;
             border: 2px solid var(--matrix-gold); 
@@ -42,7 +41,6 @@
             flex-direction: column; 
             margin-bottom: 24px; 
             position: relative; 
-            page-break-inside: avoid;
             border-radius: 0px !important;
             box-shadow: 0 8px 25px rgba(0,0,0,0.6);
             transition: all 0.25s ease-in-out;
@@ -86,9 +84,8 @@
             .card-img-frame { width: 30%; border-bottom: none; border-right: 1px solid #161a22; padding: 14px; }
         }
         .card-img-frame img { 
-            height: 200px;
-            width: auto;
-            aspect-ratio: 3/4; 
+            height: 180px;
+            width: 135px;
             object-fit: cover; 
             display: block; 
             border: 1px solid #222b35;
@@ -156,32 +153,6 @@
         @media(min-width: 768px) { .btn-ui { width: auto; } }
 
         #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
-
-        @media print { 
-            .no-print { display: none !important; } 
-            body { background: #ffffff !important; color: #000000 !important; }
-            .stock-card { 
-                background: #ffffff !important; 
-                border: 2px solid #000000 !important; 
-                color: #000000 !important;
-                box-shadow: none !important;
-                margin-bottom: 15mm;
-                flex-direction: row !important;
-                page-break-inside: avoid !important;
-            }
-            .card-img-frame { width: 30% !important; border-bottom: none !important; border-right: 1px solid #000000 !important; background: #fafafa !important; }
-            .card-img-frame img { height: 160px !important; }
-            .card-info { width: 50% !important; }
-            .card-total { width: 20% !important; border-top: none !important; border-left: 1px solid #000000 !important; background: #f1f5f9 !important; flex-direction: column !important; justify-content: center !important; }
-            .design-name, .lot-row span { color: #000000 !important; }
-            .total-val { color: #000000 !important; text-shadow: none !important; }
-            .variant-badge { border: 1px solid #000000 !important; background: #000000 !important; color: #ffffff !important; }
-            
-            /* Print adjustments for matrix view */
-            .matrix-table { color: #000 !important; background: #fff !important; border: 1px solid #000 !important; }
-            .matrix-table th { background: #f1f5f9 !important; color: #000 !important; border: 1px solid #000 !important; }
-            .matrix-table td { border: 1px solid #000 !important; color: #000 !important; }
-        }
     </style>
 </head>
 <body>
@@ -195,9 +166,10 @@
         <div>
             <h1 class="text-xl md:text-2xl font-black text-white tracking-tight leading-none">EMCER TILES PRIVATE LIMITED</h1>
             <p class="text-[11px] text-blue-400 font-extrabold uppercase tracking-[0.2em] mt-1.5">Inventory Portal</p>
-            <p id="lastUpdated" class="text-[10px] text-amber-500 font-medium uppercase mt-1">Initializing Dynamic Multi-Format Core Cluster...</p>
+            <p id="lastUpdated" class="text-[10px] text-amber-500 font-medium uppercase mt-1">Establishing Direct Live Node Link...</p>
         </div>
         <div class="flex flex-col lg:flex-row items-stretch lg:items-center no-print gap-3 w-full lg:w-auto justify-between lg:justify-end">
+            <!-- Format Segment Buttons -->
             <div class="flex border border-slate-800 bg-[#0a0d14] p-1 gap-1">
                 <button onclick="changeLayout('format1')" id="btnFormat1" class="px-3 py-1.5 text-[10px] font-black uppercase transition-all bg-amber-500 text-black">Format 1: Row Spec</button>
                 <button onclick="changeLayout('format2')" id="btnFormat2" class="px-3 py-1.5 text-[10px] font-black uppercase transition-all text-slate-400 hover:text-white">Format 2: Grid Card</button>
@@ -207,10 +179,11 @@
                 <button onclick="downloadPDF(this)" class="btn-ui bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 text-[11px] font-bold uppercase">📄 Download PDF</button>
                 <button onclick="location.reload()" class="btn-ui bg-neutral-800 hover:bg-neutral-700 text-white px-5 py-2.5 text-[11px] font-bold uppercase border border-neutral-700">🔄 Refresh</button>
             </div>
-            <div class="border border-amber-500/40 px-4 py-2 text-amber-500 font-black text-[11px] uppercase tracking-wider bg-amber-500/5 text-center">✨ Yashdeep Jivani ✨</div>
+            <div class="border border-amber-500/40 px-4 py-2 text-amber-500 font-black text-[11px] uppercase tracking-wider bg-amber-500/5 text-center">✨ YASHDEEP JIVANI ✨</div>
         </div>
     </div>
 
+    <!-- Analytics Matrix Counters -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 no-print">
         <div class="matrix-panel p-4 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Total Designs</div><div id="statDesigns" class="text-xl md:text-2xl font-black mt-1 text-white">0</div></div>
         <div class="matrix-panel p-4 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Total Boxes</div><div id="statBoxes" class="text-xl md:text-2xl font-black mt-1 text-emerald-400">0</div></div>
@@ -218,6 +191,7 @@
         <div class="matrix-panel p-4 text-center" style="border-color: rgba(223, 183, 108, 0.3);"><div class="text-amber-500 text-[10px] uppercase font-bold tracking-wider">Filtered View</div><div id="statFiltered" class="text-xl md:text-2xl font-black mt-1 text-amber-500">0</div></div>
     </div>
 
+    <!-- Live Filters Layer -->
     <div class="matrix-panel filter-grid-layout no-print">
         <div class="filter-group"><label>Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Type material name..."></div>
         <div class="filter-group"><label>Brand</label><select id="filterBrand" onchange="applyFilters()"></select></div>
@@ -229,30 +203,36 @@
         </button>
     </div>
 
+    <!-- Active Cluster Injection Root -->
     <div id="reportList">
         <div class="text-center py-24 opacity-40 font-bold tracking-widest text-xs uppercase text-slate-500 animate-pulse">Syncing Active Matrix Database Cluster...</div>
     </div>
 </div>
 
 <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzuBEiGXoJb_bqJcwpFn47cdijPU8kbkTghpSAOP7ICNVctIVUr1q_OnLi6Jax-dcKT/exec";
     let masterData = [];
-    let currentLayout = 'format1'; // Default format schema
+    let currentLayout = 'format1';
     let globalFilteredItems = [];
+    const fallbackImg = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=400&auto=format&fit=crop';
 
-    async function initPortal() {
-        try {
-            const resStock = await fetch(APPS_SCRIPT_URL);
-            if (resStock.ok) {
-                masterData = await resStock.json();
-                document.getElementById('lastUpdated').innerText = "LIVE NODE MATRIX ATTACHED: " + new Date().toLocaleString();
-                setupFilters(); 
-                applyFilters();
-            }
-        } catch (e) { 
-            console.error(e); 
-            document.getElementById('reportList').innerHTML = `<div class='text-center text-red-500 font-bold py-12'>Sync Interrupted. Connection Timed Out.</div>`;
-        }
+    // Direct initialization utilizing secure google script runner environment
+    function initPortal() {
+        google.script.run
+            .withSuccessHandler(function(data) {
+                if(data && data.length > 0) {
+                    masterData = data;
+                    document.getElementById('lastUpdated').innerText = "LIVE DATA LINK SUCCESS: " + new Date().toLocaleString();
+                    setupFilters();
+                    applyFilters();
+                } else {
+                    document.getElementById('reportList').innerHTML = `<div class='text-center text-amber-500 font-bold py-12'>Empty Cluster. Matrix Sheet contains zero stock objects.</div>`;
+                }
+            })
+            .withFailureHandler(function(err) {
+                console.error(err);
+                document.getElementById('reportList').innerHTML = `<div class='text-center text-red-500 font-bold py-12'>Sync Interrupted. Connection Timed Out.</div>`;
+            })
+            .fetchLiveStockData();
     }
 
     function setupFilters() {
@@ -280,8 +260,6 @@
 
     function changeLayout(layoutId) {
         currentLayout = layoutId;
-        
-        // Button style toggle operations
         ['format1', 'format2', 'format3'].forEach(f => {
             const btn = document.getElementById('btn' + f.charAt(0).toUpperCase() + f.slice(1));
             if(f === layoutId) {
@@ -290,8 +268,17 @@
                 btn.className = "px-3 py-1.5 text-[10px] font-black uppercase transition-all text-slate-400 hover:text-white";
             }
         });
-        
         render(globalFilteredItems);
+    }
+
+    function processImgUrl(rawUrl) {
+        if (!rawUrl) return fallbackImg;
+        let url = rawUrl.trim();
+        if (url.includes('drive.google.com')) {
+            const fileId = url.split('/d/')[1]?.split('/')[0] || url.split('id=')[1];
+            if (fileId) return `https://docs.google.com/uc?export=view&id=${fileId}`;
+        }
+        return url;
     }
 
     function applyFilters() {
@@ -311,11 +298,9 @@
                   series = (item.Series||"").trim(), 
                   size = (item.Size||"").trim(), 
                   variant = (item.Variant||"").trim(), 
-                  qty = Number(item.Total || item["Net Qty"] || 0);
+                  qty = Number(item.Total || 0);
             
-            const baseImg = item.DesignURL || item.ImgUrl || '';
-            const fallbackImg = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500&auto=format&fit=crop';
-            const imgUrl = baseImg ? baseImg : fallbackImg;
+            const imgUrl = processImgUrl(item.DesignURL || item.ImgUrl || item.Image);
             const lotNo = item["Lot No"] || item["Lot no."] || "N/A";
 
             if (desc.toLowerCase().includes(f.n) && (!f.b || brand===f.b) && (!f.sz || size===f.sz) && (!f.s || series===f.s) && (!f.v || variant===f.v)) {
@@ -337,27 +322,19 @@
     function render(items) {
         const container = document.getElementById('reportList');
         if(items.length === 0) {
+            container.className = "block";
             container.innerHTML = `<div class="text-center py-20 opacity-30 font-bold uppercase tracking-widest text-xs text-slate-500">Zero Active Filter Matches Found</div>`;
             return;
         }
 
-        const backupImg = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500&auto=format&fit=crop';
-
-        // --- FORMAT 1: ORIGINAL LANDSCAPE SPECIFICATION ROW LAYOUT ---
+        // --- FORMAT 1: ROW PROFILE VIEW ---
         if (currentLayout === 'format1') {
             container.className = "block";
-            container.innerHTML = items.map(item => {
-                let finalImg = item.imgUrl;
-                if (item.imgUrl.includes('drive.google.com')) {
-                    const fileId = item.imgUrl.split('/d/')[1]?.split('/')[0] || item.imgUrl.split('id=')[1];
-                    if (fileId) finalImg = `https://docs.google.com/uc?export=view&id=${fileId}`;
-                }
-
-                return `
+            container.innerHTML = items.map(item => `
                 <div class="stock-card">
                     <div class="variant-badge">${item.variant || 'STD'}</div>
-                    <div class="card-img-frame" onclick="document.getElementById('modalImg').src='${finalImg}'; document.getElementById('imageModal').style.display='flex'">
-                        <img src="${finalImg}" loading="lazy" crossorigin="anonymous" onerror="this.onerror=null; this.src='${backupImg}';">
+                    <div class="card-img-frame" onclick="document.getElementById('modalImg').src='${item.imgUrl}'; document.getElementById('imageModal').style.display='flex'">
+                        <img src="${item.imgUrl}" loading="lazy" crossorigin="anonymous" onerror="this.onerror=null; this.src='${fallbackImg}';">
                     </div>
                     <div class="card-info">
                         <div><span class="brand-tag">${item.brand}</span></div>
@@ -376,33 +353,22 @@
                         <div class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest md:mb-1.5">Total Boxes</div>
                         <div class="total-val">${Math.round(item.total)}</div>
                     </div>
-                </div>`;
-            }).join('');
+                </div>`).join('');
 
-        // --- FORMAT 2: PREMIUM STUDIO PORTRAIT CARD GRID (Matching your requested mobile style) ---
+        // --- FORMAT 2: GALLERY GRID VIEW ---
         } else if (currentLayout === 'format2') {
             container.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6";
-            container.innerHTML = items.map(item => {
-                let finalImg = item.imgUrl;
-                if (item.imgUrl.includes('drive.google.com')) {
-                    const fileId = item.imgUrl.split('/d/')[1]?.split('/')[0] || item.imgUrl.split('id=')[1];
-                    if (fileId) finalImg = `https://docs.google.com/uc?export=view&id=${fileId}`;
-                }
-
-                return `
-                <div class="bg-[#090b0d] border-2 border-[#dfb76c] relative flex flex-col justify-between p-0 page-break-inside-avoid shadow-xl h-full">
+            container.innerHTML = items.map(item => `
+                <div class="bg-[#090b0d] border-2 border-[#dfb76c] relative flex flex-col justify-between p-0 shadow-xl h-full">
                     <div class="variant-badge variant-badge-grid">${item.variant || 'STD'}</div>
-                    
-                    <div class="w-full bg-[#020304] border-b border-[#161a22] p-4 flex items-center justify-center cursor-pointer aspect-square" onclick="document.getElementById('modalImg').src='${finalImg}'; document.getElementById('imageModal').style.display='flex'">
-                        <img src="${finalImg}" class="h-44 w-auto object-cover border border-[#222b35]" loading="lazy" crossorigin="anonymous" onerror="this.onerror=null; this.src='${backupImg}';">
+                    <div class="w-full bg-[#020304] border-b border-[#161a22] p-4 flex items-center justify-center cursor-pointer aspect-square" onclick="document.getElementById('modalImg').src='${item.imgUrl}'; document.getElementById('imageModal').style.display='flex'">
+                        <img src="${item.imgUrl}" class="h-44 w-auto object-cover border border-[#222b35]" loading="lazy" crossorigin="anonymous" onerror="this.onerror=null; this.src='${fallbackImg}';">
                     </div>
-                    
                     <div class="p-5 flex-grow flex flex-col justify-between">
                         <div>
                             <div class="mb-1"><span class="brand-tag">${item.brand}</span></div>
                             <h3 class="text-lg font-black text-white uppercase tracking-tight line-clamp-1">${item.desc}</h3>
                             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5 mb-3">${item.series || 'REGULAR'} | ${item.size}</p>
-                            
                             <div class="bg-black/40 border border-[#161a22] p-3 space-y-1.5 max-h-32 overflow-y-auto">
                                 ${item.lots.map(l => `
                                     <div class="flex justify-between items-center text-xs font-medium text-slate-300">
@@ -412,20 +378,18 @@
                                 `).join('')}
                             </div>
                         </div>
-                        
                         <div class="flex justify-between items-center pt-4 mt-4 border-t border-[#161a22]">
                             <span class="text-[9px] font-extrabold uppercase tracking-widest text-slate-500">TOTAL READY</span>
                             <span class="text-xl font-black text-[#dfb76c] font-mono">${Math.round(item.total)} <span class="text-[10px] font-bold text-slate-500">BX</span></span>
                         </div>
                     </div>
-                </div>`;
-            }).join('');
+                </div>`).join('');
 
-        // --- FORMAT 3: COMPACT STUDIO MATRIX TABLE LAYOUT ---
+        // --- FORMAT 3: DATA MATRIX TABLE VIEW ---
         } else if (currentLayout === 'format3') {
             container.className = "block overflow-x-auto";
             let tableHtml = `
-            <table class="w-full text-left border-collapse matrix-panel border border-slate-800 matrix-table">
+            <table class="w-full text-left border-collapse matrix-panel border border-slate-800">
                 <thead>
                     <tr class="border-b border-slate-800 bg-[#020304] text-slate-400 text-[10px] font-black uppercase tracking-wider">
                         <th class="p-4 text-center w-24">Preview</th>
@@ -437,17 +401,10 @@
                 </thead>
                 <tbody class="divide-y divide-slate-900/60 text-xs">`;
 
-            tableHtml += items.map(item => {
-                let finalImg = item.imgUrl;
-                if (item.imgUrl.includes('drive.google.com')) {
-                    const fileId = item.imgUrl.split('/d/')[1]?.split('/')[0] || item.imgUrl.split('id=')[1];
-                    if (fileId) finalImg = `https://docs.google.com/uc?export=view&id=${fileId}`;
-                }
-
-                return `
+            tableHtml += items.map(item => `
                 <tr class="hover:bg-slate-900/30 transition duration-150">
                     <td class="p-3 text-center">
-                        <img src="${finalImg}" class="w-12 h-16 object-cover border border-slate-800 bg-black mx-auto cursor-pointer" onclick="document.getElementById('modalImg').src='${finalImg}'; document.getElementById('imageModal').style.display='flex'" onerror="this.onerror=null; this.src='${backupImg}';">
+                        <img src="${item.imgUrl}" class="w-12 h-16 object-cover border border-slate-800 bg-black mx-auto cursor-pointer" onclick="document.getElementById('modalImg').src='${item.imgUrl}'; document.getElementById('imageModal').style.display='flex'" onerror="this.onerror=null; this.src='${fallbackImg}';">
                     </td>
                     <td class="p-3 font-bold text-sm text-white uppercase tracking-tight">
                         <div>${item.desc}</div>
@@ -465,35 +422,70 @@
                     <td class="p-3 text-right font-black text-base text-[#dfb76c] font-mono tracking-tight">
                         ${Math.round(item.total)} <span class="text-[10px] text-slate-500 font-bold">Bx</span>
                     </td>
-                </tr>`;
-            }).join('');
+                </tr>`).join('');
 
             tableHtml += `</tbody></table>`;
             container.innerHTML = tableHtml;
         }
     }
 
-    async function downloadPDF(btn) {
-        const element = document.getElementById('reportList');
+    // High performance server-side compiled dynamic print operation
+    function downloadPDF(btn) {
         const originalText = btn.innerText;
-        btn.innerText = "Processing PDF Report..."; btn.disabled = true;
+        btn.innerText = "Processing PDF Report..."; 
+        btn.disabled = true;
 
-        // Dynamic page break customization depending on grid layouts
-        const breakMode = currentLayout === 'format2' ? ['avoid-all'] : ['avoid-all', 'css'];
+        // Clone current view HTML context element safely
+        let targetList = document.getElementById('reportList').innerHTML;
+        
+        // Wrap structure within a clean presentation block for compilation
+        let documentTemplate = `
+            <html>
+            <head>
+                <style>
+                    body { font-family: sans-serif; background-color: #ffffff !important; color: #000000 !important; padding: 10px; }
+                    .stock-card { display: flex; flex-direction: row; border: 1px solid #000; margin-bottom: 15px; page-break-inside: avoid; }
+                    .card-img-frame { width: 25%; padding: 10px; text-align: center; }
+                    .card-img-frame img { height: 120px; width: auto; object-fit: cover; }
+                    .card-info { width: 55%; padding: 10px; }
+                    .card-total { width: 20%; padding: 10px; text-align: center; background: #f0f0f0; display: flex; flex-direction: column; justify-content: center; border-left: 1px solid #000; }
+                    .variant-badge { font-weight: bold; background: #000; color: #fff; padding: 2px 5px; font-size: 10px; display: inline-block; }
+                    .brand-tag { font-size: 10px; font-weight: bold; color: blue; }
+                    .design-name { font-size: 16px; font-weight: bold; text-transform: uppercase; }
+                    .lot-row { display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; padding: 4px 0; font-size: 11px; }
+                    .total-val { font-size: 24px; font-weight: bold; color: #000; }
+                    table { w-full; border-collapse: collapse; margin-top: 20px; }
+                    th { background: #eee; font-size: 11px; padding: 8px; border: 1px solid #000; }
+                    td { padding: 8px; border: 1px solid #000; font-size: 11px; }
+                </style>
+            </head>
+            <body>
+                <h2 style="text-align:center; text-transform:uppercase;">Emcer Tiles Private Limited - Inventory Report</h2>
+                <p style="text-align:center; font-size:10px;">Generated on: ${new Date().toLocaleString()}</p>
+                <br/>
+                ${targetList}
+            </body>
+            </html>
+        `;
 
-        const opt = {
-            margin: [12, 10, 12, 10],
-            filename: 'NexTile_Live_Stock.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, allowTaint: false, backgroundColor: currentLayout === 'format3' ? '#ffffff' : '#050608' },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: breakMode }
-        };
-
-        try {
-            await html2pdf().set(opt).from(element).save();
-        } catch (e) { console.error(e); }
-        finally { btn.innerText = originalText; btn.disabled = false; }
+        // Push directly to execution server context
+        google.script.run
+            .withSuccessHandler(function(base64String) {
+                btn.innerText = originalText; 
+                btn.disabled = false;
+                
+                // Trigger download interface natively within browser pipeline
+                const link = document.createElement('a');
+                link.href = 'data:application/pdf;base64,' + base64String;
+                link.download = 'NexTile_Live_Stock.pdf';
+                link.click();
+            })
+            .withFailureHandler(function(err) {
+                alert("PDF Generation Fault: " + err.message);
+                btn.innerText = originalText; 
+                btn.disabled = false;
+            })
+            .generateServerPdf(documentTemplate);
     }
 
     window.onload = initPortal;
