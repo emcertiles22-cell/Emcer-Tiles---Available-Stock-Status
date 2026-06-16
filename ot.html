@@ -1,203 +1,502 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #090d16; color: #f3f4f6; }
-    .dashed-line { border-bottom: 1px dashed rgba(217, 119, 6, 0.2); flex-grow: 1; margin: 0 12px; position: relative; top: -4px; }
-    @media print {
-      .no-print { display: none !important; }
-      body { background-color: #090d16 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    }
-  </style>
-</head>
-<body class="p-4 md:p-8">
-
-  <div class="max-w-6xl mx-auto">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexTile - Emcer Live Stock</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <!-- Top Controller Bar (Hidden in PDF Print) -->
-    <div class="no-print bg-slate-900/80 border border-slate-800 p-4 rounded-2xl mb-8 flex flex-wrap justify-between items-center gap-4 sticky top-4 z-50 backdrop-blur-md">
-      <div>
-        <h2 class="text-amber-500 font-extrabold text-sm uppercase tracking-wider">Select Live Studio Format:</h2>
-        <p class="text-xs text-slate-400">Click below to change the visual layout instantly</p>
-      </div>
-      <div class="flex gap-2">
-        <button onclick="switchFormat('format1')" id="btn-format1" class="px-4 py-2 text-xs font-bold rounded-xl border border-amber-500 bg-amber-500 text-black transition shadow-lg">Format 1: Premium Mobile Card</button>
-        <button onclick="switchFormat('format2')" id="btn-format2" class="px-4 py-2 text-xs font-bold rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:border-amber-500 transition">Format 2: Split Spec Row</button>
-        <button onclick="switchFormat('format3')" id="btn-format3" class="px-4 py-2 text-xs font-bold rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:border-amber-500 transition">Format 3: Studio Table</button>
-      </div>
-      <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl transition shadow-lg">PRINT CURRENT VIEW</button>
-    </div>
-
-    <!-- Header Area -->
-    <div class="flex justify-between items-end border-b-2 border-slate-800 pb-6 mb-8">
-      <div>
-        <h1 class="text-3xl md:text-4xl font-black tracking-tight text-white uppercase">EMCER TILES PRIVATE LIMITED</h1>
-        <p class="text-sm text-amber-500 font-bold uppercase tracking-[0.25em] mt-1">Live Inventory Dashboard</p>
-      </div>
-      <div class="text-right hidden md:block">
-        <p class="text-xs text-slate-500 font-bold">Developer: Yashdeep Jivani</p>
-      </div>
-    </div>
-
-    <!-- Loader -->
-    <div id="loader" class="text-center py-32 text-xl font-bold text-slate-600 animate-pulse uppercase tracking-widest">Compiling Visual Profiles...</div>
-    
-    <!-- Dynamic Display Target -->
-    <div id="displayContainer"></div>
-
-  </div>
-
-  <script>
-    let globalStockData = [];
-    let currentFormat = 'format1';
-
-    window.onload = function() {
-      google.script.run.withSuccessHandler(function(data) {
-        globalStockData = data;
-        document.getElementById('loader').classList.add('hidden');
-        renderDashboard();
-      }).getStockData();
-    };
-
-    function switchFormat(formatId) {
-      currentFormat = formatId;
-      ['format1', 'format2', 'format3'].forEach(f => {
-        const btn = document.getElementById('btn-' + f);
-        if(f === formatId) {
-          btn.className = "px-4 py-2 text-xs font-bold rounded-xl border border-amber-500 bg-amber-500 text-black transition shadow-lg";
-        } else {
-          btn.className = "px-4 py-2 text-xs font-bold rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:border-amber-500 transition";
+    <style>
+        :root {
+            --matrix-gold: #dfb76c;
+            --jet-black: #050608;
+            --panel-dark: #0d0f12;
+            --border-glow: #161a22;
         }
-      });
-      renderDashboard();
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--jet-black); 
+            color: #e2e8f0;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .main-container { max-width: 1400px; margin: auto; padding: 16px; }
+        @media(min-width: 768px) { .main-container { padding: 30px; } }
+        
+        .matrix-panel {
+            background-color: var(--panel-dark);
+            border: 1px solid #1e2530;
+            border-radius: 0px !important;
+        }
+
+        /* --- FORMAT 1 styles (Prominent Sharp Gold Border Profile) --- */
+        .stock-card { 
+            background: #090b0d;
+            border: 2px solid var(--matrix-gold); 
+            display: flex; 
+            flex-direction: column; 
+            margin-bottom: 24px; 
+            position: relative; 
+            page-break-inside: avoid;
+            border-radius: 0px !important;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+            transition: all 0.25s ease-in-out;
+        }
+        @media(min-width: 768px) {
+            .stock-card { flex-direction: row; min-height: 240px; }
+        }
+        .stock-card:hover {
+            box-shadow: 0 12px 35px rgba(223, 183, 108, 0.15);
+            background: #0c0e12;
+        }
+
+        .variant-badge { 
+            position: absolute; top: 0; right: 0; 
+            background: var(--matrix-gold); color: #000; 
+            padding: 5px 16px; font-size: 11px; font-weight: 900; 
+            text-transform: uppercase; z-index: 10; 
+            letter-spacing: 0.05em;
+        }
+        @media(min-width: 768px) { .variant-badge { right: 20%; } }
+        .variant-badge-grid { right: 0 !important; }
+        
+        .brand-tag { 
+            font-size: 10px; background: rgba(59, 130, 246, 0.1); 
+            color: #3b82f6; padding: 3px 10px; 
+            font-weight: 800; display: inline-block; margin-bottom: 8px; 
+            text-transform: uppercase; border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .card-img-frame { 
+            width: 100%; 
+            border-bottom: 1px solid #161a22;
+            padding: 16px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: #020304;
+            cursor: pointer;
+        }
+        @media(min-width: 768px) {
+            .card-img-frame { width: 30%; border-bottom: none; border-right: 1px solid #161a22; padding: 14px; }
+        }
+        .card-img-frame img { 
+            height: 200px;
+            width: auto;
+            aspect-ratio: 3/4; 
+            object-fit: cover; 
+            display: block; 
+            border: 1px solid #222b35;
+        }
+
+        .card-info { width: 100%; padding: 20px; display: flex; flex-direction: column; justify-content: center; }
+        @media(min-width: 768px) { .card-info { width: 50%; padding: 24px; } }
+        
+        .design-name { font-size: 22px; font-weight: 800; text-transform: uppercase; line-height: 1.2; color: #fff; letter-spacing: -0.01em; }
+        .design-meta { color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 3px; margin-bottom: 12px; }
+        
+        .lot-row { 
+            display: flex; justify-content: space-between; 
+            border-bottom: 1px solid #161a22; 
+            padding: 8px 0; font-size: 13px; font-weight: 600; color: #cbd5e1;
+        }
+        
+        .card-total { 
+            width: 100%; 
+            border-top: 1px solid #161a22; 
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 16px 20px;
+            background: #040507; 
+        }
+        @media(min-width: 768px) {
+            .card-total { width: 20%; border-top: none; border-left: 1px solid #161a22; flex-direction: column; justify-content: center; padding: 0; }
+        }
+        .total-val { font-size: 40px; font-weight: 900; line-height: 1; color: var(--matrix-gold); text-shadow: 0 0 15px rgba(223, 183, 108, 0.3); }
+        
+        .filter-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            align-items: end;
+        }
+        @media(min-width: 768px) {
+            .filter-grid-layout { grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; padding: 20px; }
+        }
+        
+        .filter-group { display: flex; flex-direction: column; }
+        label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #64748b; margin-bottom: 6px; letter-spacing: 0.05em; }
+        
+        select, input { 
+            background: #020304 !important; 
+            color: #fff !important; 
+            border: 1px solid #222b35 !important; 
+            border-radius: 0px !important;
+            padding: 12px; font-weight: 600; font-size: 13px; outline: none; 
+            text-transform: uppercase;
+            width: 100%;
+        }
+        select:focus, input:focus { border-color: var(--matrix-gold); }
+        
+        .btn-ui {
+            border-radius: 0px !important;
+            transition: all 0.2s ease;
+            width: 100%;
+            text-align: center;
+        }
+        @media(min-width: 768px) { .btn-ui { width: auto; } }
+
+        #imageModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
+
+        @media print { 
+            .no-print { display: none !important; } 
+            body { background: #ffffff !important; color: #000000 !important; }
+            .stock-card { 
+                background: #ffffff !important; 
+                border: 2px solid #000000 !important; 
+                color: #000000 !important;
+                box-shadow: none !important;
+                margin-bottom: 15mm;
+                flex-direction: row !important;
+                page-break-inside: avoid !important;
+            }
+            .card-img-frame { width: 30% !important; border-bottom: none !important; border-right: 1px solid #000000 !important; background: #fafafa !important; }
+            .card-img-frame img { height: 160px !important; }
+            .card-info { width: 50% !important; }
+            .card-total { width: 20% !important; border-top: none !important; border-left: 1px solid #000000 !important; background: #f1f5f9 !important; flex-direction: column !important; justify-content: center !important; }
+            .design-name, .lot-row span { color: #000000 !important; }
+            .total-val { color: #000000 !important; text-shadow: none !important; }
+            .variant-badge { border: 1px solid #000000 !important; background: #000000 !important; color: #ffffff !important; }
+            
+            /* Print adjustments for matrix view */
+            .matrix-table { color: #000 !important; background: #fff !important; border: 1px solid #000 !important; }
+            .matrix-table th { background: #f1f5f9 !important; color: #000 !important; border: 1px solid #000 !important; }
+            .matrix-table td { border: 1px solid #000 !important; color: #000 !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="imageModal" onclick="this.style.display='none'">
+    <img id="modalImg" class="max-w-full max-h-[90vh] border border-neutral-700" src="">
+</div>
+
+<div class="main-container">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center pt-2 pb-6 gap-4">
+        <div>
+            <h1 class="text-xl md:text-2xl font-black text-white tracking-tight leading-none">EMCER TILES PRIVATE LIMITED</h1>
+            <p class="text-[11px] text-blue-400 font-extrabold uppercase tracking-[0.2em] mt-1.5">Inventory Portal</p>
+            <p id="lastUpdated" class="text-[10px] text-amber-500 font-medium uppercase mt-1">Initializing Dynamic Multi-Format Core Cluster...</p>
+        </div>
+        <div class="flex flex-col lg:flex-row items-stretch lg:items-center no-print gap-3 w-full lg:w-auto justify-between lg:justify-end">
+            <div class="flex border border-slate-800 bg-[#0a0d14] p-1 gap-1">
+                <button onclick="changeLayout('format1')" id="btnFormat1" class="px-3 py-1.5 text-[10px] font-black uppercase transition-all bg-amber-500 text-black">Format 1: Row Spec</button>
+                <button onclick="changeLayout('format2')" id="btnFormat2" class="px-3 py-1.5 text-[10px] font-black uppercase transition-all text-slate-400 hover:text-white">Format 2: Grid Card</button>
+                <button onclick="changeLayout('format3')" id="btnFormat3" class="px-3 py-1.5 text-[10px] font-black uppercase transition-all text-slate-400 hover:text-white">Format 3: Matrix Table</button>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="downloadPDF(this)" class="btn-ui bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 text-[11px] font-bold uppercase">📄 Download PDF</button>
+                <button onclick="location.reload()" class="btn-ui bg-neutral-800 hover:bg-neutral-700 text-white px-5 py-2.5 text-[11px] font-bold uppercase border border-neutral-700">🔄 Refresh</button>
+            </div>
+            <div class="border border-amber-500/40 px-4 py-2 text-amber-500 font-black text-[11px] uppercase tracking-wider bg-amber-500/5 text-center">✨ Yashdeep Jivani ✨</div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 no-print">
+        <div class="matrix-panel p-4 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Total Designs</div><div id="statDesigns" class="text-xl md:text-2xl font-black mt-1 text-white">0</div></div>
+        <div class="matrix-panel p-4 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Total Boxes</div><div id="statBoxes" class="text-xl md:text-2xl font-black mt-1 text-emerald-400">0</div></div>
+        <div class="matrix-panel p-4 text-center"><div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Active Brands</div><div id="statBrands" class="text-xl md:text-2xl font-black mt-1 text-white">0</div></div>
+        <div class="matrix-panel p-4 text-center" style="border-color: rgba(223, 183, 108, 0.3);"><div class="text-amber-500 text-[10px] uppercase font-bold tracking-wider">Filtered View</div><div id="statFiltered" class="text-xl md:text-2xl font-black mt-1 text-amber-500">0</div></div>
+    </div>
+
+    <div class="matrix-panel filter-grid-layout no-print">
+        <div class="filter-group"><label>Search Design</label><input type="text" id="searchName" oninput="applyFilters()" placeholder="Type material name..."></div>
+        <div class="filter-group"><label>Brand</label><select id="filterBrand" onchange="applyFilters()"></select></div>
+        <div class="filter-group"><label>Size</label><select id="filterSize" onchange="updateSeriesOptions(); applyFilters();"></select></div>
+        <div class="filter-group"><label>Series</label><select id="filterSeries" onchange="applyFilters()"></select></div>
+        <div class="filter-group"><label>Variant</label><select id="filterVariant" onchange="applyFilters()"></select></div>
+        <button onclick="resetFilters()" class="btn-ui bg-neutral-800 hover:bg-neutral-700 text-slate-300 p-3 border border-neutral-700" title="Reset Filters">
+            <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </button>
+    </div>
+
+    <div id="reportList">
+        <div class="text-center py-24 opacity-40 font-bold tracking-widest text-xs uppercase text-slate-500 animate-pulse">Syncing Active Matrix Database Cluster...</div>
+    </div>
+</div>
+
+<script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzuBEiGXoJb_bqJcwpFn47cdijPU8kbkTghpSAOP7ICNVctIVUr1q_OnLi6Jax-dcKT/exec";
+    let masterData = [];
+    let currentLayout = 'format1'; // Default format schema
+    let globalFilteredItems = [];
+
+    async function initPortal() {
+        try {
+            const resStock = await fetch(APPS_SCRIPT_URL);
+            if (resStock.ok) {
+                masterData = await resStock.json();
+                document.getElementById('lastUpdated').innerText = "LIVE NODE MATRIX ATTACHED: " + new Date().toLocaleString();
+                setupFilters(); 
+                applyFilters();
+            }
+        } catch (e) { 
+            console.error(e); 
+            document.getElementById('reportList').innerHTML = `<div class='text-center text-red-500 font-bold py-12'>Sync Interrupted. Connection Timed Out.</div>`;
+        }
     }
 
-    function renderDashboard() {
-      const container = document.getElementById('displayContainer');
-      container.innerHTML = '';
-
-      if (currentFormat === 'format1') {
-        // --- FORMAT 1: PREMIUM MOBILE CARD GRID (Exact match to image_3ece3a.png style) ---
-        let gridHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">';
-        globalStockData.forEach(item => {
-          let lotsHtml = '';
-          item.lots.forEach(l => {
-            lotsHtml += `
-              <div class="flex justify-between items-center text-sm font-semibold text-amber-400/90 mb-1">
-                <span>■ LOT: ${l.lot}</span>
-                <span class="text-white">${l.qty} BOX</span>
-              </div>`;
-          });
-
-          gridHtml += `
-            <div class="bg-[#0f141c] border border-slate-800 rounded-[24px] overflow-hidden flex flex-col justify-between shadow-xl">
-              <div class="relative bg-slate-950 flex items-center justify-center overflow-hidden">
-                <img src="${item.img}" class="w-full h-64 object-cover rounded-t-[24px]" loading="lazy">
-                <span class="absolute top-4 left-4 bg-amber-600 text-black text-[10px] px-3 py-1 font-extrabold rounded-md uppercase tracking-wider">GRADE: PRE</span>
-              </div>
-              <div class="p-5 flex-grow flex flex-col justify-between bg-[#0b1017]">
-                <div>
-                  <div class="flex justify-between items-start mb-1">
-                    <h3 class="text-xl font-black text-white uppercase tracking-tight truncate">${item.name}</h3>
-                    <span class="border border-amber-500/30 bg-amber-500/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded uppercase">${item.variant}</span>
-                  </div>
-                  <p class="text-xs font-bold text-amber-500 uppercase tracking-wide mb-4">${item.brand} | ${item.series} | ${item.size}</p>
-                  <div class="bg-black/40 border border-slate-900 p-3 rounded-xl mb-4 space-y-1">${lotsHtml}</div>
-                </div>
-                <div>
-                  <button class="no-print w-full bg-slate-900 border border-amber-500/20 text-amber-500 text-xs font-bold py-2.5 rounded-xl mb-4 hover:bg-amber-500 hover:text-black transition flex items-center justify-center gap-2">
-                     📋 COPY DETAILS FOR WHATSAPP
-                  </button>
-                  <div class="flex justify-between items-center pt-3 border-t border-slate-900 text-xs font-bold uppercase text-slate-500">
-                    <span>TOTAL AVAILABLE</span>
-                    <span class="text-lg font-black text-amber-400">${item.grandTotal} BOX</span>
-                  </div>
-                </div>
-              </div>
-            </div>`;
-        });
-        gridHtml += '</div>';
-        container.innerHTML = gridHtml;
-
-      } else if (currentFormat === 'format2') {
-        // --- FORMAT 2: SPLIT SPECIFICATION ROW ---
-        let rowHtml = '<div class="space-y-6">';
-        globalStockData.forEach(item => {
-          let lotsHtml = '';
-          item.lots.forEach(l => {
-            lotsHtml += `<div class="flex justify-between items-center text-sm font-bold text-slate-300"><span>LOT ${l.lot}</span><div class="dashed-line"></div><span class="text-amber-500">${l.qty} Bx</span></div>`;
-          });
-
-          rowHtml += `
-            <div class="bg-[#0b1017] border-2 border-slate-800 rounded-2xl flex flex-col md:flex-row overflow-hidden shadow-md">
-              <div class="md:w-1/4 bg-slate-950 p-3 border-r border-slate-800 flex items-center justify-center">
-                <img src="${item.img}" class="max-h-48 w-full object-contain rounded-lg">
-              </div>
-              <div class="md:w-1/2 p-6 flex flex-col justify-between">
-                <div>
-                  <div class="flex items-center gap-3 mb-2">
-                    <h3 class="text-2xl font-black uppercase text-white">${item.name}</h3>
-                    <span class="bg-amber-500 text-black font-black text-xs px-2 py-0.5 rounded">${item.variant}</span>
-                  </div>
-                  <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">${item.series} — ${item.size}</p>
-                  <div class="space-y-1 bg-black/20 p-4 rounded-xl border border-slate-900">${lotsHtml}</div>
-                </div>
-                <p class="text-[10px] text-slate-600 font-bold uppercase mt-4">Brand Portfolio: ${item.brand} | Quality Check Verified</p>
-              </div>
-              <div class="md:w-1/4 bg-gradient-to-br from-slate-900 to-black p-6 flex flex-col items-center justify-center text-center border-t md:border-t-0 md:border-l border-slate-800">
-                <span class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">TOTAL READY STOCK</span>
-                <span class="text-5xl font-black text-amber-500 tracking-tight">${item.grandTotal}</span>
-                <span class="text-sm font-bold text-white uppercase mt-1">Boxes Available</span>
-              </div>
-            </div>`;
-        });
-        rowHtml += '</div>';
-        container.innerHTML = rowHtml;
-
-      } else if (currentFormat === 'format3') {
-        // --- FORMAT 3: STUDIO SPECIFICATION TABLE GRID ---
-        let tableHtml = `
-          <div class="overflow-x-auto bg-[#0b1017] border border-slate-800 rounded-2xl shadow-xl">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr class="border-b border-slate-800 bg-slate-900/50 text-amber-500 text-xs font-black uppercase tracking-wider">
-                  <th class="p-4 w-28">Preview</th>
-                  <th class="p-4">Design Profile</th>
-                  <th class="p-4">Specifications</th>
-                  <th class="p-4 w-64">Lot Breakdown</th>
-                  <th class="p-4 text-right w-40">Total Stock</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-900 text-sm">`;
-        
-        globalStockData.forEach(item => {
-          let lotsHtml = '';
-          item.lots.forEach(l => {
-            lotsHtml += `<div class="text-xs font-mono text-slate-400"><span class="text-amber-500/70">L:</span>${l.lot} <span class="text-slate-200 font-bold">(${l.qty} Bx)</span></div>`;
-          });
-
-          tableHtml += `
-            <tr class="hover:bg-slate-900/20 transition">
-              <td class="p-4"><img src="${item.img}" class="w-20 h-20 object-cover rounded-xl border border-slate-800 bg-slate-950"></td>
-              <td class="p-4">
-                <div class="font-black text-base text-white uppercase">${item.name}</div>
-                <div class="text-xs font-bold text-amber-500 uppercase mt-0.5">${item.series}</div>
-              </td>
-              <td class="p-4">
-                <div class="font-semibold text-slate-300 text-xs uppercase">${item.size}</div>
-                <div class="text-[11px] text-slate-500 font-bold uppercase mt-1">Brand: ${item.brand} | Var: ${item.variant}</div>
-              </td>
-              <td class="p-4"><div class="grid grid-cols-2 gap-x-2 gap-y-0.5">${lotsHtml}</div></td>
-              <td class="p-4 text-right font-black text-xl text-white">${item.grandTotal} <span class="text-xs text-slate-500 font-normal">Bx</span></td>
-            </tr>`;
-        });
-        
-        tableHtml += '</tbody></table></div>';
-        container.innerHTML = tableHtml;
-      }
+    function setupFilters() {
+        const brands = new Set(), sizes = new Set(), variants = new Set();
+        masterData.forEach(i => { if(i.Brand) brands.add(i.Brand); if(i.Size) sizes.add(i.Size); if(i.Variant) variants.add(i.Variant); });
+        const fill = (id, set) => document.getElementById(id).innerHTML = `<option value="">All</option>` + [...set].sort().map(v => `<option value="${v}">${v}</option>`).join('');
+        fill('filterBrand', brands); fill('filterSize', sizes); fill('filterVariant', variants);
+        updateSeriesOptions();
     }
-  </script>
+
+    function updateSeriesOptions() {
+        const sz = document.getElementById('filterSize').value, srs = new Set();
+        masterData.forEach(i => { if(sz==="" || i.Size===sz) if(i.Series) srs.add(i.Series); });
+        document.getElementById('filterSeries').innerHTML = '<option value="">All</option>' + [...srs].sort().map(s => `<option value="${s}">${s}</option>`).join('');
+    }
+
+    function resetFilters() {
+        document.getElementById('searchName').value = '';
+        document.getElementById('filterBrand').value = '';
+        document.getElementById('filterSize').value = '';
+        document.getElementById('filterVariant').value = '';
+        updateSeriesOptions();
+        applyFilters();
+    }
+
+    function changeLayout(layoutId) {
+        currentLayout = layoutId;
+        
+        // Button style toggle operations
+        ['format1', 'format2', 'format3'].forEach(f => {
+            const btn = document.getElementById('btn' + f.charAt(0).toUpperCase() + f.slice(1));
+            if(f === layoutId) {
+                btn.className = "px-3 py-1.5 text-[10px] font-black uppercase transition-all bg-amber-500 text-black";
+            } else {
+                btn.className = "px-3 py-1.5 text-[10px] font-black uppercase transition-all text-slate-400 hover:text-white";
+            }
+        });
+        
+        render(globalFilteredItems);
+    }
+
+    function applyFilters() {
+        const f = { 
+            n: document.getElementById('searchName').value.toLowerCase(), 
+            b: document.getElementById('filterBrand').value, 
+            sz: document.getElementById('filterSize').value, 
+            s: document.getElementById('filterSeries').value, 
+            v: document.getElementById('filterVariant').value 
+        };
+        
+        const groups = {}; let total = 0, brands = new Set();
+        
+        masterData.forEach(item => {
+            const desc = (item["Item Description"]||"").trim(), 
+                  brand = (item.Brand||"").trim(), 
+                  series = (item.Series||"").trim(), 
+                  size = (item.Size||"").trim(), 
+                  variant = (item.Variant||"").trim(), 
+                  qty = Number(item.Total || item["Net Qty"] || 0);
+            
+            const baseImg = item.DesignURL || item.ImgUrl || '';
+            const fallbackImg = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500&auto=format&fit=crop';
+            const imgUrl = baseImg ? baseImg : fallbackImg;
+            const lotNo = item["Lot No"] || item["Lot no."] || "N/A";
+
+            if (desc.toLowerCase().includes(f.n) && (!f.b || brand===f.b) && (!f.sz || size===f.sz) && (!f.s || series===f.s) && (!f.v || variant===f.v)) {
+                const k = `${desc}|${brand}|${series}|${size}|${variant}`.toLowerCase();
+                if (!groups[k]) groups[k] = { desc, brand, series, size, variant, imgUrl, lots: [], total: 0 };
+                groups[k].lots.push({ lot: lotNo, qty });
+                groups[k].total += qty; total += qty; brands.add(brand);
+            }
+        });
+        
+        globalFilteredItems = Object.values(groups);
+        document.getElementById('statDesigns').innerText = globalFilteredItems.length;
+        document.getElementById('statBoxes').innerText = total.toLocaleString();
+        document.getElementById('statBrands').innerText = brands.size;
+        document.getElementById('statFiltered').innerText = globalFilteredItems.length;
+        render(globalFilteredItems);
+    }
+
+    function render(items) {
+        const container = document.getElementById('reportList');
+        if(items.length === 0) {
+            container.innerHTML = `<div class="text-center py-20 opacity-30 font-bold uppercase tracking-widest text-xs text-slate-500">Zero Active Filter Matches Found</div>`;
+            return;
+        }
+
+        const backupImg = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500&auto=format&fit=crop';
+
+        // --- FORMAT 1: ORIGINAL LANDSCAPE SPECIFICATION ROW LAYOUT ---
+        if (currentLayout === 'format1') {
+            container.className = "block";
+            container.innerHTML = items.map(item => {
+                let finalImg = item.imgUrl;
+                if (item.imgUrl.includes('drive.google.com')) {
+                    const fileId = item.imgUrl.split('/d/')[1]?.split('/')[0] || item.imgUrl.split('id=')[1];
+                    if (fileId) finalImg = `https://docs.google.com/uc?export=view&id=${fileId}`;
+                }
+
+                return `
+                <div class="stock-card">
+                    <div class="variant-badge">${item.variant || 'STD'}</div>
+                    <div class="card-img-frame" onclick="document.getElementById('modalImg').src='${finalImg}'; document.getElementById('imageModal').style.display='flex'">
+                        <img src="${finalImg}" loading="lazy" crossorigin="anonymous" onerror="this.onerror=null; this.src='${backupImg}';">
+                    </div>
+                    <div class="card-info">
+                        <div><span class="brand-tag">${item.brand}</span></div>
+                        <div class="design-name">${item.desc}</div>
+                        <div class="design-meta">${item.series || 'REGULAR'} | ${item.size}</div>
+                        <div class="w-full mt-2">
+                            ${item.lots.map(l => `
+                                <div class="lot-row">
+                                    <span class="text-slate-400 text-xs font-semibold tracking-wider">LOT: ${l.lot}</span>
+                                    <span class="font-bold text-slate-200">${l.qty} Bx</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="card-total">
+                        <div class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest md:mb-1.5">Total Boxes</div>
+                        <div class="total-val">${Math.round(item.total)}</div>
+                    </div>
+                </div>`;
+            }).join('');
+
+        // --- FORMAT 2: PREMIUM STUDIO PORTRAIT CARD GRID (Matching your requested mobile style) ---
+        } else if (currentLayout === 'format2') {
+            container.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6";
+            container.innerHTML = items.map(item => {
+                let finalImg = item.imgUrl;
+                if (item.imgUrl.includes('drive.google.com')) {
+                    const fileId = item.imgUrl.split('/d/')[1]?.split('/')[0] || item.imgUrl.split('id=')[1];
+                    if (fileId) finalImg = `https://docs.google.com/uc?export=view&id=${fileId}`;
+                }
+
+                return `
+                <div class="bg-[#090b0d] border-2 border-[#dfb76c] relative flex flex-col justify-between p-0 page-break-inside-avoid shadow-xl h-full">
+                    <div class="variant-badge variant-badge-grid">${item.variant || 'STD'}</div>
+                    
+                    <div class="w-full bg-[#020304] border-b border-[#161a22] p-4 flex items-center justify-center cursor-pointer aspect-square" onclick="document.getElementById('modalImg').src='${finalImg}'; document.getElementById('imageModal').style.display='flex'">
+                        <img src="${finalImg}" class="h-44 w-auto object-cover border border-[#222b35]" loading="lazy" crossorigin="anonymous" onerror="this.onerror=null; this.src='${backupImg}';">
+                    </div>
+                    
+                    <div class="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="mb-1"><span class="brand-tag">${item.brand}</span></div>
+                            <h3 class="text-lg font-black text-white uppercase tracking-tight line-clamp-1">${item.desc}</h3>
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5 mb-3">${item.series || 'REGULAR'} | ${item.size}</p>
+                            
+                            <div class="bg-black/40 border border-[#161a22] p-3 space-y-1.5 max-h-32 overflow-y-auto">
+                                ${item.lots.map(l => `
+                                    <div class="flex justify-between items-center text-xs font-medium text-slate-300">
+                                        <span class="text-slate-500 font-semibold">■ LOT: ${l.lot}</span>
+                                        <span class="text-white font-bold">${l.qty} BX</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center pt-4 mt-4 border-t border-[#161a22]">
+                            <span class="text-[9px] font-extrabold uppercase tracking-widest text-slate-500">TOTAL READY</span>
+                            <span class="text-xl font-black text-[#dfb76c] font-mono">${Math.round(item.total)} <span class="text-[10px] font-bold text-slate-500">BX</span></span>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+
+        // --- FORMAT 3: COMPACT STUDIO MATRIX TABLE LAYOUT ---
+        } else if (currentLayout === 'format3') {
+            container.className = "block overflow-x-auto";
+            let tableHtml = `
+            <table class="w-full text-left border-collapse matrix-panel border border-slate-800 matrix-table">
+                <thead>
+                    <tr class="border-b border-slate-800 bg-[#020304] text-slate-400 text-[10px] font-black uppercase tracking-wider">
+                        <th class="p-4 text-center w-24">Preview</th>
+                        <th class="p-4">Design Profile Name</th>
+                        <th class="p-4">Specifications</th>
+                        <th class="p-4 w-72">Lot Wise Breakdown</th>
+                        <th class="p-4 text-right w-36">Total Stock</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-900/60 text-xs">`;
+
+            tableHtml += items.map(item => {
+                let finalImg = item.imgUrl;
+                if (item.imgUrl.includes('drive.google.com')) {
+                    const fileId = item.imgUrl.split('/d/')[1]?.split('/')[0] || item.imgUrl.split('id=')[1];
+                    if (fileId) finalImg = `https://docs.google.com/uc?export=view&id=${fileId}`;
+                }
+
+                return `
+                <tr class="hover:bg-slate-900/30 transition duration-150">
+                    <td class="p-3 text-center">
+                        <img src="${finalImg}" class="w-12 h-16 object-cover border border-slate-800 bg-black mx-auto cursor-pointer" onclick="document.getElementById('modalImg').src='${finalImg}'; document.getElementById('imageModal').style.display='flex'" onerror="this.onerror=null; this.src='${backupImg}';">
+                    </td>
+                    <td class="p-3 font-bold text-sm text-white uppercase tracking-tight">
+                        <div>${item.desc}</div>
+                        <div class="text-[10px] text-amber-500/80 font-medium mt-0.5">${item.series || 'REGULAR'}</div>
+                    </td>
+                    <td class="p-3 uppercase tracking-wide">
+                        <div class="text-slate-300 font-semibold">${item.size}</div>
+                        <div class="text-[10px] text-slate-500 font-bold mt-0.5">${item.brand} | ${item.variant || 'STD'}</div>
+                    </td>
+                    <td class="p-3">
+                        <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px]">
+                            ${item.lots.map(l => `<div class="text-slate-400"><span class="text-slate-600 font-bold">L:</span> ${l.lot} <span class="text-slate-200 font-semibold">(${l.qty})</span></div>`).join('')}
+                        </div>
+                    </td>
+                    <td class="p-3 text-right font-black text-base text-[#dfb76c] font-mono tracking-tight">
+                        ${Math.round(item.total)} <span class="text-[10px] text-slate-500 font-bold">Bx</span>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            tableHtml += `</tbody></table>`;
+            container.innerHTML = tableHtml;
+        }
+    }
+
+    async function downloadPDF(btn) {
+        const element = document.getElementById('reportList');
+        const originalText = btn.innerText;
+        btn.innerText = "Processing PDF Report..."; btn.disabled = true;
+
+        // Dynamic page break customization depending on grid layouts
+        const breakMode = currentLayout === 'format2' ? ['avoid-all'] : ['avoid-all', 'css'];
+
+        const opt = {
+            margin: [12, 10, 12, 10],
+            filename: 'NexTile_Live_Stock.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, allowTaint: false, backgroundColor: currentLayout === 'format3' ? '#ffffff' : '#050608' },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: breakMode }
+        };
+
+        try {
+            await html2pdf().set(opt).from(element).save();
+        } catch (e) { console.error(e); }
+        finally { btn.innerText = originalText; btn.disabled = false; }
+    }
+
+    window.onload = initPortal;
+</script>
 </body>
 </html>
