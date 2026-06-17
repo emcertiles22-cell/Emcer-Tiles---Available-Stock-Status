@@ -13,14 +13,12 @@
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
-    /* Glassmorphism Effect */
     .glass-card {
       background: rgba(15, 15, 15, 0.6);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
-    /* Custom Scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -32,8 +30,48 @@
       background: #222;
       border-radius: 3px;
     }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #333;
+    
+    /* 🖨️ PERFECT PDF PRINT STYLES */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      header, .grid, .glass-card:not(#report-container), button, footer, #status-link {
+        display: none !important; /* પ્રિન્ટ કરતી વખતે ફિલ્ટર્સ અને બટનો સંતાડી દેશે */
+      }
+      .glass-card {
+        background: transparent !important;
+        border: none !important;
+        backdrop-filter: none !important;
+      }
+      #report-container, #report-data {
+        display: block !important;
+        width: 100% !important;
+      }
+      table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        color: black !important;
+      }
+      th, td {
+        border-bottom: 1px solid #ddd !important;
+        color: black !important;
+        padding: 8px !important;
+      }
+      tr {
+        page-break-inside: avoid !important; /* ટેબલની રો અધવચ્ચેથી કપાય નહીં */
+      }
+      img {
+        max-width: 80px !important;
+        height: auto !important;
+        border: 1px solid #ccc !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .text-white { color: black !important; }
+      .text-emerald-400, .text-emerald-500 { color: #047857 !important; }
+      .text-zinc-400, .text-zinc-500 { color: #4b5563 !important; }
     }
   </style>
 </head>
@@ -47,7 +85,7 @@
         <p class="text-xs font-semibold text-amber-500 tracking-widest mt-0.5">INVENTORY PORTAL</p>
         <div id="status-link" class="text-[10px] text-gray-500 mt-1 flex items-center gap-1.5">
           <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-          ESTABLISHING DIRECT LIVE NODE LINK...
+          SYNCHRONIZING SECURE NODE ENGINE...
         </div>
       </div>
 
@@ -118,7 +156,7 @@
       </div>
       <div class="flex gap-2">
         <div class="flex-1">
-          <label class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Variant</label>
+          <label class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Variant (Grade)</label>
           <select id="filter-variant" onchange="applyFilters()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white">
             <option value="">ALL VARIANTS</option>
           </select>
@@ -129,8 +167,8 @@
       </div>
     </div>
 
-    <div class="flex-1 glass-card rounded-xl p-4 min-h-[400px] flex flex-col justify-center items-center">
-      <div id="report-container" class="w-full h-full">
+    <div id="report-container" class="flex-1 glass-card rounded-xl p-4 min-h-[400px] flex flex-col justify-center items-center">
+      <div class="w-full h-full">
         <div id="loading-view" class="text-center py-20">
           <div class="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p id="loading-text" class="text-xs uppercase tracking-widest text-gray-500">Syncing Active Matrix Database Cluster...</p>
@@ -140,70 +178,65 @@
     </div>
 
     <footer class="text-center text-[10px] text-zinc-600 tracking-wider uppercase">
-      Emcer Tiles Cloud Engine v2.5 • Secured Node Session • Powered by Apps Script API
+      Emcer Tiles Cloud Engine v2.6 • Secured Node Session • Image Mapping Activated
     </footer>
 
   </div>
 
   <script>
     let masterData = [];
+    let designImages = {}; // design.json નો ડેટા અહીં સેવ થશે
     let currentLayout = 'format1';
     let globalFilteredItems = [];
 
-    // 🛑 અગત્યનું: અહીં તમારા Google Apps Script ની 'Web App URL' પેસ્ટ કરો
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbzuBEiGXoJb_bqJcwpFn47cdijPU8kbkTghpSAOP7ICNVctIVUr1q_OnLi6Jax-dcKT/exec";
+    // 🛑 કોન્ફિગરેશન લિંક્સ
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbzuBEiGXoJb_bqJcwpFn47cdijPU8kbkTghpSAOP7ICNVctIVUr1q_OnLi6Jax-dcKT/exec"; 
+    const jsonUrl = "design.json"; // જો સેમ ફોલ્ડરમાં હોય તો 'design.json', અથવા પૂરી github raw લિંક નાખો
 
-    // પેજ લોડ થાય ત્યારે ડેટા ફેચ કરવાનું ચાલુ કરો
+    const fallbackImg = "https://placehold.co/150x150/111/333?text=No+Image";
+
     window.addEventListener('DOMContentLoaded', () => {
       initPortal();
     });
 
-    // API માંથી ડેટા લાવવા માટેનું મુખ્ય ફંક્શન
     function initPortal() {
-      showLoader(true, "Fetching data from live sheet node...");
+      showLoader(true, "Fetching data from live nodes...");
       
-      if(webAppUrl.includes("તમારી_GOOGLE_WEB_APP_ની_URL")) {
-        showLoader(false);
-        document.getElementById('loading-view').innerHTML = `
-          <p class="text-amber-500 text-xs font-bold uppercase">⚠️ CONFIGURATION REQUIRED</p>
-          <p class="text-gray-400 text-[11px] mt-1">Please paste your Google Web App URL inside ot.html at line 125.</p>
-        `;
-        return;
-      }
-
-      fetch(webAppUrl)
-        .then(response => {
-          if (!response.ok) throw new Error('Network response failure');
-          return response.json();
+      // ૧. પહેલા GitHub માંથી design.json ડાઉનલોડ કરો
+      fetch(jsonUrl)
+        .then(res => res.json())
+        .then(imgData => {
+          // ધારો કે json ફોર્મેટ આ રીતનું છે: {"Design Name": "http...jpg"}
+          // કીઝ ને સરળતાથી મેચ કરવા અપરકેસમાં મેપ કરીએ
+          designImages = {};
+          Object.keys(imgData).forEach(key => {
+            designImages[key.toUpperCase().trim()] = imgData[key];
+          });
+          return fetch(webAppUrl); // ૨. પછી ગુગલ સીટનો સ્ટોક ડેટા ફેચ કરો
         })
+        .then(response => response.json())
         .then(data => {
           if (data && data.length > 0 && !data.error) {
             masterData = data;
-            
-            // હેડર સ્ટેટસ અપડેટ કરો
             document.getElementById('status-link').innerHTML = `
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              DIRECT NODE LINK ACTIVE (${masterData.length} ROWS SYNCED)
+              DIRECT LINK ACTIVE (${masterData.length} ROWS SYNCED WITH IMAGES)
             `;
-
-            // ડ્રોપડાઉન ફિલ્ટર્સ સેટ કરો
             setupFilters();
-            // ડેટા ફિલ્ટર કરીને ડિસ્પ્લે કરો
             applyFilters();
             showLoader(false);
           } else {
             showLoader(false);
-            alert("No data found or sheet is empty! Error: " + (data.error || 'None'));
+            alert("No data found or sheet error: " + (data.error || 'Empty'));
           }
         })
         .catch(err => {
-          console.error("Fetch Error:", err);
+          console.error("Initialization Error:", err);
           showLoader(false);
           document.getElementById('status-link').innerHTML = `
             <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-            NODE DISCONNECTED (CONNECTION ERROR)
+            NODE DISCONNECTED (JSON OR WEBAPP ERROR)
           `;
-          alert("Error loading data. Check Web App CORS policy or deployment settings.");
         });
     }
 
@@ -220,7 +253,6 @@
       }
     }
 
-    // ડ્રોપડાઉન ઓપ્શન્સ ડાયનેમિકલી ભરવા માટે
     function setupFilters() {
       const brands = new Set();
       const sizes = new Set();
@@ -248,7 +280,6 @@
       });
     }
 
-    // ફિલ્ટર્સ એપ્લાય કરવાનું મુખ્ય લોજિક
     function applyFilters() {
       const search = document.getElementById('search-design').value.toUpperCase().trim();
       const brand = document.getElementById('filter-brand').value;
@@ -256,7 +287,6 @@
       const series = document.getElementById('filter-series').value;
       const variant = document.getElementById('filter-variant').value;
 
-      // ફિલ્ટર પ્રોસેસ
       globalFilteredItems = masterData.filter(item => {
         const matchSearch = !search || (item.Design && item.Design.toString().toUpperCase().includes(search));
         const matchBrand = !brand || item.Brand === brand;
@@ -267,19 +297,17 @@
         return matchSearch && matchBrand && matchSize && matchSeries && matchVariant;
       });
 
-      // કાઉન્ટર્સ અને ડેટા રેન્ડર અપડેટ કરો
       updateCounters();
       renderLayout();
     }
 
-    // કાઉન્ટર્સ કેલ્ક્યુલેટ કરવા માટે
     function updateCounters() {
       const totalDesigns = new Set(masterData.map(i => i.Design)).size;
       const totalBrands = new Set(masterData.map(i => i.Brand)).size;
       
       let totalBoxes = 0;
       masterData.forEach(i => {
-        const qty = parseFloat(i.Boxes || i.Qty || i.Stock || 0);
+        const qty = parseFloat(i.Boxes || 0);
         if(!isNaN(qty)) totalBoxes += qty;
       });
 
@@ -289,7 +317,6 @@
       document.getElementById('count-filtered').innerText = globalFilteredItems.length;
     }
 
-    // ત્રણેય ફોર્મેટના લેઆઉટ સ્વિચ કરવા માટે
     function switchLayout(layout) {
       currentLayout = layout;
       ['format1', 'format2', 'format3'].forEach(l => {
@@ -303,22 +330,28 @@
       renderLayout();
     }
 
-    // લેઆઉટ પ્રમાણે HTML જનરેટ કરવું
+    // ડિઝાઇનના નામ પરથી ઈમેજ લિંક શોધવાનું હેલ્પર ફંક્શન
+    function getTileImage(designName) {
+      if(!designName) return fallbackImg;
+      const cleanKey = designName.toString().toUpperCase().trim();
+      return designImages[cleanKey] || fallbackImg;
+    }
+
     function renderLayout() {
       const container = document.getElementById('report-data');
-      
       if(globalFilteredItems.length === 0) {
         container.innerHTML = `<div class="text-center py-12 text-zinc-500 text-xs uppercase tracking-wider">No matching stock items found.</div>`;
         return;
       }
 
       if (currentLayout === 'format1') {
-        // FORMAT 1: ROW SPECIFICATION TABLE
+        // FORMAT 1: ROW SPECIFICATION TABLE (WITH IMAGE)
         let html = `
           <div class="overflow-x-auto w-full">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
-                <tr class="border-b border-zinc-800 text-zinc-400 uppercase tracking-wider">
+                <tr class="border-b border-zinc-800 text-zinc-400 uppercase tracking-wider print:border-black">
+                  <th class="py-3 px-4 w-16">Preview</th>
                   <th class="py-3 px-4">Design Name</th>
                   <th class="py-3 px-4">Brand</th>
                   <th class="py-3 px-4">Size</th>
@@ -326,17 +359,21 @@
                   <th class="py-3 px-4 text-right">Available Boxes</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-zinc-900">
+              <tbody class="divide-y divide-zinc-900 print:divide-gray-200">
         `;
         
         globalFilteredItems.forEach(item => {
+          const imgUrl = getTileImage(item.Design);
           html += `
-            <tr class="hover:bg-zinc-900/50 transition">
-              <td class="py-3 px-4 font-bold text-white uppercase">${item.Design || '-'}</td>
-              <td class="py-3 px-4 text-zinc-400">${item.Brand || '-'}</td>
-              <td class="py-3 px-4 text-zinc-400">${item.Size || '-'}</td>
-              <td class="py-3 px-4 text-zinc-500">${item.Series || '-'}</td>
-              <td class="py-3 px-4 text-right font-bold text-emerald-400">${parseInt(item.Boxes || item.Qty || 0)} Box</td>
+            <tr class="hover:bg-zinc-900/50 transition print:hover:bg-transparent">
+              <td class="py-2 px-4">
+                <img src="${imgUrl}" alt="Tile Preview" class="w-12 h-12 object-cover rounded border border-zinc-800 print:w-16 print:h-16" onerror="this.src='${fallbackImg}'">
+              </td>
+              <td class="py-2 px-4 font-bold text-white uppercase print:text-black">${item.Design || '-'}</td>
+              <td class="py-2 px-4 text-zinc-400 print:text-gray-700">${item.Brand || '-'}</td>
+              <td class="py-2 px-4 text-zinc-400 print:text-gray-700">${item.Size || '-'}</td>
+              <td class="py-2 px-4 text-zinc-500 print:text-gray-500">${item.Series || '-'}</td>
+              <td class="py-2 px-4 text-right font-bold text-emerald-400 print:text-emerald-800">${parseInt(item.Boxes || 0)} Box</td>
             </tr>
           `;
         });
@@ -344,19 +381,23 @@
         container.innerHTML = html;
 
       } else if (currentLayout === 'format2') {
-        // FORMAT 2: GRID CARDS
-        let html = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">`;
+        // FORMAT 2: GRID CARDS (PREMIUM VIEW)
+        let html = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full print:block">`;
         globalFilteredItems.forEach(item => {
+          const imgUrl = getTileImage(item.Design);
           html += `
-            <div class="border border-zinc-800 bg-zinc-950 p-4 rounded-lg flex flex-col justify-between space-y-3">
-              <div>
-                <span class="text-[9px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded uppercase font-bold tracking-widest">${item.Brand || 'EMCER'}</span>
-                <h4 class="text-sm font-bold text-white uppercase mt-2 tracking-wide">${item.Design || '-'}</h4>
-                <p class="text-[11px] text-zinc-500 mt-1">${item.Size || '-'} • ${item.Series || '-'}</p>
+            <div class="border border-zinc-800 bg-zinc-950 p-4 rounded-lg flex flex-col justify-between space-y-3 print:border-b print:border-gray-300 print:mb-4 print:flex-row print:space-y-0">
+              <div class="print:flex print:gap-4">
+                <img src="${imgUrl}" alt="Tile" class="w-full h-40 object-cover rounded border border-zinc-900 mb-2 print:w-20 print:h-20" onerror="this.src='${fallbackImg}'">
+                <div>
+                  <span class="text-[9px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded uppercase font-bold tracking-widest print:border">${item.Brand || 'EMCER'}</span>
+                  <h4 class="text-sm font-bold text-white uppercase mt-2 tracking-wide print:text-black">${item.Design || '-'}</h4>
+                  <p class="text-[11px] text-zinc-500 mt-1">${item.Size || '-'} • ${item.Series || '-'}</p>
+                </div>
               </div>
-              <div class="flex justify-between items-center border-t border-zinc-900 pt-2.5">
-                <span class="text-[10px] uppercase text-zinc-500 font-medium">Stock Status</span>
-                <span class="text-sm font-black text-emerald-400">${parseInt(item.Boxes || item.Qty || 0)} BOX</span>
+              <div class="flex justify-between items-center border-t border-zinc-900 pt-2.5 print:border-none print:pt-0">
+                <span class="text-[10px] uppercase text-zinc-500 font-medium print:hidden">Stock Status</span>
+                <span class="text-sm font-black text-emerald-400 print:text-emerald-800">${parseInt(item.Boxes || 0)} BOX</span>
               </div>
             </div>
           `;
@@ -368,20 +409,25 @@
         // FORMAT 3: MATRIX TABLE
         let html = `
           <div class="overflow-x-auto w-full">
-            <table class="w-full text-center border border-zinc-800 text-xs">
-              <tr class="bg-zinc-950 text-zinc-400 uppercase border-b border-zinc-800">
+            <table class="w-full text-center border border-zinc-800 text-xs print:border-black">
+              <tr class="bg-zinc-950 text-zinc-400 uppercase border-b border-zinc-800 print:bg-gray-100 print:text-black">
+                <th class="p-3 border-r border-zinc-800 text-left w-20">Image</th>
                 <th class="p-3 border-r border-zinc-800 text-left">Material Identity Matrix</th>
                 <th class="p-3">Available Volume Block</th>
               </tr>
         `;
         globalFilteredItems.forEach(item => {
+          const imgUrl = getTileImage(item.Design);
           html += `
-            <tr class="border-b border-zinc-900 hover:bg-zinc-900/30">
-              <td class="p-3 border-r border-zinc-800 text-left font-semibold text-zinc-300">
+            <tr class="border-b border-zinc-900 hover:bg-zinc-900/30 print:border-gray-200">
+              <td class="p-2 border-r border-zinc-800 print:border-gray-200">
+                <img src="${imgUrl}" class="w-10 h-10 object-cover mx-auto rounded" onerror="this.src='${fallbackImg}'">
+              </td>
+              <td class="p-3 border-r border-zinc-800 text-left font-semibold text-zinc-300 print:text-black print:border-gray-200">
                 ${item.Design} [${item.Size} | ${item.Brand}]
               </td>
-              <td class="p-3 font-bold text-amber-500 bg-amber-500/[0.01]">
-                ${parseInt(item.Boxes || item.Qty || 0)} Bxs
+              <td class="p-3 font-bold text-amber-500 bg-amber-500/[0.01] print:text-black">
+                ${parseInt(item.Boxes || 0)} Bxs
               </td>
             </tr>
           `;
@@ -391,7 +437,6 @@
       }
     }
 
-    // ફિલ્ટર્સ ક્લીયર કરવા માટે
     function clearFilters() {
       document.getElementById('search-design').value = '';
       document.getElementById('filter-brand').value = '';
@@ -401,7 +446,6 @@
       applyFilters();
     }
 
-    // PDF પ્રિન્ટ આઉટ / ડાઉનલોડ કરવા માટે
     function downloadPDF() {
       window.print();
     }
