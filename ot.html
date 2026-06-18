@@ -81,7 +81,7 @@
         width: 55px !important;
         height: 55px !important;
         max-width: 55px !important;
-        object-cover: cover !important;
+        object-fit: cover !important;
         border: 1px solid #777 !important;
         border-radius: 4px !important;
         display: block !important;
@@ -198,9 +198,14 @@
     </div>
 
     <footer class="text-center text-[10px] text-zinc-600 tracking-wider uppercase">
-      Emcer Tiles Engine v3.0 • Automated Live Sync Enabled
+      Emcer Tiles Engine v3.0 • Yashdeep Jivani
     </footer>
 
+  </div>
+
+  <div id="image-modal" onclick="closeImageModal()" class="no-print fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm cursor-zoom-out">
+    <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white text-3xl font-bold bg-zinc-900/80 w-10 h-10 rounded-full flex items-center justify-center hover:bg-zinc-800 transition">&times;</button>
+    <img id="modal-img" src="" alt="Full Preview" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl border border-zinc-800" onclick="event.stopPropagation()">
   </div>
 
   <script>
@@ -230,7 +235,6 @@
           if(Array.isArray(arrData)) {
             arrData.forEach(item => {
               if(item.name && item.url) {
-                // નામ માંથી વધારાની જગ્યા હટાવીને ઇન્ડેક્સ કી બનાવીએ
                 const cleanKey = item.name.toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
                 designImages[cleanKey] = item.url;
               }
@@ -239,7 +243,7 @@
         })
         .catch(e => console.error("JSON Mapping bypass:", e))
         .finally(() => {
-          // ૨. હવે શુદ્ધ Fetch API થી ગુગલ શીટનો ડેટા લાવીએ (google.script.run વગર)
+          // ૨. હવે વેબ એપ માંથી લાઈવ ગુગલ શીટનો ડેટા ફેચ કરીએ
           fetch(webAppUrl)
             .then(res => res.json())
             .then(data => {
@@ -265,7 +269,7 @@
         });
     }
 
-    // 🔍 એડવાન્સ ઇન્ટેલિજન્ટ ઇમેજ મેચિંગ લોજિક
+    // 🔍 એડવાન્સ ઇન્ટેલિજન્ટ ઇમેજ ફઝી-મેચિંગ લોજિક
     function getTileImage(designName) {
       if(!designName) return fallbackImg;
       const targetKey = designName.toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -273,7 +277,7 @@
       // A. ડાયરેક્ટ આખું નામ મેચ થાય તો
       if (designImages[targetKey]) return designImages[targetKey];
       
-      // B. જો શીટમાં 'Statuario Mercury-A' હોય અને JSON માં ખાલી 'Statuario Mercury' હોય તો પણ શોધી લેશે
+      // B. પાર્શિયલ/આંશિક મેચિંગ (જેમ કે 'Statuario Mercury-A' માંથી 'Statuario Mercury' શોધી લેશે)
       const keys = Object.keys(designImages);
       for (let i = 0; i < keys.length; i++) {
         if (targetKey.includes(keys[i]) || keys[i].includes(targetKey)) {
@@ -281,6 +285,21 @@
         }
       }
       return fallbackImg;
+    }
+
+    // 👁️ ઈમેજ મોટી કરીને બતાવવા માટેના પોપઅપ ફંક્શન્સ
+    function openImageModal(imgSrc) {
+      const modal = document.getElementById('image-modal');
+      const modalImg = document.getElementById('modal-img');
+      modalImg.src = imgSrc;
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden'; 
+    }
+
+    function closeImageModal() {
+      const modal = document.getElementById('image-modal');
+      modal.classList.add('hidden');
+      document.body.style.overflow = ''; 
     }
 
     function showLoader(show, message = "") {
@@ -365,7 +384,6 @@
       }
 
       if (currentLayout === 'format1' || currentLayout === 'format3') {
-        // પ્રિન્ટ-ફ્રેન્ડલી રો સ્પેસિફિકેશન ટેબલ
         let html = `
           <div class="overflow-x-auto w-full">
             <table class="w-full text-left border-collapse text-xs">
@@ -384,10 +402,11 @@
         `;
         
         globalFilteredItems.forEach(item => {
+          const imgSrc = getTileImage(item.Design);
           html += `
             <tr class="hover:bg-zinc-900/50 transition">
               <td class="py-2 px-2 flex justify-center items-center">
-                <img src="${getTileImage(item.Design)}" alt="Tile" class="w-12 h-12 object-cover rounded border border-zinc-800" onerror="this.src='${fallbackImg}'">
+                <img src="${imgSrc}" alt="Tile" onclick="openImageModal('${imgSrc}')" class="w-12 h-12 object-cover rounded border border-zinc-800 cursor-zoom-in hover:opacity-80 transition" onerror="this.src='${fallbackImg}'">
               </td>
               <td class="py-2 px-4 font-bold text-white uppercase">${item.Design || '-'}</td>
               <td class="py-2 px-4 text-zinc-400">${item.Brand || '-'}</td>
@@ -401,13 +420,13 @@
         container.innerHTML = html + `</tbody></table></div>`;
         
       } else if (currentLayout === 'format2') {
-        // ગ્રીડ કાર્ડ ફોર્મેટ
         let html = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">`;
         globalFilteredItems.forEach(item => {
+          const imgSrc = getTileImage(item.Design);
           html += `
             <div class="border border-zinc-800 bg-zinc-950 p-4 rounded-lg flex flex-col justify-between space-y-3">
               <div>
-                <img src="${getTileImage(item.Design)}" class="w-full h-40 object-cover rounded border border-zinc-900 mb-2" onerror="this.src='${fallbackImg}'">
+                <img src="${imgSrc}" onclick="openImageModal('${imgSrc}')" class="w-full h-40 object-cover rounded border border-zinc-900 mb-2 cursor-zoom-in hover:opacity-80 transition" onerror="this.src='${fallbackImg}'">
                 <span class="text-[9px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded uppercase font-bold">${item.Brand || 'EMCER'}</span>
                 <h4 class="text-sm font-bold text-white uppercase mt-2">${item.Design || '-'}</h4>
                 <p class="text-[11px] text-zinc-500 mt-1">${item.Size || '-'} • ${item.Series || '-'}</p>
@@ -428,20 +447,16 @@
     }
 
     function downloadPDF() {
-      // પ્રિન્ટ ડેટ સેટ કરો
       const now = new Date();
       document.getElementById('print-date').innerText = "Report Generated on: " + now.toLocaleString('en-IN');
       
-      // જો ગ્રીડ કાર્ડ મોડ ઓન હોય, તો પ્રિન્ટ કરવા માટે તેને ઓટોમેટીક ટેબલ મોડ (Format 1) માં ફેરવવું
       const previousLayout = currentLayout;
       if(currentLayout === 'format2') {
         switchLayout('format1');
       }
       
-      // બ્રાઉઝર પ્રિન્ટ વિન્ડો ઓપન કરો
       window.print();
       
-      // પ્રિન્ટ પછી પાછું જૂનું લેઆઉટ કરી દેવું
       if(previousLayout === 'format2') {
         switchLayout('format2');
       }
