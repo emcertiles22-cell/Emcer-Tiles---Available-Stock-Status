@@ -329,7 +329,7 @@
                                          <p class="text-amber-600/70 font-medium text-sm">Syncing flat rows directly from Script Engine...</p>`;
             }
 
-            if(!CONFIG_WEB_APP_URL || CONFIG_WEB_APP_URL.includes("YOUR_APPS_SCRIPT")) {
+            if(!CONFIG_WEB_APP_URL || CONFIG_WEB_APP_URL.includes("https://script.google.com/macros/s/AKfycbzuBEiGXoJb_bqJcwpFn47cdijPU8kbkTghpSAOP7ICNVctIVUr1q_OnLi6Jax-dcKT/exec")) {
                 alert("Please add your deployed Apps Script URL in CONFIG_WEB_APP_URL field inside the code!");
                 if(placeholder) placeholder.innerHTML = "❌ Setup Config Parameter URL inside source code.";
                 return;
