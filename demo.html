@@ -53,7 +53,7 @@
         ::-webkit-scrollbar-track { background: #020408; }
         ::-webkit-scrollbar-thumb { background: rgba(223, 183, 108, 0.3); border-radius: 10px; }
         
-        /* 👑 પ્રિન્ટ અને પીડીએફ માટેનું ખાસ પ્રીમિયમ સેટિંગ અહીં છે ભાઈ */
+        /* 🖨️ PDF પ્રિન્ટ પ્રીમિયમ લેઆઉટ સેટિંગ */
         @media print {
             @page { 
                 size: A4 portrait; 
@@ -68,7 +68,6 @@
             }
             .no-print { display: none !important; }
             
-            /* હેડર સેટિંગ */
             header {
                 border-bottom: 2px solid #111111 !important;
                 padding-bottom: 10px !important;
@@ -76,7 +75,6 @@
                 display: block !important;
             }
             
-            /* સ્ટેટ્સ કાઉન્ટર પેનલ */
             .glass-panel { 
                 border: none !important; 
                 background: transparent !important; 
@@ -98,12 +96,10 @@
                 flex: 1;
             }
             
-            /* ગ્રીડ લેઆઉટ માંથી રો-વાઇઝ લીસ્ટ વ્યુ (A4 માં બેસ્ટ ફિટ માટે) */
             #tileGrid { 
                 display: block !important; 
             }
             
-            /* ટાઇલ્સ કાર્ડ સેટિંગ */
             .tile-card { 
                 page-break-inside: avoid !important; 
                 border: 1px solid #666666 !important; 
@@ -120,7 +116,6 @@
                 margin-bottom: 15px !important;
             }
             
-            /* ઈમેજ નાની અને સાઈડમાં સેટ કરી જેથી પેજ બગડે નહિ */
             .tile-card .image-container { 
                 width: 140px !important; 
                 height: 140px !important; 
@@ -134,7 +129,6 @@
                 object-fit: cover !important; 
             }
             
-            /* કન્ટેન્ટ એરિયા */
             .tile-card .content-container { 
                 padding: 12px 16px !important; 
                 flex-grow: 1 !important; 
@@ -143,7 +137,6 @@
                 justify-content: space-between !important;
             }
             
-            /* ફોન્ટ કલર્સ બ્લેક એન્ડ વહાઈટ પ્રિન્ટ માટે */
             .text-gold, #statsCount, #statsQty { 
                 color: #000000 !important; 
                 font-weight: 800 !important; 
@@ -154,7 +147,6 @@
                 color: #000000 !important; 
             }
             
-            /* લોટ્સ ટેબલ લેઆઉટ */
             .bg-black\/50 { 
                 background: transparent !important; 
                 border: none !important; 
@@ -182,7 +174,6 @@
                 text-align: right !important;
             }
             
-            /* બેજ સેટિંગ */
             .badge-surface { 
                 background: #eceff1 !important; 
                 color: #000000 !important; 
@@ -317,6 +308,7 @@
     </footer>
 
     <script>
+        // 🔗 તમારી નવી અપડેટેડ Apps Script Web App URL અહીં સેટ કરી દીધી છે
         const CONFIG_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzuBEiGXoJb_bqJcwpFn47cdijPU8kbkTghpSAOP7ICNVctIVUr1q_OnLi6Jax-dcKT/exec"; 
 
         var finalGroups = [];
@@ -329,7 +321,7 @@
                                          <p class="text-amber-600/70 font-medium text-sm">Syncing flat rows directly from Script Engine...</p>`;
             }
 
-            if(!CONFIG_WEB_APP_URL || CONFIG_WEB_APP_URL.includes("https://script.google.com/macros/s/AKfycbzuBEiGXoJb_bqJcwpFn47cdijPU8kbkTghpSAOP7ICNVctIVUr1q_OnLi6Jax-dcKT/exec")) {
+            if(!CONFIG_WEB_APP_URL || CONFIG_WEB_APP_URL.includes("YOUR_APPS_SCRIPT")) {
                 alert("Please add your deployed Apps Script URL in CONFIG_WEB_APP_URL field inside the code!");
                 if(placeholder) placeholder.innerHTML = "❌ Setup Config Parameter URL inside source code.";
                 return;
