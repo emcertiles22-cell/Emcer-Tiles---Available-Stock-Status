@@ -1,197 +1,12 @@
-<!DOCTYPE html>
-<html lang="en" class="h-full bg-black">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Emcer Tiles | Inventory Portal</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  <style>
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    .glass-card {
-      background: rgba(15, 15, 15, 0.6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #000;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #222;
-      border-radius: 3px;
-    }
-    
-    /* 🖨️ PERFECT PDF PRINT STYLES */
-    @media print {
-      body {
-        background: white !important;
-        color: black !important;
-      }
-      header, .grid, .glass-card:not(#report-container), button, footer, #status-link {
-        display: none !important; /* પ્રિન્ટ કરતી વખતે ફિલ્ટર્સ અને બટનો સંતાડી દેશે */
-      }
-      .glass-card {
-        background: transparent !important;
-        border: none !important;
-        backdrop-filter: none !important;
-      }
-      #report-container, #report-data {
-        display: block !important;
-        width: 100% !important;
-      }
-      table {
-        width: 100% !important;
-        border-collapse: collapse !important;
-        color: black !important;
-      }
-      th, td {
-        border-bottom: 1px solid #ddd !important;
-        color: black !important;
-        padding: 8px !important;
-      }
-      tr {
-        page-break-inside: avoid !important; /* ટેબલની રો અધવચ્ચેથી કપાય નહીં */
-      }
-      img {
-        max-width: 80px !important;
-        height: auto !important;
-        border: 1px solid #ccc !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-      .text-white { color: black !important; }
-      .text-emerald-400, .text-emerald-500 { color: #047857 !important; }
-      .text-zinc-400, .text-zinc-500 { color: #4b5563 !important; }
-    }
-  </style>
-</head>
-<body class="h-full text-gray-200 antialiased selection:bg-amber-500 selection:text-black">
-
-  <div class="min-h-screen flex flex-col justify-between p-4 md:p-6 lg:p-8 space-y-6">
-    
-    <header class="glass-card rounded-xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-      <div>
-        <h1 class="text-xl md:text-2xl font-bold tracking-wider text-white">EMCER TILES PRIVATE LIMITED</h1>
-        <p class="text-xs font-semibold text-amber-500 tracking-widest mt-0.5">INVENTORY PORTAL</p>
-        <div id="status-link" class="text-[10px] text-gray-500 mt-1 flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-          SYNCHRONIZING SECURE NODE ENGINE...
-        </div>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
-        <button onclick="switchLayout('format1')" id="btn-format1" class="px-3 py-1.5 text-xs font-bold rounded uppercase tracking-wider transition bg-amber-500 text-black">
-          Format 1: Row Spec
-        </button>
-        <button onclick="switchLayout('format2')" id="btn-format2" class="px-3 py-1.5 text-xs font-bold rounded uppercase tracking-wider transition bg-zinc-900 text-gray-400 hover:text-white border border-zinc-800">
-          Format 2: Grid Card
-        </button>
-        <button onclick="switchLayout('format3')" id="btn-format3" class="px-3 py-1.5 text-xs font-bold rounded uppercase tracking-wider transition bg-zinc-900 text-gray-400 hover:text-white border border-zinc-800">
-          Format 3: Matrix Table
-        </button>
-        
-        <button onclick="downloadPDF()" class="ml-auto md:ml-2 bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 text-xs font-bold rounded uppercase tracking-wider flex items-center gap-1.5 transition">
-          🛑 Download PDF
-        </button>
-        <button onclick="initPortal()" class="bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-800 px-4 py-1.5 text-xs font-bold rounded uppercase tracking-wider flex items-center gap-1.5 transition">
-          🔄 Refresh
-        </button>
-        <div class="border border-amber-500/30 bg-amber-500/10 text-amber-500 px-4 py-1.5 text-xs font-bold rounded uppercase tracking-widest hidden md:block">
-          ✨ Yashdeep Jivani ✨
-        </div>
-      </div>
-    </header>
-
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="glass-card rounded-xl p-4 text-center">
-        <p class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Total Designs</p>
-        <h3 id="count-designs" class="text-2xl md:text-3xl font-bold text-white mt-1">0</h3>
-      </div>
-      <div class="glass-card rounded-xl p-4 text-center">
-        <p class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Total Boxes</p>
-        <h3 id="count-boxes" class="text-2xl md:text-3xl font-bold text-emerald-500 mt-1">0</h3>
-      </div>
-      <div class="glass-card rounded-xl p-4 text-center">
-        <p class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Active Brands</p>
-        <h3 id="count-brands" class="text-2xl md:text-3xl font-bold text-white mt-1">0</h3>
-      </div>
-      <div class="glass-card rounded-xl p-4 text-center border-amber-500/20 bg-amber-500/[0.02]">
-        <p class="text-[10px] uppercase tracking-widest text-amber-500/70 font-semibold">Filtered View</p>
-        <h3 id="count-filtered" class="text-2xl md:text-3xl font-bold text-amber-500 mt-1">0</h3>
-      </div>
-    </div>
-
-    <div class="glass-card rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
-      <div>
-        <label class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Search Design</label>
-        <input type="text" id="search-design" oninput="applyFilters()" placeholder="TYPE MATERIAL NAME..." class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs focus:outline-none focus:border-amber-500 uppercase text-white placeholder-gray-600">
-      </div>
-      <div>
-        <label class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Brand</label>
-        <select id="filter-brand" onchange="applyFilters()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white">
-          <option value="">ALL BRANDS</option>
-        </select>
-      </div>
-      <div>
-        <label class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Size</label>
-        <select id="filter-size" onchange="applyFilters()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white">
-          <option value="">ALL SIZES</option>
-        </select>
-      </div>
-      <div>
-        <label class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Series</label>
-        <select id="filter-series" onchange="applyFilters()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white">
-          <option value="">ALL SERIES</option>
-        </select>
-      </div>
-      <div class="flex gap-2">
-        <div class="flex-1">
-          <label class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Variant (Grade)</label>
-          <select id="filter-variant" onchange="applyFilters()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white">
-            <option value="">ALL VARIANTS</option>
-          </select>
-        </div>
-        <button onclick="clearFilters()" class="bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-gray-400 hover:text-white p-2 rounded transition h-[34px] w-[38px] flex items-center justify-center" title="Clear Filters">
-          🗑️
-        </button>
-      </div>
-    </div>
-
-    <div id="report-container" class="flex-1 glass-card rounded-xl p-4 min-h-[400px] flex flex-col justify-center items-center">
-      <div class="w-full h-full">
-        <div id="loading-view" class="text-center py-20">
-          <div class="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p id="loading-text" class="text-xs uppercase tracking-widest text-gray-500">Syncing Active Matrix Database Cluster...</p>
-        </div>
-        <div id="report-data" class="hidden w-full"></div>
-      </div>
-    </div>
-
-    <footer class="text-center text-[10px] text-zinc-600 tracking-wider uppercase">
-      Emcer Tiles Cloud Engine v2.6 • Secured Node Session • Image Mapping Activated
-    </footer>
-
-  </div>
-
-  <script>
+<script>
     let masterData = [];
-    let designImages = {}; // design.json નો ડેટા અહીં સેવ થશે
+    let designImages = {}; 
     let currentLayout = 'format1';
     let globalFilteredItems = [];
 
-    // 🛑 કોન્ફિગરેશન લિંક્સ
+    // 🛑 તમારા કનેક્શન સેટિંગ્સ
     const webAppUrl = "https://script.google.com/macros/s/AKfycbzuBEiGXoJb_bqJcwpFn47cdijPU8kbkTghpSAOP7ICNVctIVUr1q_OnLi6Jax-dcKT/exec"; 
-    const jsonUrl = "design.json"; // જો સેમ ફોલ્ડરમાં હોય તો 'design.json', અથવા પૂરી github raw લિંક નાખો
+    const jsonUrl = "design.json"; 
 
     const fallbackImg = "https://placehold.co/150x150/111/333?text=No+Image";
 
@@ -202,17 +17,17 @@
     function initPortal() {
       showLoader(true, "Fetching data from live nodes...");
       
-      // ૧. પહેલા GitHub માંથી design.json ડાઉનલોડ કરો
+      // ૧. GitHub માંથી design.json લાવો
       fetch(jsonUrl)
         .then(res => res.json())
         .then(imgData => {
-          // ધારો કે json ફોર્મેટ આ રીતનું છે: {"Design Name": "http...jpg"}
-          // કીઝ ને સરળતાથી મેચ કરવા અપરકેસમાં મેપ કરીએ
           designImages = {};
+          // JSON ની કીઝ માંથી વધારાની સ્પેસ, ડેશ (-) કાઢીને એકદમ ક્લીન ઇન્ડેક્સ બનાવીએ
           Object.keys(imgData).forEach(key => {
-            designImages[key.toUpperCase().trim()] = imgData[key];
+            const cleanKey = key.toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
+            designImages[cleanKey] = imgData[key];
           });
-          return fetch(webAppUrl); // ૨. પછી ગુગલ સીટનો સ્ટોક ડેટા ફેચ કરો
+          return fetch(webAppUrl); // ૨. ગુગલ સીટ ડેટા લાવો
         })
         .then(response => response.json())
         .then(data => {
@@ -220,7 +35,7 @@
             masterData = data;
             document.getElementById('status-link').innerHTML = `
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              DIRECT LINK ACTIVE (${masterData.length} ROWS SYNCED WITH IMAGES)
+              DIRECT LINK ACTIVE (${masterData.length} ROWS SYNCED)
             `;
             setupFilters();
             applyFilters();
@@ -238,6 +53,29 @@
             NODE DISCONNECTED (JSON OR WEBAPP ERROR)
           `;
         });
+    }
+
+    // 🔍 ઈમેજ શોધવા માટેનું એડવાન્સ સુપિરિયર ફંક્શન
+    function getTileImage(designName) {
+      if(!designName) return fallbackImg;
+      
+      // નામમાંથી બધી સ્પેશિયલ કેરેક્ટર અને સ્પેસ હટાવીને સરખામણી કરવી
+      const targetKey = designName.toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
+      
+      // ૧. ડાયરેક્ટ મેચ ચેક કરો
+      if (designImages[targetKey]) {
+        return designImages[targetKey];
+      }
+      
+      // ૨. જો ડાયરેક્ટ મેચ ન થાય, તો આંશિક (Partial) નામથી શોધો (જેમ કે Mercury-A માંથી Mercury મેચ કરવું)
+      const keys = Object.keys(designImages);
+      for (let i = 0; i < keys.length; i++) {
+        if (targetKey.includes(keys[i]) || keys[i].includes(targetKey)) {
+          return designImages[keys[i]];
+        }
+      }
+      
+      return fallbackImg; // જો કંઈ ન મળે તો
     }
 
     function showLoader(show, message = "") {
@@ -330,13 +168,6 @@
       renderLayout();
     }
 
-    // ડિઝાઇનના નામ પરથી ઈમેજ લિંક શોધવાનું હેલ્પર ફંક્શન
-    function getTileImage(designName) {
-      if(!designName) return fallbackImg;
-      const cleanKey = designName.toString().toUpperCase().trim();
-      return designImages[cleanKey] || fallbackImg;
-    }
-
     function renderLayout() {
       const container = document.getElementById('report-data');
       if(globalFilteredItems.length === 0) {
@@ -345,13 +176,12 @@
       }
 
       if (currentLayout === 'format1') {
-        // FORMAT 1: ROW SPECIFICATION TABLE (WITH IMAGE)
         let html = `
           <div class="overflow-x-auto w-full">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
                 <tr class="border-b border-zinc-800 text-zinc-400 uppercase tracking-wider print:border-black">
-                  <th class="py-3 px-4 w-16">Preview</th>
+                  <th class="py-3 px-4 w-20">Preview</th>
                   <th class="py-3 px-4">Design Name</th>
                   <th class="py-3 px-4">Brand</th>
                   <th class="py-3 px-4">Size</th>
@@ -381,16 +211,15 @@
         container.innerHTML = html;
 
       } else if (currentLayout === 'format2') {
-        // FORMAT 2: GRID CARDS (PREMIUM VIEW)
         let html = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full print:block">`;
         globalFilteredItems.forEach(item => {
           const imgUrl = getTileImage(item.Design);
           html += `
-            <div class="border border-zinc-800 bg-zinc-950 p-4 rounded-lg flex flex-col justify-between space-y-3 print:border-b print:border-gray-300 print:mb-4 print:flex-row print:space-y-0">
+            <div class="border border-zinc-800 bg-zinc-950 p-4 rounded-lg flex flex-col justify-between space-y-3 print:border-b print:border-gray-300 print:mb-4 print:flex-row print:space-y-0 print:bg-white">
               <div class="print:flex print:gap-4">
                 <img src="${imgUrl}" alt="Tile" class="w-full h-40 object-cover rounded border border-zinc-900 mb-2 print:w-20 print:h-20" onerror="this.src='${fallbackImg}'">
                 <div>
-                  <span class="text-[9px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded uppercase font-bold tracking-widest print:border">${item.Brand || 'EMCER'}</span>
+                  <span class="text-[9px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded uppercase font-bold tracking-widest print:border print:text-black print:bg-gray-100">${item.Brand || 'EMCER'}</span>
                   <h4 class="text-sm font-bold text-white uppercase mt-2 tracking-wide print:text-black">${item.Design || '-'}</h4>
                   <p class="text-[11px] text-zinc-500 mt-1">${item.Size || '-'} • ${item.Series || '-'}</p>
                 </div>
@@ -406,12 +235,11 @@
         container.innerHTML = html;
 
       } else if (currentLayout === 'format3') {
-        // FORMAT 3: MATRIX TABLE
         let html = `
           <div class="overflow-x-auto w-full">
             <table class="w-full text-center border border-zinc-800 text-xs print:border-black">
               <tr class="bg-zinc-950 text-zinc-400 uppercase border-b border-zinc-800 print:bg-gray-100 print:text-black">
-                <th class="p-3 border-r border-zinc-800 text-left w-20">Image</th>
+                <th class="p-3 border-r border-zinc-800 text-left w-24">Image</th>
                 <th class="p-3 border-r border-zinc-800 text-left">Material Identity Matrix</th>
                 <th class="p-3">Available Volume Block</th>
               </tr>
@@ -421,7 +249,7 @@
           html += `
             <tr class="border-b border-zinc-900 hover:bg-zinc-900/30 print:border-gray-200">
               <td class="p-2 border-r border-zinc-800 print:border-gray-200">
-                <img src="${imgUrl}" class="w-10 h-10 object-cover mx-auto rounded" onerror="this.src='${fallbackImg}'">
+                <img src="${imgUrl}" class="w-10 h-10 object-cover mx-auto rounded print:w-14 print:h-14" onerror="this.src='${fallbackImg}'">
               </td>
               <td class="p-3 border-r border-zinc-800 text-left font-semibold text-zinc-300 print:text-black print:border-gray-200">
                 ${item.Design} [${item.Size} | ${item.Brand}]
@@ -450,5 +278,3 @@
       window.print();
     }
   </script>
-</body>
-</html>
