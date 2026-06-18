@@ -77,21 +77,27 @@
         page-break-inside: avoid !important;
       }
       /* પ્રિન્ટમાં ફોટો બરાબર દેખાય તે માટે */
+      /* 🖨️ PDF પ્રિન્ટમાં ફોટો મોટો અને ક્લિયર બતાવવા માટે */
       img {
-        width: 55px !important;
-        height: 55px !important;
-        max-width: 55px !important;
-        object-fit: cover !important;
-        border: 1px solid #777 !important;
-        border-radius: 4px !important;
+        width: 140px !important;      /* ફોટાની પહોળાઈ વધારી */
+        height: 140px !important;     /* ફોટાની લંબાઈ વધારી */
+        max-width: 140px !important;
+        object-fit: contain !important; /* ફોટો કપાય નહીં અને આખો દેખાય */
+        border: 1px solid #333 !important;
+        border-radius: 6px !important;
         display: block !important;
+        margin: auto !important;      /* સેન્ટરમાં ગોઠવવા */
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
-      .text-white { color: black !important; }
-      .text-emerald-400, .text-emerald-500 { color: #000 !important; font-weight: 800 !important; }
-      .text-zinc-400, .text-zinc-500 { color: #333 !important; }
-    }
+
+      /* ટેબલના ખાનાને થોડી વધુ જગ્યા આપવા માટે */
+      td {
+        border: 1px solid #bbb !important;
+        color: black !important;
+        padding: 10px 8px !important; /* પેડિંગ વધાર્યું */
+        vertical-align: middle !important;
+      }
     
     /* સામાન્ય સ્ક્રીન પર પ્રિન્ટ હેડર સંતાડેલું રહેશે */
     .print-header { display: none; }
