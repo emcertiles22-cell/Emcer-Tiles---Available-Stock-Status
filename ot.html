@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -17,100 +17,188 @@
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
+    
+    /* 🖨️ ELITE PDF PRINT STYLES - જોવી ગમે તેવી પ્રિન્ટ */
     @media print {
-      body { background: white !important; color: black !important; }
-      header, .grid, .glass-card:not(#report-container), button, footer, #status-link { display: none !important; }
-      .glass-card { background: transparent !important; border: none !important; backdrop-filter: none !important; }
-      #report-container, #report-data { display: block !important; width: 100% !important; }
-      table { width: 100% !important; border-collapse: collapse !important; color: black !important; }
-      th, td { border-bottom: 1px solid #ddd !important; color: black !important; padding: 8px !important; }
-      tr { page-break-inside: avoid !important; }
-      img { max-width: 80px !important; height: auto !important; border: 1px solid #ccc !important; }
+      @page {
+        size: A4;
+        margin: 15mm 10mm 15mm 10mm;
+      }
+      body {
+        background: white !important;
+        color: black !important;
+        font-size: 11px !important;
+      }
+      /* પોર્ટલના ફિલ્ટર્સ અને બટનો પ્રિન્ટમાં ગાયબ થઈ જશે */
+      header, .grid, .glass-card:not(#report-container), button, footer, #status-link, .no-print {
+        display: none !important;
+      }
+      .glass-card {
+        background: transparent !important;
+        border: none !important;
+        backdrop-filter: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      #report-container, #report-data {
+        display: block !important;
+        width: 100% !important;
+      }
+      
+      /* પ્રિન્ટ હેડર (લેટરહેડ લુક) */
+      .print-header {
+        display: block !important;
+        text-align: center;
+        border-bottom: 3px double #000 !important;
+        padding-bottom: 12px;
+        margin-bottom: 20px;
+      }
+      
+      table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        color: black !important;
+      }
+      th {
+        background-color: #f2f2f2 !important;
+        color: black !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        border: 1px solid #999 !important;
+        padding: 8px !important;
+      }
+      td {
+        border: 1px solid #bbb !important;
+        color: black !important;
+        padding: 6px 8px !important;
+        vertical-align: middle !important;
+      }
+      tr {
+        page-break-inside: avoid !important;
+      }
+      /* પ્રિન્ટમાં ફોટો બરાબર દેખાય તે માટે */
+      img {
+        width: 55px !important;
+        height: 55px !important;
+        max-width: 55px !important;
+        object-cover: cover !important;
+        border: 1px solid #777 !important;
+        border-radius: 4px !important;
+        display: block !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
       .text-white { color: black !important; }
-      .text-emerald-400, .text-emerald-500 { color: #047857 !important; }
+      .text-emerald-400, .text-emerald-500 { color: #000 !important; font-weight: 800 !important; }
+      .text-zinc-400, .text-zinc-500 { color: #333 !important; }
     }
+    
+    /* સામાન્ય સ્ક્રીન પર પ્રિન્ટ હેડર સંતાડેલું રહેશે */
+    .print-header { display: none; }
   </style>
 </head>
-<body class="h-full text-gray-200 antialiased">
+<body class="h-full text-gray-200 antialiased bg-black">
 
   <div class="min-h-screen flex flex-col justify-between p-4 md:p-6 lg:p-8 space-y-6">
     
     <header class="glass-card rounded-xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
       <div>
-        <h1 class="text-xl md:text-2xl font-bold tracking-wider text-white">EMCER TILES PRIVATE LIMITED</h1>
-        <p class="text-xs font-semibold text-amber-500 tracking-widest mt-0.5">INVENTORY PORTAL</p>
+        <h1 class="text-xl md:text-2xl font-extrabold tracking-wider text-white">EMCER TILES PRIVATE LIMITED</h1>
+        <p class="text-xs font-bold text-amber-500 tracking-widest mt-0.5">INVENTORY PORTAL</p>
         <div id="status-link" class="text-[10px] text-gray-500 mt-1 flex items-center gap-1.5">
           <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-          INITIALIZING SECURE NODE ENGINE...
+          CONNECTING API NODES...
         </div>
       </div>
 
       <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
-        <button onclick="switchLayout('format1')" id="btn-format1" class="px-3 py-1.5 text-xs font-bold rounded bg-amber-500 text-black">Format 1: Row Spec</button>
-        <button onclick="switchLayout('format2')" id="btn-format2" class="px-3 py-1.5 text-xs font-bold rounded bg-zinc-900 text-gray-400 border border-zinc-800">Format 2: Grid Card</button>
-        <button onclick="switchLayout('format3')" id="btn-format3" class="px-3 py-1.5 text-xs font-bold rounded bg-zinc-900 text-gray-400 border border-zinc-800">Format 3: Matrix Matrix</button>
-        <button onclick="downloadPDF()" class="bg-red-600 text-white px-4 py-1.5 text-xs font-bold rounded uppercase">🛑 PDF</button>
-        <button onclick="initPortal()" class="bg-zinc-900 text-white border border-zinc-800 px-4 py-1.5 text-xs font-bold rounded">🔄 Refresh</button>
+        <button onclick="switchLayout('format1')" id="btn-format1" class="px-3 py-1.5 text-xs font-bold rounded uppercase tracking-wider transition bg-amber-500 text-black">Format 1: Row Spec</button>
+        <button onclick="switchLayout('format2')" id="btn-format2" class="px-3 py-1.5 text-xs font-bold rounded uppercase tracking-wider transition bg-zinc-900 text-gray-400 border border-zinc-800">Format 2: Grid Card</button>
+        <button onclick="switchLayout('format3')" id="btn-format3" class="px-3 py-1.5 text-xs font-bold rounded uppercase tracking-wider transition bg-zinc-900 text-gray-400 border border-zinc-800">Format 3: Matrix</button>
+        
+        <button onclick="downloadPDF()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 text-xs font-bold rounded uppercase tracking-wider flex items-center gap-1.5 transition">
+          🛑 Download PDF
+        </button>
+        <button onclick="initPortal()" class="bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-800 px-4 py-1.5 text-xs font-bold rounded uppercase transition">
+          🔄 Refresh
+        </button>
       </div>
     </header>
 
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <div class="glass-card rounded-xl p-4 text-center">
-        <p class="text-[10px] uppercase text-gray-500">Total Designs</p>
+        <p class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Total Designs</p>
         <h3 id="count-designs" class="text-2xl font-bold text-white mt-1">0</h3>
       </div>
       <div class="glass-card rounded-xl p-4 text-center">
-        <p class="text-[10px] uppercase text-gray-500">Total Boxes</p>
+        <p class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Total Boxes</p>
         <h3 id="count-boxes" class="text-2xl font-bold text-emerald-500 mt-1">0</h3>
       </div>
       <div class="glass-card rounded-xl p-4 text-center">
-        <p class="text-[10px] uppercase text-gray-500">Active Brands</p>
+        <p class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Active Brands</p>
         <h3 id="count-brands" class="text-2xl font-bold text-white mt-1">0</h3>
       </div>
-      <div class="glass-card rounded-xl p-4 text-center border-amber-500/20">
-        <p class="text-[10px] uppercase text-amber-500">Filtered View</p>
+      <div class="glass-card rounded-xl p-4 text-center border-amber-500/20 bg-amber-500/[0.01]">
+        <p class="text-[10px] uppercase tracking-widest text-amber-500 font-semibold">Filtered View</p>
         <h3 id="count-filtered" class="text-2xl font-bold text-amber-500 mt-1">0</h3>
       </div>
     </div>
 
     <div class="glass-card rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
       <div>
-        <label class="text-[10px] text-gray-400 block mb-1.5">Search Design</label>
-        <input type="text" id="search-design" oninput="applyFilters()" placeholder="TYPE MATERIAL NAME..." class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs text-white uppercase">
+        <label class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Search Design</label>
+        <input type="text" id="search-design" oninput="applyFilters()" placeholder="TYPE MATERIAL NAME..." class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs focus:outline-none focus:border-amber-500 uppercase text-white placeholder-gray-600">
       </div>
       <div>
-        <label class="text-[10px] text-gray-400 block mb-1.5">Brand</label>
-        <select id="filter-brand" onchange="applyFilters()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs text-white"><option value="">ALL BRANDS</option></select>
+        <label class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Brand</label>
+        <select id="filter-brand" onchange="applyFilters()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs text-white">
+          <option value="">ALL BRANDS</option>
+        </select>
       </div>
       <div>
-        <label class="text-[10px] text-gray-400 block mb-1.5">Size</label>
-        <select id="filter-size" onchange="applyFilters()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs text-white"><option value="">ALL SIZES</option></select>
+        <label class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Size</label>
+        <select id="filter-size" onchange="applyFilters()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs text-white">
+          <option value="">ALL SIZES</option>
+        </select>
       </div>
       <div>
-        <label class="text-[10px] text-gray-400 block mb-1.5">Series</label>
-        <select id="filter-series" onchange="applyFilters()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs text-white"><option value="">ALL SERIES</option></select>
+        <label class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Series</label>
+        <select id="filter-series" onchange="applyFilters()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs text-white">
+          <option value="">ALL SERIES</option>
+        </select>
       </div>
       <div class="flex gap-2">
         <div class="flex-1">
-          <label class="text-[10px] text-gray-400 block mb-1.5">Variant</label>
-          <select id="filter-variant" onchange="applyFilters()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs text-white"><option value="">ALL VARIANTS</option></select>
+          <label class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Variant (Grade)</label>
+          <select id="filter-variant" onchange="applyFilters()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs text-white">
+            <option value="">ALL VARIANTS</option>
+          </select>
         </div>
-        <button onclick="clearFilters()" class="bg-zinc-900 border border-zinc-800 p-2 rounded h-[34px] w-[38px]">🗑️</button>
+        <button onclick="clearFilters()" class="bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-gray-400 hover:text-white p-2 rounded transition h-[34px] w-[38px] flex items-center justify-center">
+          🗑️
+        </button>
       </div>
     </div>
 
     <div id="report-container" class="flex-1 glass-card rounded-xl p-4 min-h-[400px] flex flex-col justify-center items-center">
+      
+      <div class="print-header w-full">
+        <h1 style="font-size: 20px; font-weight: 800; letter-spacing: 1px; margin: 0; color: #000;">EMCER TILES PRIVATE LIMITED</h1>
+        <p style="font-size: 10px; font-weight: 700; color: #555; letter-spacing: 3px; margin: 2px 0 0 0;">LIVE INVENTORY STOCK REPORT</p>
+        <p id="print-date" style="font-size: 9px; color: #666; margin: 5px 0 0 0; font-weight: 500;"></p>
+      </div>
+
       <div class="w-full h-full">
         <div id="loading-view" class="text-center py-20">
           <div class="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p id="loading-text" class="text-xs uppercase tracking-widest text-gray-500">Syncing Active Matrix Database Cluster...</p>
+          <p id="loading-text" class="text-xs uppercase tracking-widest text-gray-500">Connecting Web Engine & JSON Repositories...</p>
         </div>
         <div id="report-data" class="hidden w-full"></div>
       </div>
     </div>
 
-    <footer class="text-center text-[10px] text-zinc-600 uppercase">
-      Emcer Tiles Cloud Engine v2.7 • Yashdeep Jivani
+    <footer class="text-center text-[10px] text-zinc-600 tracking-wider uppercase">
+      Emcer Tiles Engine v3.0 • Automated Live Sync Enabled
     </footer>
 
   </div>
@@ -121,67 +209,71 @@
     let currentLayout = 'format1';
     let globalFilteredItems = [];
 
-    // 🛑 લિંક કન્ફિગરેશન (ચેક કરીને સાચી નાખજો)
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbzuBEiGXoJb_bqJcwpFn47cdijPU8kbkTghpSAOP7ICNVctIVUr1q_OnLi6Jax-dcKT/exec"; // તમારી લાઈવ URL અહીં બદલો
+    // 🛑 લિંક સેટિંગ્સ
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbzuBEiGXoJb_bqJcwpFn47cdijPU8kbkTghpSAOP7ICNVctIVUr1q_OnLi6Jax-dcKT/exec"; 
     const jsonUrl = "./design.json"; 
 
-    const fallbackImg = "https://placehold.co/150x150/111/333?text=No+Image";
+    const fallbackImg = "https://placehold.co/100x100/222/444?text=No+Photo";
 
     window.addEventListener('DOMContentLoaded', () => {
       initPortal();
     });
 
     function initPortal() {
-      showLoader(true, "Connecting to data nodes...");
+      showLoader(true, "Fetching master datasets...");
       
-      // ૧. પેલા ફ્રી સેફ્ટી સાથે JSON લાવો જેથી પ્રોબ્લેમ હોય તો પણ કોડ ન અટકે
+      // ૧. Array format વાળા design.json ને પરફેક્ટ લોડ કરીએ
       fetch(jsonUrl)
-        .then(res => {
-          if(!res.ok) return {}; // જો ફાઈલ ન મળે તો ખાલી ઓબ્જેક્ટ રિટર્ન કરો
-          return res.json();
-        })
-        .then(imgData => {
+        .then(res => res.json())
+        .then(arrData => {
           designImages = {};
-          if(imgData) {
-            Object.keys(imgData).forEach(key => {
-              const cleanKey = key.toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
-              designImages[cleanKey] = imgData[key];
+          if(Array.isArray(arrData)) {
+            arrData.forEach(item => {
+              if(item.name && item.url) {
+                // નામ માંથી વધારાની જગ્યા હટાવીને ઇન્ડેક્સ કી બનાવીએ
+                const cleanKey = item.name.toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
+                designImages[cleanKey] = item.url;
+              }
             });
           }
         })
-        .catch(e => console.log("JSON Load bypass", e))
+        .catch(e => console.error("JSON Mapping bypass:", e))
         .finally(() => {
-          // ૨. હવે ગુગલ સીટનો ડેટા ફેચ કરો
+          // ૨. હવે શુદ્ધ Fetch API થી ગુગલ શીટનો ડેટા લાવીએ (google.script.run વગર)
           fetch(webAppUrl)
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
               if (data && data.length > 0 && !data.error) {
                 masterData = data;
                 document.getElementById('status-link').innerHTML = `
                   <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  LIVE NODE LINK ACTIVE (${masterData.length} ROWS)
+                  LIVE ENGINE ONLINE (${masterData.length} ROWS SYNCED)
                 `;
                 setupFilters();
                 applyFilters();
                 showLoader(false);
               } else {
                 showLoader(false);
-                document.getElementById('loading-view').innerHTML = `<p class="text-red-500 text-xs font-bold">SHEET ERROR: ${data.error || 'Empty Data'}</p>`;
+                document.getElementById('loading-view').innerHTML = `<p class="text-red-500 text-xs font-bold">API ERROR: ${data.error || 'No rows returned'}</p>`;
               }
             })
             .catch(err => {
-              console.error("Fetch Error:", err);
+              console.error("Critical Connection Error:", err);
               showLoader(false);
-              document.getElementById('loading-view').innerHTML = `<p class="text-red-500 text-xs font-bold">CONNECTION FAILED (CHECK WEB APP DEPLOYMENT)</p>`;
+              document.getElementById('loading-view').innerHTML = `<p class="text-red-500 text-xs font-bold">CONNECTION FAILED. RE-CHECK WEBAPP API DEPLOYMENT.</p>`;
             });
         });
     }
 
+    // 🔍 એડવાન્સ ઇન્ટેલિજન્ટ ઇમેજ મેચિંગ લોજિક
     function getTileImage(designName) {
       if(!designName) return fallbackImg;
       const targetKey = designName.toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
+      
+      // A. ડાયરેક્ટ આખું નામ મેચ થાય તો
       if (designImages[targetKey]) return designImages[targetKey];
       
+      // B. જો શીટમાં 'Statuario Mercury-A' હોય અને JSON માં ખાલી 'Statuario Mercury' હોય તો પણ શોધી લેશે
       const keys = Object.keys(designImages);
       for (let i = 0; i < keys.length; i++) {
         if (targetKey.includes(keys[i]) || keys[i].includes(targetKey)) {
@@ -260,7 +352,7 @@
       currentLayout = layout;
       ['format1', 'format2', 'format3'].forEach(l => {
         const btn = document.getElementById(`btn-${l}`);
-        btn.className = (l === layout) ? "px-3 py-1.5 text-xs font-bold rounded bg-amber-500 text-black" : "px-3 py-1.5 text-xs font-bold rounded bg-zinc-900 text-gray-400 border border-zinc-800";
+        btn.className = (l === layout) ? "px-3 py-1.5 text-xs font-bold rounded bg-amber-500 text-black uppercase tracking-wider" : "px-3 py-1.5 text-xs font-bold rounded bg-zinc-900 text-gray-400 border border-zinc-800 uppercase tracking-wider";
       });
       renderLayout();
     }
@@ -268,28 +360,65 @@
     function renderLayout() {
       const container = document.getElementById('report-data');
       if(globalFilteredItems.length === 0) {
-        container.innerHTML = `<div class="text-center py-12 text-zinc-500 text-xs uppercase">No stock items found.</div>`;
+        container.innerHTML = `<div class="text-center py-12 text-zinc-500 text-xs uppercase">No matching stock items found.</div>`;
         return;
       }
 
-      if (currentLayout === 'format1') {
-        let html = `<div class="overflow-x-auto w-full"><table class="w-full text-left text-xs"><thead><tr class="border-b border-zinc-800 text-zinc-400 uppercase"><th class="py-3 px-4 w-20">Preview</th><th class="py-3 px-4">Design Name</th><th class="py-3 px-4">Brand</th><th class="py-3 px-4">Size</th><th class="py-3 px-4">Series</th><th class="py-3 px-4 text-right">Available Boxes</th></tr></thead><tbody class="divide-y divide-zinc-900 print:divide-gray-200">`;
+      if (currentLayout === 'format1' || currentLayout === 'format3') {
+        // પ્રિન્ટ-ફ્રેન્ડલી રો સ્પેસિફિકેશન ટેબલ
+        let html = `
+          <div class="overflow-x-auto w-full">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b border-zinc-800 text-zinc-400 uppercase tracking-wider">
+                  <th class="py-3 px-4 w-20 text-center">Image</th>
+                  <th class="py-3 px-4">Design Name</th>
+                  <th class="py-3 px-4">Brand</th>
+                  <th class="py-3 px-4">Size</th>
+                  <th class="py-3 px-4">Series</th>
+                  <th class="py-3 px-4">Grade</th>
+                  <th class="py-3 px-4 text-right">Available Boxes</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-zinc-900">
+        `;
+        
         globalFilteredItems.forEach(item => {
-          html += `<tr><td class="py-2 px-4"><img src="${getTileImage(item.Design)}" class="w-12 h-12 object-cover rounded border border-zinc-800 print:w-16 print:h-16" onerror="this.src='${fallbackImg}'"></td><td class="py-2 px-4 font-bold text-white uppercase print:text-black">${item.Design || '-'}</td><td class="py-2 px-4 text-zinc-400 print:text-gray-700">${item.Brand || '-'}</td><td class="py-2 px-4 text-zinc-400 print:text-gray-700">${item.Size || '-'}</td><td class="py-2 px-4 text-zinc-500 print:text-gray-500">${item.Series || '-'}</td><td class="py-2 px-4 text-right font-bold text-emerald-400 print:text-emerald-800">${parseInt(item.Boxes || 0)} Box</td></tr>`;
+          html += `
+            <tr class="hover:bg-zinc-900/50 transition">
+              <td class="py-2 px-2 flex justify-center items-center">
+                <img src="${getTileImage(item.Design)}" alt="Tile" class="w-12 h-12 object-cover rounded border border-zinc-800" onerror="this.src='${fallbackImg}'">
+              </td>
+              <td class="py-2 px-4 font-bold text-white uppercase">${item.Design || '-'}</td>
+              <td class="py-2 px-4 text-zinc-400">${item.Brand || '-'}</td>
+              <td class="py-2 px-4 text-zinc-400">${item.Size || '-'}</td>
+              <td class="py-2 px-4 text-zinc-500">${item.Series || '-'}</td>
+              <td class="py-2 px-4 text-zinc-500">${item.Variant || '-'}</td>
+              <td class="py-2 px-4 text-right font-black text-emerald-400">${parseInt(item.Boxes || 0)} Box</td>
+            </tr>
+          `;
         });
         container.innerHTML = html + `</tbody></table></div>`;
+        
       } else if (currentLayout === 'format2') {
-        let html = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full print:block">`;
+        // ગ્રીડ કાર્ડ ફોર્મેટ
+        let html = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">`;
         globalFilteredItems.forEach(item => {
-          html += `<div class="border border-zinc-800 bg-zinc-950 p-4 rounded-lg flex flex-col justify-between space-y-3 print:border-b print:mb-4 print:flex-row print:bg-white"><div class="print:flex print:gap-4"><img src="${getTileImage(item.Design)}" class="w-full h-40 object-cover rounded mb-2 print:w-20 print:h-20" onerror="this.src='${fallbackImg}'"><div><span class="text-[9px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded uppercase print:text-black">${item.Brand || 'EMCER'}</span><h4 class="text-sm font-bold text-white uppercase mt-2 print:text-black">${item.Design || '-'}</h4><p class="text-[11px] text-zinc-500 mt-1">${item.Size || '-'} • ${item.Series || '-'}</p></div></div><div class="flex justify-between items-center border-t border-zinc-900 pt-2.5 print:border-none"><span class="text-sm font-black text-emerald-400 print:text-emerald-800">${parseInt(item.Boxes || 0)} BOX</span></div></div>`;
+          html += `
+            <div class="border border-zinc-800 bg-zinc-950 p-4 rounded-lg flex flex-col justify-between space-y-3">
+              <div>
+                <img src="${getTileImage(item.Design)}" class="w-full h-40 object-cover rounded border border-zinc-900 mb-2" onerror="this.src='${fallbackImg}'">
+                <span class="text-[9px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded uppercase font-bold">${item.Brand || 'EMCER'}</span>
+                <h4 class="text-sm font-bold text-white uppercase mt-2">${item.Design || '-'}</h4>
+                <p class="text-[11px] text-zinc-500 mt-1">${item.Size || '-'} • ${item.Series || '-'}</p>
+              </div>
+              <div class="flex justify-between items-center border-t border-zinc-900 pt-2">
+                <span class="text-xs font-black text-emerald-400">${parseInt(item.Boxes || 0)} BOX</span>
+              </div>
+            </div>
+          `;
         });
         container.innerHTML = html + `</div>`;
-      } else if (currentLayout === 'format3') {
-        let html = `<div class="overflow-x-auto w-full"><table class="w-full text-center border border-zinc-800 text-xs"><tr class="bg-zinc-950 text-zinc-400 uppercase border-b border-zinc-800 print:text-black"><th class="p-3 text-left w-24">Image</th><th class="p-3 text-left">Material Identity Matrix</th><th class="p-3">Available Volume Block</th></tr>`;
-        globalFilteredItems.forEach(item => {
-          html += `<tr class="border-b border-zinc-900"><td class="p-2"><img src="${getTileImage(item.Design)}" class="w-10 h-10 object-cover mx-auto rounded" onerror="this.src='${fallbackImg}'"></td><td class="p-3 text-left font-semibold text-zinc-300 print:text-black">${item.Design} [${item.Size} | ${item.Brand}]</td><td class="p-3 font-bold text-amber-500 print:text-black">${parseInt(item.Boxes || 0)} Bxs</td></tr>`;
-        });
-        container.innerHTML = html + `</table></div>`;
       }
     }
 
@@ -298,7 +427,25 @@
       applyFilters();
     }
 
-    function downloadPDF() { window.print(); }
+    function downloadPDF() {
+      // પ્રિન્ટ ડેટ સેટ કરો
+      const now = new Date();
+      document.getElementById('print-date').innerText = "Report Generated on: " + now.toLocaleString('en-IN');
+      
+      // જો ગ્રીડ કાર્ડ મોડ ઓન હોય, તો પ્રિન્ટ કરવા માટે તેને ઓટોમેટીક ટેબલ મોડ (Format 1) માં ફેરવવું
+      const previousLayout = currentLayout;
+      if(currentLayout === 'format2') {
+        switchLayout('format1');
+      }
+      
+      // બ્રાઉઝર પ્રિન્ટ વિન્ડો ઓપન કરો
+      window.print();
+      
+      // પ્રિન્ટ પછી પાછું જૂનું લેઆઉટ કરી દેવું
+      if(previousLayout === 'format2') {
+        switchLayout('format2');
+      }
+    }
   </script>
 </body>
 </html>
